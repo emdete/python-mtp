@@ -1,0 +1,51 @@
+About
+------
+PyMTP is a Pythonic wrapper around libmtp, allowing python applications to 
+communicate with MTP devices, such as the Microsoft(R) Zune(TM), Creative(R)
+Zen(TM) devices (except the Creative Zen Stone), and many others. 
+
+Why
+----
+I decided to write pymtp after I got my Creative(R) Zen V Plus, and I noticed
+there wasn't any libraries to use MTP in python. I grabbed ctypes and went to 
+work. 
+
+Requirements
+------------
+PyMTP 0.0.4 requires:
+	* Python
+	* Ctypes (or Python 2.5, as it includes Ctypes)
+	* LibMTP 0.2.6 or above
+
+Installing
+-----------
+To install PyMTP on most systems, run setup.py:
+
+	python setup.py build
+	python setup.py install
+	
+After running those commands (on *nix, you'll need to run the install command 
+as root), PyMTP should be installed and ready to go
+
+Generating documentation
+------------------------
+While PyMTP doesn't come with any documentation with it, you can generate 
+documentation using epydoc. Epydoc makes very pretty documentation:
+
+	epydoc -o <output directory> pymtp.py
+	
+This, of course, requires epydoc to be installed.
+
+Getting help
+-------------
+If you find you need help getting PyMTP working, or have any questions or 
+comments on PyMTP, please send me a message. I'm usually available on 
+irc.freenode.net as "nick125", or email me at nick@nick125.com
+
+Thanks
+------
+I would like to take this moment to thank everyone who has ever filed a bug
+report or a patch. You guys have made me feel like my work is actually 
+important to someone and have given me the encouragement to keep working on it.
+I'd like to give a special thanks to Dan O'Reilly for his patches and other
+contributions to this project.

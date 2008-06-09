@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+#
+# PyMTP demo scripts
+# (c) 2008 Nick Devito
+# Released under the GPL v3 or later.
+#
+
+import sys
+sys.path.insert(0, "../")
+
+import pymtp
+
+def usage():
+	print "Usage: %s <object ids>" % (sys.argv[0])
+
+def main():
+	if len(sys.argv) <= 1:
+		usage()
+		sys.exit(2)
+		
+	mtp = pymtp.MTP()
+	mtp.connect()
+
+	object_ids = sys.argv[1:]
+	for object_id in object_ids:
+		mtp.delete_object(int(object_id))
+		print "Deleted object %s" % (object_id)
+	mtp.disconnect()
+		
+if __name__ == "__main__":
+	main()
