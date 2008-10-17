@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
 #
 # A Ctypes wrapper to LibMTP
 # Developed by: Nick Devito (nick@nick125.com)
@@ -22,9 +23,9 @@
 		>>>
 """
 
-__VERSION__ = "0.0.5"
-__VERSION_MACRO__ = 5
-__VERSION_MINOR__ = 0
+__VERSION__ = "0.1.0"
+__VERSION_MACRO__ = 0
+__VERSION_MINOR__ = 1
 __VERSION_MAJOR__ = 0
 __VERSION_TUPLE__ = (__VERSION_MAJOR__, __VERSION_MINOR__, __VERSION_MACRO__)
 __AUTHOR__ = "Nick Devito (nick@nick125.com)"
