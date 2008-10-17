@@ -7,7 +7,7 @@
 
 import sys
 sys.path.insert(0, "../") # so the examples work out of the box
-
+import pygame; pygame.init()
 import pymtp
 
 # Connect to MTP

@@ -167,6 +167,7 @@ class LIBMTP_File(ctypes.Structure):
 
 LIBMTP_File._fields_ = [("item_id", ctypes.c_uint32),
                         ("parent_id", ctypes.c_uint32),
+                        ("storage_id", ctypes.c_uint32),
                         ("filename", ctypes.c_char_p),
                         ("filesize", ctypes.c_uint64),
 			("filetype", ctypes.c_int),
@@ -183,8 +184,10 @@ class LIBMTP_Track(ctypes.Structure):
 		
 LIBMTP_Track._fields_ = [("item_id", ctypes.c_uint32),
 			("parent_id", ctypes.c_uint32),
+                        ("storage_id", ctypes.c_uint32),
 			("title", ctypes.c_char_p),
 			("artist", ctypes.c_char_p),
+			("composer", ctypes.c_char_p), 
 			("genre", ctypes.c_char_p),
 			("album", ctypes.c_char_p),
 			("date", ctypes.c_char_p),
@@ -277,6 +280,8 @@ class LIBMTP_Playlist(ctypes.Structure):
 		return self.no_tracks
 
 LIBMTP_Playlist._fields_ = [("playlist_id", ctypes.c_uint32),
+                            ("parent_id", ctypes.c_uint32),
+                            ("storage_id", ctypes.c_uint32),
                             ("name", ctypes.c_char_p),
                             ("tracks", ctypes.POINTER(ctypes.c_uint32)),
                             ("no_tracks", ctypes.c_uint32),
@@ -293,6 +298,7 @@ class LIBMTP_Folder(ctypes.Structure):
 
 LIBMTP_Folder._fields_ = [("folder_id", ctypes.c_uint32),
                           ("parent_id", ctypes.c_uint32),
+                          ("storage_id", ctypes.c_uint32),
                           ("name", ctypes.c_char_p),
                           ("sibling", ctypes.POINTER(LIBMTP_Folder)),
                           ("child", ctypes.POINTER(LIBMTP_Folder))]
@@ -1144,7 +1150,6 @@ class MTP:
 				
 		if (self.device == None):
 			raise NotConnected
-
 		folders = self.mtp.LIBMTP_Get_Folder_List(self.device)
 		next = folders
 		# A temporary holding space, this makes checking folder
@@ -1153,7 +1158,6 @@ class MTP:
 
 		while True:
 			next = next.contents
-
 			## Check if this folder is in the dict
 			if not (tmp.has_key(next.folder_id)):
 				tmp[next.folder_id] = next
