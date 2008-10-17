@@ -100,6 +100,29 @@ class MutableIterableModel(IterableModel):
 # Defining LIBMTP_Album, MTPAlbum and MTPAlbums
 # ---------
 
+class LIBMTP_Album(ctypes.Structure):
+	"""
+		LIBMTP_Album
+	
+		Contains the ctypes structure for LIBMTP_album_struct
+	"""
+	
+	def __repr__(self):
+		return str(self.name)
+
+LIBMTP_Album._fields_ = [
+	("album_id", ctypes.c_uint32),
+	("parent_id", ctypes.c_uint32),
+	("storage_id", ctypes.c_uint32),
+	("name", ctypes.c_char_p),
+	("artist", ctypes.c_char_p),
+	("composer", ctypes.c_char_p),
+	("genre", ctypes.c_char_p),
+	("tracks", ctypes.POINTER(ctypes.c_uint32)),
+	("no_tracks", ctypes.c_uint32),
+	("next", ctypes.POINTER(LIBMTP_Album)),
+	]
+
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
 # ---------
@@ -108,15 +131,17 @@ class LIBMTP_Error(ctypes.Structure):
 	"""
 		LIBMTP_Error
 		
-		Contains the ctypes structure for LIBMTP_error_t
+		Contains the ctypes structure for LIBMTP_error_struct
 	"""
 
 	def __repr__(self):
-		return self.errornumber
+		return int(self.errornumber)
 
-LIBMTP_Error._fields_ = [("errornumber", ctypes.c_int),
-                         ("error_text", ctypes.c_char_p),
-                         ("next", ctypes.POINTER(LIBMTP_Error))]
+LIBMTP_Error._fields_ = [
+	("errornumber", ctypes.c_int),
+	("error_text", ctypes.c_char_p),
+	("next", ctypes.POINTER(LIBMTP_Error)),
+	]
 						 
 class MTPError(BaseModel):
 	"""
