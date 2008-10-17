@@ -130,16 +130,60 @@ class MTPAlbum(BaseModel):
 		An object representing a single album.
 	"""
 
-	@property
-	def album_id(self):
+	def _get_album_id(self):
+		"""
+			A unique identifier for the album - typically, you don't manipulate
+			this value manually. 
+		"""
+		
 		return int(self.base_structure.album_id)
 		
-	@property
-	def parent_id(self):
+	def _set_album_id(self, value):
+		self.base_structure.album_id = ctypes.c_uint32(int(value))
+		
+	album_id = property(_get_album_id, _set_album_id)
+	
+	def _get_parent_id(self):
+		"""
+			The parent folder ID for the album
+		"""
+		
 		return int(self.base_structure.parent_id)
+		
+	def _set_parent_id(self, value):
+		self.base_structure.parent_id = ctypes.c_uint32(int(value))
+		
+	parent_id = property(_get_parent_id, _set_parent_id)
 
-#	@property
 
+	def _get_storage_id(self):
+		"""
+			The unique storage identifier of the storage holding this album.
+			
+			Typically, this is the same storage as holding the tracks 
+			themselves.
+		"""
+		
+		return int(self.base_structure.storage_id)
+		
+	def _set_storage_id(self, value):
+		self.base_structure.storage_id = ctypes.c_uint32(int(value))
+		
+	storage_id = property(_get_storage_id _set_storage_id)
+	
+	
+	def _get_name(self):
+		"""
+			The name of the album.
+		"""
+		return str(self.base_structure.name)
+		
+	def _set_name(self, value):
+		self.base_structure.name = ctypes.c_char_p(str(value))
+		
+	name = property(_get_name, _set_name)
+	
+	
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
 # ---------
