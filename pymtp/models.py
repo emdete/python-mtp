@@ -122,6 +122,23 @@ LIBMTP_Album._fields_ = [
 	("no_tracks", ctypes.c_uint32),
 	("next", ctypes.POINTER(LIBMTP_Album)),
 	]
+	
+class MTPAlbum(BaseModel):
+	"""
+		MTPAlbum
+		
+		An object representing a single album.
+	"""
+
+	@property
+	def album_id(self):
+		return int(self.base_structure.album_id)
+		
+	@property
+	def parent_id(self):
+		return int(self.base_structure.parent_id)
+
+#	@property
 
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
