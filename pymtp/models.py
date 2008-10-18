@@ -26,7 +26,7 @@ class BaseModel(object):
     def __init__(self, base_structure):
         """
             Initializes a BaseModel for the supplied base_structure.
-            
+
             @param base_structure: The underlying CTypes structure to "wrap".
             @type base_structure: any ctypes.structure object
             @return: Nothing
@@ -37,19 +37,19 @@ class BaseModel(object):
 class IterableModel(BaseModel):
     """
         IterableModel
-        
+
         Provides a basic iterable model for CTypes data types that specify
         a "next" parameter (as a pointer).
-        
-        You still have to define __getitem__, etc, but you can use _get_item 
+
+        You still have to define __getitem__, etc, but you can use _get_item
         to retrieve the object!
     """
-    
+
     def _get_item(self, level):
         """
         Returns the "level"th object in the list. If the level exceeds
         the number of objects in the list, it'll raise IndexError.
-        
+
         @type level: int
         @param key: The index of the object to retrieve
         @return: The CTypes data type object
@@ -61,14 +61,14 @@ class IterableModel(BaseModel):
                 current = current.next.contents
             else:
                 raise IndexError
-                
+
         return current
-                
+
     def __len__(self):
         """
             Returns the number of objects in the list.
             B{Note that this function is really expensive!}
-            
+
             @return: the number of objects in the list
             @rtype: int
         """
@@ -85,12 +85,12 @@ class IterableModel(BaseModel):
 class MutableIterableModel(IterableModel):
     """
         MutableIterableModel
-        
+
         Extends the L{IterableModel} model for mutable objects.
-        
+
         As with L{IterableModel}, you still have to provide the data type
         functions (i.e., __getitem__, __setitem__, __delitem__, etc), but you
-        can use the functions in this model to perform the underlying 
+        can use the functions in this model to perform the underlying
         operations.
     """
     pass
@@ -99,18 +99,18 @@ class MutableIterableModel(IterableModel):
 class FixedArray(object):
     """
         FixedArray
-        
-        A simple list-like object that uses a list of integers and a fixed 
+
+        A simple list-like object that uses a list of integers and a fixed
         length. At the moment, this is used to turn those track/no_track
         attributes into a Python list.
     """
-    
+
     def __init__(self, array, length, mutable=True):
         """
             Initializes the FixedArray. If None is passed as the array,
             we'll create an array of integers.
-            
-            @type array: Ctypes array 
+
+            @type array: Ctypes array
             @param array: A Ctypes array
             @type length: int
             @param length: The length of the list
@@ -121,66 +121,66 @@ class FixedArray(object):
         # Small sanity check
         if not self.array:
             self.array = ctypes.POINTER(ctypes.c_int(0))
-    
+
     def __getitem__(self, key):
         """
             Returns the item with the index specified.
-            
+
             @type key: int
             @param key: The index of the object to retrieve
         """
         if key > (self.length - 1):
             raise IndexError
-            
+
         return self.array[key]
-        
+
     def __delitem__(self, key):
         """
             Deletes the item at the index specified
-            
+
             @type key: int
             @param key: The index of the object to delete
         """
         if not self.mutable:
             raise TypeError("Not a mutable object!")
-        
+
         if key > (self.length - 1):
             raise KeyError
-        
+
         for i in xrange(key, (self.length - 1)):
             self.array[i] = self.array[i + 1]
 
     def __setitem__(self, key, value):
         """
             Sets the value specified to the index specified
-            
+
             @type key: int
             @param key: The index of the object to modify
         """
         if not self.mutable:
             raise TypeError("Not a mutable object!")
-        
+
         if key > (self.length - 1):
             raise KeyError
-        
+
         self.array[key] = value
-        
+
     def __len__(self):
         """
             Returns the length of the array
         """
         return int(self.length)
-        
+
     def append(self, value):
         """
             Appends the value specified to the end of the array
         """
         if not self.mutable:
             raise TypeError("Not a mutable object!")
-        
-        self.array[self.length - 1] = value        
+
+        self.array[self.length - 1] = value
         self.length += 1
-        
+
     def insert(self, position, value):
         """
             Inserts the value at the position specified
@@ -189,14 +189,14 @@ class FixedArray(object):
         """
         if not self.mutable:
             raise TypeError("Not a mutable object!")
-        
+
         if position > (self.length - 1):
             raise KeyError
         # Move the objects above the position
         for i in reversed(xrange(position, (self.length - 1))):
             self.array[i + 1] = self.array[i]
-            
-        self.array[position] = value    
+
+        self.array[position] = value
         self.length += 1
 
 
@@ -238,42 +238,42 @@ class MTPAlbum(BaseModel):
     def _get_album_id(self):
         """
             A unique identifier for the album - typically, you don't manipulate
-            this value manually. 
+            this value manually.
         """
         return int(self.base_structure.album_id)
-        
+
     def _set_album_id(self, value):
         self.base_structure.album_id = ctypes.c_uint32(int(value))
-        
+
     album_id = property(_get_album_id, _set_album_id)
-    
+
     def _get_parent_id(self):
         """
             The parent folder ID for the album
         """
         return int(self.base_structure.parent_id)
-        
+
     def _set_parent_id(self, value):
         self.base_structure.parent_id = ctypes.c_uint32(int(value))
-        
+
     parent_id = property(_get_parent_id, _set_parent_id)
 
 
     def _get_storage_id(self):
         """
             The unique storage identifier of the storage holding this album.
-            
-            Typically, this is the same storage as holding the tracks 
+
+            Typically, this is the same storage as holding the tracks
             themselves.
         """
         return int(self.base_structure.storage_id)
-        
+
     def _set_storage_id(self, value):
         self.base_structure.storage_id = ctypes.c_uint32(int(value))
-        
+
     storage_id = property(_get_storage_id, _set_storage_id)
-    
-    
+
+
     def _get_name(self):
         """
             The name of the album.
@@ -332,13 +332,13 @@ class MTPAlbum(BaseModel):
 class MTPAlbums(IterableModel):
     """
         MTPAlbums
-        
+
         An object representing a list of L{MTPAlbum} objects.
     """
     def __getitem__(self, key):
         """
             Returns the L{MTPAlbum} object at the index specified
-            
+
             @type key: int
             @param key: Index of object to return
             @rtype: L{MTPAlbum}
@@ -354,10 +354,10 @@ class MTPAlbums(IterableModel):
 class LIBMTP_DeviceEntry(ctypes.Structure):
     """
         LibMTP_DeviceEntry
-        
+
         Contains the CTypes structure for LIBMTP_device_entry_struct
     """
-    
+
     def __repr__(self):
         return "%s %s" % (self.vendor_id, self.product_id)
 
@@ -374,10 +374,10 @@ LIBMTP_DeviceEntry._fields_ = [
 class MTPDeviceEntry(BaseModel):
     """
         MTPDeviceEntry
-        
+
         An object representing a MTP device entry.
     """
-    
+
     @property
     def vendor(self):
         """
@@ -386,7 +386,7 @@ class MTPDeviceEntry(BaseModel):
             @return: string containing the vendor of the device
         """
         return str(self.base_structure.vendor)
-        
+
     @property
     def vendor_id(self):
         """
@@ -395,7 +395,7 @@ class MTPDeviceEntry(BaseModel):
             @return: vendor ID
         """
         return int(self.base_structure.vendor_id)
-        
+
     @property
     def product(self):
         """
@@ -404,7 +404,7 @@ class MTPDeviceEntry(BaseModel):
             @return: string containing the product name of the device
         """
         return str(self.base_structure.product)
-        
+
     @property
     def product_id(self):
         """
@@ -413,9 +413,9 @@ class MTPDeviceEntry(BaseModel):
             @return: product ID
         """
         return int(self.base_structure.product_id)
-        
-        
-# --------- 
+
+
+# ---------
 # Begin LIBMTP_DeviceStorage and MTPDeviceStorage
 # ---------
 
@@ -423,7 +423,7 @@ class MTPDeviceEntry(BaseModel):
 class LIBMTP_DeviceStorage(ctypes.Structure):
     """
         LIBMTP_DeviceStorage
-        
+
         Contains the ctypes structure for LIBMTP_devicestorage_t
     """
 
@@ -448,7 +448,7 @@ LIBMTP_DeviceStorage._fields_ = [
 class MTPDeviceStorage(BaseModel):
     """
         MTPDeviceStorage
-        
+
         An object representing a MTP Device storage.
     """
     @property
@@ -457,67 +457,67 @@ class MTPDeviceStorage(BaseModel):
             The storage unique identifier
         """
         return int(self.base_structure.storage_id)
-        
+
     @property
     def storage_type(self):
         """
             The storage type of the storage as an integer.
         """
         return int(self.base_structure.storage_type)
-        
+
     @property
     def filesystem_type(self):
         """
             The filesystem type of the storage as an integer
         """
         return int(self.base_structure.filesystem_type)
-        
+
     @property
     def access_capacity(self):
         """
             The accessable capacity of the storage.
         """
         return int(self.base_structure.access_capacity)
-    
+
     @property
     def max_capacity(self):
         """
             The maximum capacity of the storage.
         """
         return int(self.base_structure.max_capacity)
-    
+
     @property
     def free_space(self):
         """
             The amount of free space on the storage in bytes.
         """
         return int(self.base_structure.free_space)
-        
+
     @property
     def free_space_in_objects(self):
         """
             The amount of free space on the storage in objects.
         """
         return int(self.base_structure.free_space_in_objects)
-        
+
     @property
     def storage_description(self):
         """
             A description of the storage
         """
         return str(self.base_structure.storage_description)
-    
+
     @property
     def volume_id(self):
         """
             The volume ID of the storage.
         """
         return str(self.base_structure.volume_id)
-        
+
 class MTPDeviceStorages(IterableModel):
     """
         MTPDeviceStorages
-    
+
         An object representing a group of L{MTPDeviceStorage} objects.
     """
     def __init__(self, base_structure):
@@ -533,14 +533,14 @@ class MTPDeviceStorages(IterableModel):
     def __getitem__(self, key):
         """
             Returns the L{MTPDeviceStorage} object at the index specified.
-            
+
             @type key: int
             @param key: The index of the object to retrieve
             @rtype: L{MTPDeviceStorage}
             @return: The L{MTPDeviceStorage} object at the index specified
         """
         return MTPDeviceStorage(self._get_item(key))
-        
+
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
 # ---------
@@ -548,7 +548,7 @@ class MTPDeviceStorages(IterableModel):
 class LIBMTP_Error(ctypes.Structure):
     """
         LIBMTP_Error
-        
+
         Contains the ctypes structure for LIBMTP_error_struct
     """
 
@@ -566,14 +566,14 @@ LIBMTP_Error._fields_ = [
 class MTPError(BaseModel):
     """
         MTPError
-        
+
         An object representing an single MTP error.
     """
     @property
     def errornumber(self):
         """
             Returns the error number
-            
+
             @return: LibMTP error number
             @rtype: int
         """
@@ -583,7 +583,7 @@ class MTPError(BaseModel):
     def error_text(self):
         """
             Returns the error text
-            
+
             @return: LibMTP error text
             @rtype: str
         """
@@ -593,14 +593,14 @@ class MTPError(BaseModel):
 class MTPErrors(IterableModel):
     """
         MTPErrors
-        
+
         An object representing a list of MTPError objects.
-    """    
-        
+    """
+
     def __getitem__(self, key):
         """
             Returns the key from the list of errors
-            
+
             @type key: int
             @param key: The index of the object to retrieve
             @return: A MTPError object
@@ -616,7 +616,8 @@ class MTPErrors(IterableModel):
 class LIBMTP_MTPDevice(ctypes.Structure):
     """
         LIBMTP_MTPDevice
-        Contains the ctypes structure for LIBMTP_mtpdevice_t
+
+        Contains the ctypes structure for LIBMTP_mtpdevice_struct
     """
 
     def __repr__(self):
@@ -641,6 +642,10 @@ LIBMTP_MTPDevice._fields_ = [
     ("next", ctypes.POINTER(LIBMTP_MTPDevice)),
     ]
 
+
+# --------
+# Beginning LibMTP_File, MTPFile and MTPFiles
+# --------
 class LIBMTP_File(ctypes.Structure):
     """
         LIBMTP_File
@@ -650,13 +655,15 @@ class LIBMTP_File(ctypes.Structure):
     def __repr__(self):
         return "%s (%s)" % (self.filename, self.item_id)
 
-LIBMTP_File._fields_ = [("item_id", ctypes.c_uint32),
-                        ("parent_id", ctypes.c_uint32),
-                        ("storage_id", ctypes.c_uint32),
-                        ("filename", ctypes.c_char_p),
-                        ("filesize", ctypes.c_uint64),
-            ("filetype", ctypes.c_int),
-            ("next", ctypes.POINTER(LIBMTP_File))]
+LIBMTP_File._fields_ = [
+    ("item_id", ctypes.c_uint32),
+    ("parent_id", ctypes.c_uint32),
+    ("storage_id", ctypes.c_uint32),
+    ("filename", ctypes.c_char_p),
+    ("filesize", ctypes.c_uint64),
+    ("filetype", ctypes.c_int),
+    ("next", ctypes.POINTER(LIBMTP_File))
+    ]
 
 class LIBMTP_Track(ctypes.Structure):
     """
@@ -666,13 +673,13 @@ class LIBMTP_Track(ctypes.Structure):
 
     def __repr__(self):
         return "%s - %s (%s)" % (self.artist, self.title, self.item_id)
-        
+
 LIBMTP_Track._fields_ = [("item_id", ctypes.c_uint32),
             ("parent_id", ctypes.c_uint32),
                         ("storage_id", ctypes.c_uint32),
             ("title", ctypes.c_char_p),
             ("artist", ctypes.c_char_p),
-            ("composer", ctypes.c_char_p), 
+            ("composer", ctypes.c_char_p),
             ("genre", ctypes.c_char_p),
             ("album", ctypes.c_char_p),
             ("date", ctypes.c_char_p),
