@@ -477,7 +477,7 @@ class MTPDeviceStorage(BaseModel):
         """
             The accessable capacity of the storage.
         """
-        return int(self.base_structure.access_capacity).
+        return int(self.base_structure.access_capacity)
     
     @property
     def max_capacity(self):
@@ -514,6 +514,32 @@ class MTPDeviceStorage(BaseModel):
         """
         return str(self.base_structure.volume_id)
         
+class MTPDeviceStorages(IterableModel):
+    """
+        MTPDeviceStorages
+    
+        An object representing a group of L{MTPDeviceStorage} objects.
+    """
+    def __init__(self, base_structure):
+        IterableModel.__init__(self, base_structure)
+        # Make sure that our base_structure refers to the "lowest" object
+        # in the tree
+        while True:
+            if self.base_structure.prev:
+                self.base_structure = self.base_structure.prev.contents
+            else:
+                break
+
+    def __getitem__(self, key):
+        """
+            Returns the L{MTPDeviceStorage} object at the index specified.
+            
+            @type key: int
+            @param key: The index of the object to retrieve
+            @rtype: L{MTPDeviceStorage}
+            @return: The L{MTPDeviceStorage} object at the index specified
+        """
+        return MTPDeviceStorage(self._get_item(key))
         
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
