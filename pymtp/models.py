@@ -404,7 +404,31 @@ class MTPErrors(IterableModel):
 		"""
 		return MTPError(self._get_item(key))
 
+# ---------
+# Begin LIBMTP_DeviceEntry and MTPDeviceEntry
+# ---------
 
+class LIBMTP_DeviceEntry(ctypes.Structure):
+	"""
+		LibMTP_DeviceEntry
+		
+		Contains the CTypes structure for LIBMTP_device_entry_struct
+	"""
+	
+	def __repr__(self):
+		return "%s %s" % (self.vendor_id, self.product_id)
+
+LIBMTP_DeviceEntry._fields_ = [
+	("vendor", ctypes.c_char_p),
+	("vendor_id", ctypes.c_uint16),
+	("product", ctypes.c_char_p),
+	("product_id", ctypes.c_uint16),
+	("device_flags", ctypes.c_uint32),
+	]
+
+# --------- 
+# Begin LIBMTP_DeviceStorage and MTPDeviceStorage
+# ---------
 
 class LIBMTP_DeviceStorage(ctypes.Structure):
 	"""
