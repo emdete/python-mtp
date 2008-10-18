@@ -511,8 +511,8 @@ class MTPErrors(IterableModel):
             @rtype: L{MTPError}
         """
         return MTPError(self._get_item(key))
-		
-		
+        
+        
 class LIBMTP_MTPDevice(ctypes.Structure):
     """
         LIBMTP_MTPDevice
@@ -599,68 +599,6 @@ class LIBMTP_Playlist(ctypes.Structure):
         self.no_tracks = ctypes.c_uint32(0)
     def __repr__(self):
         return "%s (%s)" % (self.name, self.playlist_id)
-
-    def __iter__(self):
-        """
-            This allows the playlist object to act like a list with
-            a generator.
-        """
-        for track in xrange(self.no_tracks):
-            yield self.tracks[track]
-
-    def __getitem__(self, key):
-        """
-            This allows the playlist to return tracks like a list
-        """
-
-        if (key > (self.no_tracks - 1)):
-            raise IndexError
-
-        return self.tracks[key]
-
-    def __setitem__(self, key, value):
-        """
-            This allows the user to manipulate the playlist like a 
-            list. However, this will only modify existing objects, 
-            you can't try to set a key outside of the current size.
-        """
-
-        if (key > (self.no_tracks - 1)):
-            raise IndexError
-
-        self.tracks[key] = value
-
-    def __delitem__(self, key):
-        """
-            This allows the user to delete an object
-            from the playlist
-        """
-
-        if (key > (self.no_tracks - 1)):
-            raise IndexError
-
-        for i in range(key, (self.no_tracks - 1)):
-            self.tracks[i] = self.tracks[i + 1]
-
-        self.no_tracks -= 1
-    
-    def append(self, value):
-        """
-            This function appends a track to the end of the tracks
-            list.
-        """
-        if (self.tracks == None):
-            self.tracks = ctypes.pointer(ctypes.c_uint32(0))
-
-        self.no_tracks += 1
-        self.tracks[(self.no_tracks - 1)] = value
-
-    def __len__(self):
-        """
-            This returns the number of tracks in the playlist
-        """
-
-        return self.no_tracks
 
 LIBMTP_Playlist._fields_ = [("playlist_id", ctypes.c_uint32),
                             ("parent_id", ctypes.c_uint32),
