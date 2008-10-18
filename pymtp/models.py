@@ -423,6 +423,7 @@ class MTPDeviceEntry(BaseModel):
 class LIBMTP_DeviceStorage(ctypes.Structure):
     """
         LIBMTP_DeviceStorage
+        
         Contains the ctypes structure for LIBMTP_devicestorage_t
     """
 
@@ -431,20 +432,89 @@ class LIBMTP_DeviceStorage(ctypes.Structure):
 
 
 LIBMTP_DeviceStorage._fields_ = [
-    ("id", ctypes.c_uint32),
-    ("StorageType", ctypes.c_uint16),
-    ("FilesystemType", ctypes.c_uint16),
-    ("AccessCapability", ctypes.c_uint16),
-    ("MaxCapacity", ctypes.c_uint64),
-    ("FreeSpaceInBytes", ctypes.c_uint64),
-    ("FreeSpaceInObjects", ctypes.c_uint64),
-    ("StorageDescription", ctypes.c_char_p),
-    ("VolumeIdentifier", ctypes.c_char_p),
+    ("storage_id", ctypes.c_uint32),
+    ("storage_type", ctypes.c_uint16),
+    ("filesystem_type", ctypes.c_uint16),
+    ("access_capability", ctypes.c_uint16),
+    ("max_capacity", ctypes.c_uint64),
+    ("free_space", ctypes.c_uint64),
+    ("free_space_in_objects", ctypes.c_uint64),
+    ("storage_description", ctypes.c_char_p),
+    ("volume_id", ctypes.c_char_p),
     ("next", ctypes.POINTER(LIBMTP_DeviceStorage)),
     ("prev", ctypes.POINTER(LIBMTP_DeviceStorage)),
     ]
 
-
+class MTPDeviceStorage(BaseModel):
+    """
+        MTPDeviceStorage
+        
+        An object representing a MTP Device storage.
+    """
+    @property
+    def storage_id(self):
+        """
+            The storage unique identifier
+        """
+        return int(self.base_structure.storage_id)
+        
+    @property
+    def storage_type(self):
+        """
+            The storage type of the storage as an integer.
+        """
+        return int(self.base_structure.storage_type)
+        
+    @property
+    def filesystem_type(self):
+        """
+            The filesystem type of the storage as an integer
+        """
+        return int(self.base_structure.filesystem_type)
+        
+    @property
+    def access_capacity(self):
+        """
+            The accessable capacity of the storage.
+        """
+        return int(self.base_structure.access_capacity).
+    
+    @property
+    def max_capacity(self):
+        """
+            The maximum capacity of the storage.
+        """
+        return int(self.base_structure.max_capacity)
+    
+    @property
+    def free_space(self):
+        """
+            The amount of free space on the storage in bytes.
+        """
+        return int(self.base_structure.free_space)
+        
+    @property
+    def free_space_in_objects(self):
+        """
+            The amount of free space on the storage in objects.
+        """
+        return int(self.base_structure.free_space_in_objects)
+        
+    @property
+    def storage_description(self):
+        """
+            A description of the storage
+        """
+        return str(self.base_structure.storage_description)
+    
+    @property
+    def volume_id(self):
+        """
+            The volume ID of the storage.
+        """
+        return str(self.base_structure.volume_id)
+        
+        
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
 # ---------
