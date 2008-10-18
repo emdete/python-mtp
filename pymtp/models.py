@@ -358,7 +358,7 @@ LIBMTP_Error._fields_ = [
 	("error_text", ctypes.c_char_p),
 	("next", ctypes.POINTER(LIBMTP_Error)),
 	]
-						 
+						
 class MTPError(BaseModel):
 	"""
 		MTPError
@@ -507,21 +507,21 @@ class LIBMTP_MTPDevice(ctypes.Structure):
 		return self.interface_number
 
 LIBMTP_MTPDevice._fields_ = [("interface_number", ctypes.c_uint8),
-                             ("params", ctypes.c_void_p),
-                             ("usbinfo", ctypes.c_void_p),
-                             ("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
-                             ("errorstack", ctypes.POINTER(LIBMTP_Error)),
-                             ("maximum_battery_level", ctypes.c_uint8),
-                             ("default_music_folder", ctypes.c_uint32),
-                             ("default_playlist_folder", ctypes.c_uint32),
-                             ("default_picture_folder", ctypes.c_uint32),
-                             ("default_video_folder", ctypes.c_uint32),
-                             ("default_organizer_folder", ctypes.c_uint32),
-                             ("default_zencast_folder", ctypes.c_uint32),
-                             ("default_album_folder", ctypes.c_uint32),
-                             ("default_text_folder", ctypes.c_uint32),
-                             ("cd", ctypes.c_void_p),
-                             ("next", ctypes.POINTER(LIBMTP_MTPDevice))]
+							("params", ctypes.c_void_p),
+							("usbinfo", ctypes.c_void_p),
+							("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
+							("errorstack", ctypes.POINTER(LIBMTP_Error)),
+							("maximum_battery_level", ctypes.c_uint8),
+							("default_music_folder", ctypes.c_uint32),
+							("default_playlist_folder", ctypes.c_uint32),
+							("default_picture_folder", ctypes.c_uint32),
+							("default_video_folder", ctypes.c_uint32),
+							("default_organizer_folder", ctypes.c_uint32),
+							("default_zencast_folder", ctypes.c_uint32),
+							("default_album_folder", ctypes.c_uint32),
+							("default_text_folder", ctypes.c_uint32),
+							("cd", ctypes.c_void_p),
+							("next", ctypes.POINTER(LIBMTP_MTPDevice))]
 
 class LIBMTP_File(ctypes.Structure):
 	"""
@@ -533,10 +533,10 @@ class LIBMTP_File(ctypes.Structure):
 		return "%s (%s)" % (self.filename, self.item_id)
 
 LIBMTP_File._fields_ = [("item_id", ctypes.c_uint32),
-                        ("parent_id", ctypes.c_uint32),
-                        ("storage_id", ctypes.c_uint32),
-                        ("filename", ctypes.c_char_p),
-                        ("filesize", ctypes.c_uint64),
+						("parent_id", ctypes.c_uint32),
+						("storage_id", ctypes.c_uint32),
+						("filename", ctypes.c_char_p),
+						("filesize", ctypes.c_uint64),
 			("filetype", ctypes.c_int),
 			("next", ctypes.POINTER(LIBMTP_File))]
 
@@ -551,7 +551,7 @@ class LIBMTP_Track(ctypes.Structure):
 		
 LIBMTP_Track._fields_ = [("item_id", ctypes.c_uint32),
 			("parent_id", ctypes.c_uint32),
-                        ("storage_id", ctypes.c_uint32),
+						("storage_id", ctypes.c_uint32),
 			("title", ctypes.c_char_p),
 			("artist", ctypes.c_char_p),
 			("composer", ctypes.c_char_p), 
@@ -647,12 +647,12 @@ class LIBMTP_Playlist(ctypes.Structure):
 		return self.no_tracks
 
 LIBMTP_Playlist._fields_ = [("playlist_id", ctypes.c_uint32),
-                            ("parent_id", ctypes.c_uint32),
-                            ("storage_id", ctypes.c_uint32),
-                            ("name", ctypes.c_char_p),
-                            ("tracks", ctypes.POINTER(ctypes.c_uint32)),
-                            ("no_tracks", ctypes.c_uint32),
-                            ("next", ctypes.POINTER(LIBMTP_Playlist))]
+							("parent_id", ctypes.c_uint32),
+							("storage_id", ctypes.c_uint32),
+							("name", ctypes.c_char_p),
+							("tracks", ctypes.POINTER(ctypes.c_uint32)),
+							("no_tracks", ctypes.c_uint32),
+							("next", ctypes.POINTER(LIBMTP_Playlist))]
 
 class LIBMTP_Folder(ctypes.Structure):
 	"""
@@ -664,8 +664,8 @@ class LIBMTP_Folder(ctypes.Structure):
 		return "%s (%s)" % (self.name, self.folder_id)
 
 LIBMTP_Folder._fields_ = [("folder_id", ctypes.c_uint32),
-                          ("parent_id", ctypes.c_uint32),
-                          ("storage_id", ctypes.c_uint32),
-                          ("name", ctypes.c_char_p),
-                          ("sibling", ctypes.POINTER(LIBMTP_Folder)),
-                          ("child", ctypes.POINTER(LIBMTP_Folder))]
+						("parent_id", ctypes.c_uint32),
+						("storage_id", ctypes.c_uint32),
+						("name", ctypes.c_char_p),
+						("sibling", ctypes.POINTER(LIBMTP_Folder)),
+						("child", ctypes.POINTER(LIBMTP_Folder))]
