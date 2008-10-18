@@ -11,7 +11,6 @@
 	Provides the nice comfy data models for PyMTP.
 """
 
-import sets
 import ctypes
 
 # ----------
@@ -59,10 +58,10 @@ class IterableModel(BaseModel):
 		for i in xrange(level):
 			if current.next:
 				current = current.next.contents
-				else:
-					raise IndexError
+			else:
+				raise IndexError
 				
-				return current
+		return current
 				
 	def __len__(self):
 		"""
@@ -95,7 +94,110 @@ class MutableIterableModel(IterableModel):
 	"""
 	pass
 
+class FixedArray(object):
+	"""
+		FixedArray
+		
+		A simple list-like object that uses a list of integers and a fixed 
+		length. At the moment, this is used to turn those track/no_track
+		attributes into a Python list.
+	"""
+	
+	def __init__(self, array, length, mutable=True):
+		"""
+			Initializes the FixedArray. If None is passed as the array,
+			we'll create an array of integers.
+			
+			@type array: Ctypes array 
+			@param array: A Ctypes array
+			@type length: int
+			@param length: The length of the list
+		"""
+		self.array = array
+		self.length = length
+		self.mutable = mutable
+		# Small sanity check
+		if not self.array:
+			self.array = ctypes.POINTER(ctypes.c_int(0))
+	
+	def __getitem__(self, key):
+		"""
+			Returns the item with the index specified.
+			
+			@type key: int
+			@param key: The index of the object to retrieve
+		"""
+		if key > (self.length - 1):
+			raise IndexError
+			
+		return self.array[key]
+		
+	def __delitem__(self, key):
+		"""
+			Deletes the item at the index specified
+			
+			@type key: int
+			@param key: The index of the object to delete
+		"""
+		if not self.mutable:
+			raise TypeError("Not a mutable object!")
+		
+		if key > (self.length - 1):
+			raise KeyError
+		
+		for i in xrange(key, (self.length - 1)):
+			self.array[i] = self.array[i + 1]
 
+	def __setitem__(self, key, value):
+		"""
+			Sets the value specified to the index specified
+			
+			@type key: int
+			@param key: The index of the object to modify
+		"""
+		if not self.mutable:
+			raise TypeError("Not a mutable object!")
+		
+		if key > (self.length - 1):
+			raise KeyError
+		
+		self.array[key] = value
+		
+	def __len__(self):
+		"""
+			Returns the length of the array
+		"""
+		return int(self.length)
+		
+	def append(self, value):
+		"""
+			Appends the value specified to the end of the array
+		"""
+		if not self.mutable:
+			raise TypeError("Not a mutable object!")
+		
+		self.array[self.length - 1] = value		
+		self.length += 1
+		
+	def insert(self, position, value):
+		"""
+			Inserts the value at the position specified
+			@type position: int
+			@param position: Index to insert the value at
+		"""
+		if not self.mutable:
+			raise TypeError("Not a mutable object!")
+		
+		if position > (self.length - 1):
+			raise KeyError
+		# Move the objects above the position
+		for i in reversed(xrange(position, (self.length - 1))):
+			self.array[i + 1] = self.array[i]
+			
+		self.array[position] = value	
+		self.length += 1
+			
+			
 # ---------
 # Defining LIBMTP_Album, MTPAlbum and MTPAlbums
 # ---------
@@ -129,13 +231,12 @@ class MTPAlbum(BaseModel):
 		
 		An object representing a single album.
 	"""
-
+	
 	def _get_album_id(self):
 		"""
 			A unique identifier for the album - typically, you don't manipulate
 			this value manually. 
 		"""
-		
 		return int(self.base_structure.album_id)
 		
 	def _set_album_id(self, value):
@@ -147,7 +248,6 @@ class MTPAlbum(BaseModel):
 		"""
 			The parent folder ID for the album
 		"""
-		
 		return int(self.base_structure.parent_id)
 		
 	def _set_parent_id(self, value):
@@ -163,13 +263,12 @@ class MTPAlbum(BaseModel):
 			Typically, this is the same storage as holding the tracks 
 			themselves.
 		"""
-		
 		return int(self.base_structure.storage_id)
 		
 	def _set_storage_id(self, value):
 		self.base_structure.storage_id = ctypes.c_uint32(int(value))
 		
-	storage_id = property(_get_storage_id _set_storage_id)
+	storage_id = property(_get_storage_id, _set_storage_id)
 	
 	
 	def _get_name(self):
@@ -183,7 +282,61 @@ class MTPAlbum(BaseModel):
 		
 	name = property(_get_name, _set_name)
 	
+
+	def _get_artist(self):
+		"""
+			The artist of the album
+		"""
+		return str(self.base_structure.artist)
 	
+	def _set_artist(self, value):
+		self.base_structure.artist = ctypes.c_char_p(str(value))
+		
+	artist = property(_get_artist, _set_artist)
+	
+	
+	def _get_composer(self):
+		"""
+			The composer of the album
+		"""
+		return str(self.base_structure.composer)
+		
+	def _set_composer(self, value):
+		self.base_structure.compser = ctypes.c_char_p(str(value))
+		
+	composer = property(_get_composer, _set_composer)
+	
+	
+	def _get_genre(self):
+		"""
+			The genre of the albumn
+		"""
+		return str(self.base_structure.genre)
+		
+	def _set_genre(self, value):
+		self.base_structure.genre = ctypes.c_char_p(str(value))
+		
+	genre = property(_get_genre, _set_genre)
+	
+	tracks = FixedArray(self.base_structure.tracks, self.base_structure.no_tracks)
+	
+	
+class MTPAlbums(IterableModel):
+	"""
+		MTPAlbums
+		
+		An object representing a list of L{MTPAlbum} objects.
+	"""
+	def __getitem__(self, key):
+		"""
+			Returns the L{MTPAlbum} object at the index specified
+			
+			@type key: int
+			@param key: Index of object to return
+			@rtype: L{MTPAlbum}
+			@return: The L{MTPAlbum} object at the key/index specified
+		"""
+		return MTPAlbum(self._get_item(key))
 # ---------
 # Defining LIBMTP_Error, MTPError, and MTPErrors
 # ---------
