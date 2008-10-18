@@ -607,8 +607,12 @@ class MTPErrors(IterableModel):
             @rtype: L{MTPError}
         """
         return MTPError(self._get_item(key))
-        
-        
+
+
+# --------
+# Beginning LIBMTP_MTPDevice, MTPDevice and MTPDevices
+# --------
+
 class LIBMTP_MTPDevice(ctypes.Structure):
     """
         LIBMTP_MTPDevice
@@ -618,22 +622,24 @@ class LIBMTP_MTPDevice(ctypes.Structure):
     def __repr__(self):
         return self.interface_number
 
-LIBMTP_MTPDevice._fields_ = [("interface_number", ctypes.c_uint8),
-                            ("params", ctypes.c_void_p),
-                            ("usbinfo", ctypes.c_void_p),
-                            ("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
-                            ("errorstack", ctypes.POINTER(LIBMTP_Error)),
-                            ("maximum_battery_level", ctypes.c_uint8),
-                            ("default_music_folder", ctypes.c_uint32),
-                            ("default_playlist_folder", ctypes.c_uint32),
-                            ("default_picture_folder", ctypes.c_uint32),
-                            ("default_video_folder", ctypes.c_uint32),
-                            ("default_organizer_folder", ctypes.c_uint32),
-                            ("default_zencast_folder", ctypes.c_uint32),
-                            ("default_album_folder", ctypes.c_uint32),
-                            ("default_text_folder", ctypes.c_uint32),
-                            ("cd", ctypes.c_void_p),
-                            ("next", ctypes.POINTER(LIBMTP_MTPDevice))]
+LIBMTP_MTPDevice._fields_ = [
+    ("interface_number", ctypes.c_uint8),
+    ("params", ctypes.c_void_p),
+    ("usbinfo", ctypes.c_void_p),
+    ("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
+    ("errorstack", ctypes.POINTER(LIBMTP_Error)),
+    ("maximum_battery_level", ctypes.c_uint8),
+    ("default_music_folder", ctypes.c_uint32),
+    ("default_playlist_folder", ctypes.c_uint32),
+    ("default_picture_folder", ctypes.c_uint32),
+    ("default_video_folder", ctypes.c_uint32),
+    ("default_organizer_folder", ctypes.c_uint32),
+    ("default_zencast_folder", ctypes.c_uint32),
+    ("default_album_folder", ctypes.c_uint32),
+    ("default_text_folder", ctypes.c_uint32),
+    ("cd", ctypes.c_void_p),
+    ("next", ctypes.POINTER(LIBMTP_MTPDevice)),
+    ]
 
 class LIBMTP_File(ctypes.Structure):
     """

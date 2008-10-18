@@ -12,10 +12,10 @@ work.
 
 Requirements
 ------------
-PyMTP 0.0.4 requires:
-	* Python
+PyMTP 0.1.0 requires:
+	* Python 2.4 or above
 	* Ctypes (or Python 2.5, as it includes Ctypes)
-	* LibMTP 0.2.6 or above
+	* LibMTP 0.3.3 or above
 
 Installing
 -----------
@@ -30,7 +30,7 @@ as root), PyMTP should be installed and ready to go
 Generating documentation
 ------------------------
 While PyMTP doesn't come with any documentation with it, you can generate 
-documentation using epydoc. Epydoc makes very pretty documentation:
+documentation using epydoc:
 
 	epydoc -o <output directory> pymtp.py
 	
