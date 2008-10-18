@@ -302,7 +302,7 @@ class MTPAlbum(BaseModel):
 		return str(self.base_structure.composer)
 		
 	def _set_composer(self, value):
-		self.base_structure.compser = ctypes.c_char_p(str(value))
+		self.base_structure.composer = ctypes.c_char_p(str(value))
 		
 	composer = property(_get_composer, _set_composer)
 	
@@ -318,7 +318,9 @@ class MTPAlbum(BaseModel):
 		
 	genre = property(_get_genre, _set_genre)
 	
-	tracks = FixedArray(self.base_structure.tracks, self.base_structure.no_tracks)
+	@property
+	def tracks(self):
+		return FixedArray(self.base_structure.tracks, self.base_structure.no_tracks)
 	
 	
 class MTPAlbums(IterableModel):
