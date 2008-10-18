@@ -55,6 +55,10 @@ class IterableModel(BaseModel):
         @return: The CTypes data type object
         @rtype: CTypes data type
         """
+        # Quick sanity check to make sure we don't try to
+        # get an item for a NULL base_structure
+        if not self.base_structure:
+            raise IndexError
         current = self.base_structure
         for i in xrange(level):
             if current.next:
@@ -72,6 +76,11 @@ class IterableModel(BaseModel):
             @return: the number of objects in the list
             @rtype: int
         """
+        # A quick sanity check to return 0 when base_structure
+        # is null
+        if not self.base_structure:
+            return 0
+
         level = 0
         current = self.base_structure
         while True:
@@ -326,7 +335,8 @@ class MTPAlbum(BaseModel):
         """
             A list of tracks in the album
         """
-        return FixedArray(self.base_structure.tracks, self.base_structure.no_tracks)
+        return FixedArray(self.base_structure.tracks,
+            self.base_structure.no_tracks)
 
 
 class MTPAlbums(IterableModel):
@@ -624,7 +634,7 @@ class LIBMTP_MTPDevice(ctypes.Structure):
         return self.interface_number
 
 LIBMTP_MTPDevice._fields_ = [
-    ("interface_number", ctypes.c_uint8),
+    ("object_bitsize", ctypes.c_uint8),
     ("params", ctypes.c_void_p),
     ("usbinfo", ctypes.c_void_p),
     ("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
@@ -642,6 +652,127 @@ LIBMTP_MTPDevice._fields_ = [
     ("next", ctypes.POINTER(LIBMTP_MTPDevice)),
     ]
 
+class MTPDevice(BaseModel):
+    """
+        MTPDevice
+
+        An object containing information about an MTP device
+    """
+    @property
+    def storage(self):
+        """
+            The storage objects for the device
+            @return: The device storages
+            @rtype: L{MTPDeviceStorages}
+        """
+        return MTPDeviceStorages(self.base_structure.storage)
+
+    @property
+    def errorstack(self):
+        """
+            The errorstack for the device - upon initialization,
+            this is set to NULL
+            @return: The device's errorstack
+            @rtype: L{MTPErrors}
+        """
+        return MTPErrors(self.base_structure.errorstack)
+
+    @property
+    def maximum_battery_level(self):
+        """
+            The device's maximum battery level - if LibMTP can't
+            get a max battery level, this defaults to 100.
+            @return: The device's maximum battery level
+            @rtype: int
+        """
+        return int(self.base_structure.maximum_battery_level)
+
+    @property
+    def default_music_folder(self):
+        """
+            The ID of the default music folder
+            @return: The default music folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_music_folder)
+
+    @property
+    def default_playlist_folder(self):
+        """
+            The ID of the default playlist folder
+            @return: The default playlist folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_playlist_folder)
+
+    @property
+    def default_picture_folder(self):
+        """
+            The ID of the default picture folder
+            @return: The default picture folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_picture_folder)
+
+    @property
+    def default_video_folder(self):
+        """
+            The ID of the default video folder
+            @return: The default video folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_video_folder)
+
+    @property
+    def default_organizer_folder(self):
+        """
+            The ID of the default organizer folder
+            @return: The default organizer folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_organizer_folder)
+
+    @property
+    def default_zencast_folder(self):
+        """
+            The ID of the default ZENcast folder (only on Creative devices)
+            @return: The default ZENcast folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_zencast_folder)
+
+    @property
+    def default_album_folder(self):
+        """
+            The ID of the default album folder
+            @return: The default album folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_album_folder)
+
+    @property
+    def default_text_folder(self):
+        """
+            The ID of the default text folder
+            @return: The default text folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.default_text_folder)
+
+
+class MTPDevices(IterableModel):
+    """
+        MTPDevices
+
+        An object of a list of MTP devices
+    """
+    def __getitem__(self, key):
+        """
+            Returns a MTPDevice from the list of devices
+            @return: The MTP device with the index specified
+            @rtype: L{MTPDevice}
+        """
+        return MTPDevice(self._get_item(key))
 
 # --------
 # Beginning LibMTP_File, MTPFile and MTPFiles
