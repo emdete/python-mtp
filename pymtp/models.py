@@ -483,17 +483,19 @@ class LIBMTP_DeviceStorage(ctypes.Structure):
 	def __repr__(self):
 		return self.id
 
-LIBMTP_DeviceStorage._fields_ = [("id", ctypes.c_uint32),
-                                 ("StorageType", ctypes.c_uint16),
-                                 ("FilesystemType", ctypes.c_uint16),
-                                 ("AccessCapability", ctypes.c_uint16),
-                                 ("MaxCapacity", ctypes.c_uint64),
-                                 ("FreeSpaceInBytes", ctypes.c_uint64),
-                                 ("FreeSpaceInObjects", ctypes.c_uint64),
-                                 ("StorageDescription", ctypes.c_char_p),
-                                 ("VolumeIdentifier", ctypes.c_char_p),
-                                 ("next", ctypes.POINTER(LIBMTP_DeviceStorage)),
-                                 ("prev", ctypes.POINTER(LIBMTP_DeviceStorage))]
+LIBMTP_DeviceStorage._fields_ = [
+	("id", ctypes.c_uint32),
+	("StorageType", ctypes.c_uint16),
+	("FilesystemType", ctypes.c_uint16),
+	("AccessCapability", ctypes.c_uint16),
+	("MaxCapacity", ctypes.c_uint64),
+	("FreeSpaceInBytes", ctypes.c_uint64),
+	("FreeSpaceInObjects", ctypes.c_uint64),
+	("StorageDescription", ctypes.c_char_p),
+	("VolumeIdentifier", ctypes.c_char_p),
+	("next", ctypes.POINTER(LIBMTP_DeviceStorage)),
+	("prev", ctypes.POINTER(LIBMTP_DeviceStorage)),
+	]
 
 class LIBMTP_MTPDevice(ctypes.Structure):
 	"""
