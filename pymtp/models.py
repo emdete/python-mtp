@@ -426,6 +426,50 @@ LIBMTP_DeviceEntry._fields_ = [
 	("device_flags", ctypes.c_uint32),
 	]
 
+class MTPDeviceEntry(BaseModel):
+	"""
+		MTPDeviceEntry
+		
+		An object representing a MTP device entry.
+	"""
+	
+	@property
+	def vendor(self):
+		"""
+			The vendor information for the device
+			@rtype: str
+			@return: string containing the vendor of the device
+		"""
+		return str(self.base_structure.vendor)
+		
+	@property
+	def vendor_id(self):
+		"""
+			The Vendor ID for the device.
+			@rtype: int
+			@return: vendor ID
+		"""
+		return int(self.base_structure.vendor_id)
+		
+	@property
+	def product(self):
+		"""
+			The product name for the device
+			@rtype: str
+			@return: string containing the product name of the device
+		"""
+		return str(self.base_structure.product)
+		
+	@property
+	def product_id(self):
+		"""
+			The Product ID for the device
+			@rtype: int
+			@return: product ID
+		"""
+		return int(self.base_structure.product_id)
+		
+		
 # --------- 
 # Begin LIBMTP_DeviceStorage and MTPDeviceStorage
 # ---------
