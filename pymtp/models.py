@@ -551,73 +551,6 @@ class MTPDeviceStorages(IterableModel):
         """
         return MTPDeviceStorage(self._get_item(key))
 
-# ---------
-# Defining LIBMTP_Error, MTPError, and MTPErrors
-# ---------
-
-class LIBMTP_Error(ctypes.Structure):
-    """
-        LIBMTP_Error
-
-        Contains the ctypes structure for LIBMTP_error_struct
-    """
-
-    def __repr__(self):
-        return int(self.errornumber)
-
-
-LIBMTP_Error._fields_ = [
-    ("errornumber", ctypes.c_int),
-    ("error_text", ctypes.c_char_p),
-    ("next", ctypes.POINTER(LIBMTP_Error)),
-    ]
-
-
-class MTPError(BaseModel):
-    """
-        MTPError
-
-        An object representing an single MTP error.
-    """
-    @property
-    def errornumber(self):
-        """
-            Returns the error number
-
-            @return: LibMTP error number
-            @rtype: int
-        """
-        return int(self.base_structure.errornumber)
-
-    @property
-    def error_text(self):
-        """
-            Returns the error text
-
-            @return: LibMTP error text
-            @rtype: str
-        """
-        return str(self.base_structure.error_text)
-
-
-class MTPErrors(IterableModel):
-    """
-        MTPErrors
-
-        An object representing a list of MTPError objects.
-    """
-
-    def __getitem__(self, key):
-        """
-            Returns the key from the list of errors
-
-            @type key: int
-            @param key: The index of the object to retrieve
-            @return: A MTPError object
-            @rtype: L{MTPError}
-        """
-        return MTPError(self._get_item(key))
-
 
 # --------
 # Beginning LIBMTP_MTPDevice, MTPDevice and MTPDevices
@@ -774,6 +707,75 @@ class MTPDevices(IterableModel):
         """
         return MTPDevice(self._get_item(key))
 
+
+# ---------
+# Defining LIBMTP_Error, MTPError, and MTPErrors
+# ---------
+
+class LIBMTP_Error(ctypes.Structure):
+    """
+        LIBMTP_Error
+
+        Contains the ctypes structure for LIBMTP_error_struct
+    """
+
+    def __repr__(self):
+        return int(self.errornumber)
+
+
+LIBMTP_Error._fields_ = [
+    ("errornumber", ctypes.c_int),
+    ("error_text", ctypes.c_char_p),
+    ("next", ctypes.POINTER(LIBMTP_Error)),
+    ]
+
+
+class MTPError(BaseModel):
+    """
+        MTPError
+
+        An object representing an single MTP error.
+    """
+    @property
+    def errornumber(self):
+        """
+            Returns the error number
+
+            @return: LibMTP error number
+            @rtype: int
+        """
+        return int(self.base_structure.errornumber)
+
+    @property
+    def error_text(self):
+        """
+            Returns the error text
+
+            @return: LibMTP error text
+            @rtype: str
+        """
+        return str(self.base_structure.error_text)
+
+
+class MTPErrors(IterableModel):
+    """
+        MTPErrors
+
+        An object representing a list of MTPError objects.
+    """
+
+    def __getitem__(self, key):
+        """
+            Returns the key from the list of errors
+
+            @type key: int
+            @param key: The index of the object to retrieve
+            @return: A MTPError object
+            @rtype: L{MTPError}
+        """
+        return MTPError(self._get_item(key))
+
+
 # --------
 # Beginning LibMTP_File, MTPFile and MTPFiles
 # --------
@@ -796,12 +798,67 @@ LIBMTP_File._fields_ = [
     ("next", ctypes.POINTER(LIBMTP_File))
     ]
 
+class MTPFile(BaseModel):
+    """
+        MTPFile
+
+        A class representing a file on an MTP device.
+    """
+    @property
+    def item_id(self):
+        """
+            The unique identifier for the file
+            @return: File identifier
+            @rtype: int
+        """
+        return int(self.base_structure.item_id)
+
+    def _get_parent_id(self):
+        """
+            The ID of the parent folder
+            @return: Parent folder ID
+            @rtype: int
+        """
+        return int(self.base_structure.parent_id)
+
+    def _set_parent_id(self, value):
+        """
+            Sets the parent folder ID
+
+            Note that we don't do any sanity checks here!
+        """
+        self.base_structure.parent_id = ctypes.c_uint32(int(value))
+
+    parent_id = property(_get_parent_id, _set_parent_id)
+
+    def _get_storage_id(self):
+        """
+            The ID of the storage device where the file resides
+            @return: Storage ID
+            @rtype: int
+        """
+        return int(self.base_structure.storage_id)
+
+    def _set_storage_id(self, value):
+        """
+            Sets the storage device ID
+
+            As with parent_id, we don't conduct any sanity checks here
+            for the values passed.
+        """
+        self.base_structure.storage_id = ctypes.c_uint32(int(value))
+
+    storage_id = property(_get_storage_id, _set_storage_id)
+
+
+# ----------
+# Beginning LIBMTP_Track, MTPTrack and MTPTracks
+# ----------
 class LIBMTP_Track(ctypes.Structure):
     """
         LIBMTP_Track
         Contains the ctypes structure for LIBMTP_track_t
     """
-
     def __repr__(self):
         return "%s - %s (%s)" % (self.artist, self.title, self.item_id)
 
