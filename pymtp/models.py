@@ -998,7 +998,31 @@ class MTPTrack(BaseModel):
 
     title = property(_get_title, _set_title)
 
+    def _get_artist(self):
+        """
+            The artist of the track
+            @return: The track artist
+            @rtype: str
+        """
+        return str(self.base_structure.artist)
 
+    def _set_artist(self, value):
+        self.base_structure.artist = ctypes.c_char_p(str(value))
+
+    artist = property(_get_artist, _set_artist)
+
+    def _get_composer(self):
+        """
+            The composer of the track
+            @return: The track composer
+            @rtype: str
+        """
+        return str(self.base_structure.composer)
+
+    def _set_composer(self, value):
+        self.base_structure.composer = ctypes.c_char_p(str(value))
+
+    composer = property(_get_composer, _set_composer)
 
 class LIBMTP_Playlist(ctypes.Structure):
     """
