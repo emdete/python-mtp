@@ -1224,6 +1224,8 @@ class MTPTrack(BaseModel):
 
 class MTPTracks(IterableModel):
     """
+        MTPTracks
+
         An object representing a list of L{MTPTrack} objects.
     """
     def __getitem__(self, key):
@@ -1248,13 +1250,45 @@ class LIBMTP_Playlist(ctypes.Structure):
     def __repr__(self):
         return "%s (%s)" % (self.name, self.playlist_id)
 
-LIBMTP_Playlist._fields_ = [("playlist_id", ctypes.c_uint32),
-                            ("parent_id", ctypes.c_uint32),
-                            ("storage_id", ctypes.c_uint32),
-                            ("name", ctypes.c_char_p),
-                            ("tracks", ctypes.POINTER(ctypes.c_uint32)),
-                            ("no_tracks", ctypes.c_uint32),
-                            ("next", ctypes.POINTER(LIBMTP_Playlist))]
+LIBMTP_Playlist._fields_ = [
+    ("playlist_id", ctypes.c_uint32),
+    ("parent_id", ctypes.c_uint32),
+    ("storage_id", ctypes.c_uint32),
+    ("name", ctypes.c_char_p),
+    ("tracks", ctypes.POINTER(ctypes.c_uint32)),
+    ("no_tracks", ctypes.c_uint32),
+    ("next", ctypes.POINTER(LIBMTP_Playlist)),
+    ]
+
+class MTPPlaylist(BaseModel):
+    """
+        MTPPlaylist
+
+        An object representing a playlist on a MTP device.
+    """
+    @property
+    def playlist_id(self):
+        """
+            The unique playlist identifier
+            @rtype: int
+            @return: Playlist ID
+        """
+        return int(self.base_structure.playlist_id)
+
+    def _get_parent_id(self):
+        """
+            The parent folder where the playlist resides.
+        """
+        return int(self.base_structure.parent_id)
+
+    def _set_parent_id(self, value):
+        self.base_structure.parent_id = ctypes.c_uint32(int(value))
+
+
+
+# -------
+# Beginning LIBMTP_Folder, MTPFolder, and MTPFolders
+# -------
 
 class LIBMTP_Folder(ctypes.Structure):
     """
