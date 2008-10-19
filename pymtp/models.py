@@ -1278,13 +1278,63 @@ class MTPPlaylist(BaseModel):
     def _get_parent_id(self):
         """
             The parent folder where the playlist resides.
+            @rtype: int
+            @return: Parent folder ID
         """
         return int(self.base_structure.parent_id)
 
     def _set_parent_id(self, value):
         self.base_structure.parent_id = ctypes.c_uint32(int(value))
 
+    parent_id = property(_get_parent_id, _set_parent_id)
 
+    def _get_storage_id(self):
+        """
+            The storage ID where this playlist resides
+            @rtype: int
+            @return: Storage ID
+        """
+        return int(self.base_structure.storage_id)
+
+    def _set_storage_id(self, value):
+        self.base_structure.storage_id = ctypes.c_uint32(int(value))
+
+    storage_id = property(_get_storage_id, _set_storage_id)
+
+    def _get_name(self):
+        """
+            The name of the playlist
+            @rtype: str
+            @return: Playlist name
+        """
+        return str(self.base_structure.name)
+
+    def _set_name(self, value):
+        self.base_structure.name = ctypes.c_char_p(str(value))
+
+    @property
+    def tracks(self):
+        """
+            List of tracks in the playlist
+            @rtype: L{FixedArray}
+            @return: A L{FixedArray} containing the tracks
+        """
+        return FixedArray(self.base_structure.tracks,
+            self.base_structure.no_tracks)
+
+class MTPPlaylists(IterableModel):
+    """
+        An object representing a group of MTPPlaylists
+    """
+    def __getitem__(self, key):
+        """
+            Returns a L{MTPPlaylist} for the object specified
+            @type key: int
+            @param key: Index of the object to retrieve
+            @rtype: L{MTPPlaylist}
+            @return: The L{MTPPlaylist} at the index specified
+        """
+        return MTPPlaylist(self._get_item(key))
 
 # -------
 # Beginning LIBMTP_Folder, MTPFolder, and MTPFolders
