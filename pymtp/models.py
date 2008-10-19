@@ -1000,7 +1000,7 @@ class MTPTrack(BaseModel):
 
     def _get_artist(self):
         """
-            The artist of the track
+            The recording artist of the track
             @return: The track artist
             @rtype: str
         """
@@ -1013,7 +1013,7 @@ class MTPTrack(BaseModel):
 
     def _get_composer(self):
         """
-            The composer of the track
+            The recording composer of the track
             @return: The track composer
             @rtype: str
         """
@@ -1024,15 +1024,148 @@ class MTPTrack(BaseModel):
 
     composer = property(_get_composer, _set_composer)
 
+    def _get_genre(self):
+        """
+            The genre of the track
+            @return: The track genre
+            @rtype: str
+        """
+        return str(self.base_structure.genre)
+
+    def _set_genre(self, value):
+        self.base_structure.genre = ctypes.c_char_p(str(value))
+
+    genre = property(_get_genre, _set_genre)
+
+    def _get_album(self):
+        """
+            The album name of the track
+            @return: The track album
+            @rtype: str
+        """
+        return str(self.base_structure.album)
+
+    def _set_album(self, value):
+        self.base_structure.album = ctypes.c_char_p(str(value))
+
+    album = property(_get_album, _set_album)
+
+    def _get_date(self):
+        """
+            The date of the original recording as a string
+            @return: Date of the track's original recording
+            @rtype: str
+        """
+        # TODO: change this to a datetime string?
+        return str(self.base_structure.date)
+
+    def _set_date(self, value):
+        self.base_structure.date = ctypes.c_char_p(str(value))
+
+    date = property(_get_date, _set_date)
+
+    def _get_filename(self):
+        """
+            The original filename of the track
+            @rtype: str
+            @return: The original filename of the track
+        """
+        return str(self.base_structure.filename)
+
+    def _set_filename(self, value):
+        self.base_structure.filename = ctypes.c_char_p(str(value))
+
+    filename = property(_get_filename, _set_filename)
+
+    def _get_tracknumber(self):
+        """
+            The track number on the album
+            @rtype: int
+            @return: The track number
+        """
+        return int(self.base_structure.tracknumber)
+
+    def _set_tracknumber(self, value):
+        self.base_structure.tracknumber = ctypes.c_uint16(int(value))
+
+    tracknumber = property(_get_tracknumber, _set_tracknumber)
+
+    def _get_duration(self):
+        """
+            The duration of the track in milliseconds
+            @rtype: int
+            @return: The duration of the track in milliseconds
+        """
+        return int(self.base_structure.duration)
+
+    def _set_duration(self, value):
+        self.base_structure.duration = ctypes.c_uint32(int(value))
+
+    duration = property(_get_duration, _set_duration)
+
+    def _get_samplerate(self):
+        """
+            The samplerate of the track (min 0x1f80, max 0xbb80)
+            @rtype: int
+            @return: Samplerate of track
+        """
+        return int(self.base_structure.samplerate)
+
+    def _set_samplerate(self, value):
+        self.base_structure.samplerate = ctypes.c_uint32(int(value))
+
+    samplerate = property(_get_samplerate, _set_samplerate)
+
+    def _get_nochannels(self):
+        """
+            The number of channels the track has.
+
+            If this is zero, then the number of channels is unknown.
+            @rtype: int
+            @return: Number of channels
+        """
+        return int(self.base_structure.nochannels)
+
+    def _set_nochannels(self, value):
+        self.base_structure.nochannels = ctypes.c_uint16(int(value))
+
+    nochannels = property(_get_nochannels, _set_nochannels)
+
+    def _get_wavecodec(self):
+        """
+            The FourCC wave codec ID of the track
+            @rtype: int
+            @return: Codec ID
+        """
+        return int(self.base_structure.wavecodec)
+
+    def _set_wavecodec(self, value):
+        self.base_structure.wavecodec = ctypes.c_uint32(int(value))
+
+    wavecodec = property(_get_wavecodec, _set_wavecodec)
+
+    def _get_bitrate(self):
+        """
+            The bitrate of the track (for VBR, this is the average)
+            @rtype: int
+            @return: Track bitrate in kbps
+        """
+        return int(self.base_structure.bitrate)
+
+    def _set_bitrate(self, value):
+        self.base_structure.bitrate = ctypes.c_uint32(int(value))
+
+    bitrate = property(_get_bitrate, _set_bitrate)
+
+# --------
+# Beginning LIBMTP_Playlist, MTPPlaylist, MTPPlaylists
+# --------
 class LIBMTP_Playlist(ctypes.Structure):
     """
         LIBMTP_Playlist
         Contains the ctypes structure for LIBMTP_playlist_t
     """
 
-    def __init__(self):
-        self.tracks = ctypes.pointer(ctypes.c_uint32(0))
-        self.no_tracks = ctypes.c_uint32(0)
     def __repr__(self):
         return "%s (%s)" % (self.name, self.playlist_id)
 
