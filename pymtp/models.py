@@ -850,6 +850,63 @@ class MTPFile(BaseModel):
 
     storage_id = property(_get_storage_id, _set_storage_id)
 
+    def _get_filename(self):
+        """
+            The filename of the file on the device
+            @return: filename
+            @rtype: str
+        """
+        return str(self.base_structure.filename)
+
+    def _set_filename(self, value):
+        self.base_structure.filename = ctypes.c_char_p(str(value))
+
+    filename = property(_get_filename, _set_filename)
+
+    def _get_filesize(self):
+        """
+            The size of the file in bytes
+            @return: Size of file
+            @rtype: int
+        """
+        return int(self.base_structure.filesize)
+
+    def _set_filesize(self, value):
+        self.base_structure.filesize = ctypes.c_uint64(int(value))
+
+    filesize = property(_get_filesize, _set_filesize)
+
+    def _get_filetype(self):
+        """
+            The filetype of the file
+            @return: Filetype as an integer
+            @rtype: int
+        """
+        # TODO: Maybe this should return a MTPFileType object (when they exist)
+        return int(self.base_structure.filetype)
+
+    def _set_filetype(self, value):
+        # TODO: This should accept an integer AND a MTPFileType!
+        self.base_structure.filetype = ctypes.c_int(int(value))
+
+    filetype = property(_get_filetype, _set_filetype)
+
+class MTPFiles(IterableModel):
+    """
+        MTPFiles
+
+        An object representing a list of L{MTPFile} objects
+    """
+    def __getitem__(self, key):
+        """
+            Returns the L{MTPFile} object at the index specified
+            @param key: The index of the object to retrieve
+            @type key: int
+            @return: The object requested
+            @rtype: L{MTPFile}
+        """
+        return MTPFile(self._get_item(key))
+
 
 # ----------
 # Beginning LIBMTP_Track, MTPTrack and MTPTracks
