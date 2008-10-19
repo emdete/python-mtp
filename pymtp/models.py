@@ -1157,6 +1157,85 @@ class MTPTrack(BaseModel):
 
     bitrate = property(_get_bitrate, _set_bitrate)
 
+    def _get_bitratetype(self):
+        """
+            The bitrate type (0 = unused, 1 = CBR, 2 = VBR, 3 = unused)
+            @rtype: int
+            @return: Track's bitrate type
+        """
+        return int(self.base_structure.bitratetype)
+
+    def _set_bitratetype(self, value):
+        self.base_structure.bitratetype = ctypes.c_uint16(int(value))
+
+    bitratetype = property(_get_bitratetype, _set_bitratetype)
+
+    def _get_rating(self):
+        """
+            The track's user rating (0-100)
+            @rtype: int
+            @return: Track rating
+        """
+        return int(self.base_structure.rating)
+
+    def _set_rating(self, value):
+        self.base_structure.rating = ctypes.c_uint16(int(value))
+
+    rating = property(_get_rating, _set_rating)
+
+    def _get_usecount(self):
+        """
+            The number of times the track has been played/used
+            @rtype: int
+            @return: Track play/use count
+        """
+        return int(self.base_structure.usecount)
+
+    def _set_usecount(self, value):
+        self.base_structure.usecount = ctypes.c_uint32(int(value))
+
+    usecount = property(_get_usecount, _set_usecount)
+
+    def _get_filesize(self):
+        """
+            The file size of the track in bytes
+            @rtype: int
+            @return: File size in bytes
+        """
+        return int(self.base_structure.filesize)
+
+    def _set_filesize(self, value):
+        self.base_structure.filesize = ctypes.c_uint64(int(value))
+
+    filesize = property(_get_filesize, _set_filesize)
+
+    def _get_filetype(self):
+        """
+            The filetype as an integer
+            @rtype: int
+            @return: File type
+        """
+        return int(self.base_structure.filetype)
+
+    def _set_filetype(self, value):
+        self.base_structure.filetype = ctypes.c_int(int(value))
+
+    filetype = property(_get_filetype, _set_filetype)
+
+class MTPTracks(IterableModel):
+    """
+        An object representing a list of L{MTPTrack} objects.
+    """
+    def __getitem__(self, key):
+        """
+            Returns the L{MTPTrack} at the index specified
+            @type key: int
+            @param key: The index to retrieve
+            @rtype: L{MTPTrack}
+            @return: The track specified
+        """
+        return MTPTrack(self._get_item(key))
+
 # --------
 # Beginning LIBMTP_Playlist, MTPPlaylist, MTPPlaylists
 # --------
