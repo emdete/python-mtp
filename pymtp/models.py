@@ -1336,6 +1336,7 @@ class MTPPlaylists(IterableModel):
         """
         return MTPPlaylist(self._get_item(key))
 
+
 # -------
 # Beginning LIBMTP_Folder, MTPFolder, and MTPFolders
 # -------
@@ -1343,15 +1344,291 @@ class MTPPlaylists(IterableModel):
 class LIBMTP_Folder(ctypes.Structure):
     """
         LIBMTP_Folder
+
         Contains the ctypes structure for LIBMTP_folder_t
     """
 
     def __repr__(self):
         return "%s (%s)" % (self.name, self.folder_id)
 
-LIBMTP_Folder._fields_ = [("folder_id", ctypes.c_uint32),
-                        ("parent_id", ctypes.c_uint32),
-                        ("storage_id", ctypes.c_uint32),
-                        ("name", ctypes.c_char_p),
-                        ("sibling", ctypes.POINTER(LIBMTP_Folder)),
-                        ("child", ctypes.POINTER(LIBMTP_Folder))]
+LIBMTP_Folder._fields_ = [
+    ("folder_id", ctypes.c_uint32),
+    ("parent_id", ctypes.c_uint32),
+    ("storage_id", ctypes.c_uint32),
+    ("name", ctypes.c_char_p),
+    ("sibling", ctypes.POINTER(LIBMTP_Folder)),
+    ("child", ctypes.POINTER(LIBMTP_Folder)),
+    ]
+
+class MTPFolder(BaseModel):
+    """
+        MTPFolder
+
+        An object representing a folder on a MTP device
+    """
+    @property
+    def folder_id(self):
+        """
+            The folder unique identifier
+            @rtype: int
+            @return: Folder ID
+        """
+        return int(self.base_structure.folder_id)
+
+    def _get_parent_id(self):
+        """
+            The ID of the parent ID
+            @rtype: int
+            @return: Parent ID
+        """
+        return int(self.base_structure.parent_id)
+
+    def _set_parent_id(self, value):
+        self.base_structure.parent_id = ctypes.c_uint32(int(value))
+
+    parent_id = property(_get_parent_id, _set_parent_id)
+
+    def _get_storage_id(self):
+        """
+            The storage ID containing the folder
+            @rtype: int
+            @return: Storage ID
+        """
+        return int(self.base_structure.storage_id)
+
+    def _set_storage_id(self, value):
+        self.base_structure.storage_id = ctypes.c_uint32(int(value))
+
+    storage_id = property(_get_storage_id, _set_storage_id)
+
+    def _get_name(self):
+        """
+            The name of the folder
+            @rtype: str
+            @return: Folder name
+        """
+        return str(self.base_structure.name)
+
+    def _set_name(self, value):
+        self.base_structure.name = ctypes.c_char_p(str(value))
+
+    name = property(_get_name, _set_name)
+
+    @property
+    def children(self):
+        """
+            The children folders as a L{MTPFolders} object
+            @rtype: L{MTPFolders}
+            @return: MTPFolders object representing the children folders
+        """
+        return MTPFolders(self.base_structure.children)
+
+class MTPFolders(BaseModel):
+    """
+        MTPFolders
+
+        An object representing a group of L{MTPFolder} objects.
+    """
+    # Why don't we use an IterableModel here? because IterableModel doesn't
+    # support .sibling, but rather ".next". This should change in 0.1.1
+    def __getitem__(self, key):
+        """
+            Returns the L{MTPFolder} object at the index specified
+            @type key: int
+            @param key: Index to return
+            @rtype: L{MTPFolder}
+            @return: L{MTPFolder} of the object specified
+        """
+        # Sanity check for NULL base_structures
+        if not self.base_structure:
+            raise IndexError
+
+        current = self.base_structure
+        for i in xrange(key):
+            if current.sibling:
+                current = current.sibling.contents
+            else:
+                raise IndexError
+
+        return MTPFolder(current)
+
+    def __len__(self):
+        """
+            Returns the number of objects in the object
+            B{Note that this function is expensive!}
+        """
+        # A quick sanity check
+        if not self.base_structure:
+            return 0
+
+        current = self.base_structure
+        level = 0
+        while True:
+            if current.sibling:
+                level += 1
+                current = current.sibling.contents
+            else:
+                break
+
+        return level
+
+# --------
+# Beginning LIBMTP_FileSampleData, MTPFileSampleData
+# --------
+
+class LIBMTP_FileSampleData(ctypes.Structure):
+    """
+        LIBMTP_FileSampleData
+
+        The ctypes structure for LIBMTP_filesampledata_struct
+    """
+    def __repr__(self):
+        return "(%sx%s) (%sms) @ %s bytes" % (self.width, self.height,
+            self.duration, self.size)
+
+LIBMTP_FileSampleData._fields_ = [
+    ("width", ctypes.c_uint32),
+    ("height", ctypes.c_uint32),
+    ("duration", ctypes.c_uint32),
+    ("filetype", ctypes.c_int),
+    ("size", ctypes.c_uint64),
+    ("data", ctypes.c_char_p),
+    ]
+
+class MTPFileSampleData(BaseModel):
+    """
+        MTPFileSampleData
+
+        An object representing some sample data
+    """
+
+    def _get_width(self):
+        """
+            The width of the sample (if it's an image)
+            @rtype: int
+            @return: Sample width
+        """
+        return int(self.base_structure.width)
+
+    def _set_width(self, value):
+        self.base_structure.width = ctypes.c_uint32(int(value))
+
+    width = property(_get_width, _set_width)
+
+    def _get_height(self):
+        """
+            The height of the sample (if it's an image)
+            @rtype: int
+            @return: Sample length
+        """
+        return int(self.base_structure.height)
+
+    def _set_height(self, value):
+        self.base_structure.height = ctypes.c_uint32(int(value))
+
+    height = property(_get_height, _set_height)
+
+    def _get_duration(self):
+        """
+            The duration of the sample in milliseconds (if it's audio)
+            @rtype: int
+            @return: Sample duration
+        """
+        return int(self.base_structure.duration)
+
+    def _set_duration(self, value):
+        self.base_structure.duration = ctypes.c_uint32(int(value))
+
+    duration = property(_get_duration, _set_duration)
+
+    def _get_filetype(self):
+        """
+            The filetype of the sample as an integer
+            @rtype: int
+            @return: The filetype as an integer
+        """
+        # Maybe this should be a filetype or something?
+        return int(self.base_structure.filetype)
+
+    def _set_filetype(self, value):
+        self.base_structure.filetype = ctypes.c_int(int(value))
+
+    filetype = property(_get_filetype, _set_filetype)
+
+    def _get_size(self):
+        """
+            The size of the sample in bytes
+            @rtype: int
+            @return: Sample size in bytes
+        """
+        return int(self.base_structure.size)
+
+    def _set_size(self, value):
+        self.base_structure.size = ctypes.c_uint64(int(value))
+
+    size = property(_get_size, _set_size)
+
+    def _get_data(self):
+        """
+            The data of the sample
+            @rtype: str
+            @return: File data
+        """
+        return self.base_structure.data
+
+    def _set_data(self, value):
+        self.base_structure.data = value
+
+    data = property(_get_data, _set_data)
+
+# ---------
+# Beginning LIBMTP_RawDevice and MTPRawDevice
+# ---------
+class LIBMTP_RawDevice(ctypes.Structure):
+    """
+        LIBMTP_RawDevice
+
+        The ctypes tructure for LIBMTP_raw_device_struct
+    """
+    def __repr__(self):
+        return self.devnum
+
+LIBMTP_RawDevice._fields_ = [
+    ("device_entry", ctypes.POINTER(LIBMTP_DeviceEntry),
+    ("bus_location", ctypes.c_uint32),
+    ("devnum", ctypes.c_uint8),
+    ]
+
+class MTPRawDevice(BaseStructure):
+    """
+        MTPRawDevice
+
+        An object representing a raw MTP device entry
+    """
+    @property
+    def device_entry(self):
+        """
+            The MTP device entry for the device
+            @rtype: L{MTPDeviceEntry}
+            @return: MTP device entry
+        """
+        return MTPDeviceEntry(self.base_structure.device_entry)
+
+    @property
+    def bus_location(self):
+        """
+            The location on the bus (if available)
+            @rtype: int
+            @return: bus location
+        """
+        return int(self.base_structure.bus_location)
+
+    @property
+    def devnum(self):
+        """
+            The device number on the bus (if available)
+            @rtype: int
+            @return: Device number
+        """
+        return int(self.base_structure.devnum)
+
