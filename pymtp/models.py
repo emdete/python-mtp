@@ -1594,12 +1594,12 @@ class LIBMTP_RawDevice(ctypes.Structure):
         return self.devnum
 
 LIBMTP_RawDevice._fields_ = [
-    ("device_entry", ctypes.POINTER(LIBMTP_DeviceEntry),
+    ("device_entry", ctypes.POINTER(LIBMTP_DeviceEntry)),
     ("bus_location", ctypes.c_uint32),
     ("devnum", ctypes.c_uint8),
     ]
 
-class MTPRawDevice(BaseStructure):
+class MTPRawDevice(BaseModel):
     """
         MTPRawDevice
 
