@@ -1606,6 +1606,19 @@ class MTPRawDevice(BaseModel):
         An object representing a raw MTP device entry
     """
     @property
+    def device_id(self):
+        """
+            A somewhat unique identifier for the device based on the bus
+            location, device number, vendor_id and product_id.
+            B{Don't trust this to be consistent between instances!}
+            @rtype: str
+            @return: Identifier
+        """
+        de = self.device_entry
+        return "%s%s-%s%s" % (self.bus_location, self.devnum,
+            de.vendor_id, de.product_id)
+
+    @property
     def device_entry(self):
         """
             The MTP device entry for the device

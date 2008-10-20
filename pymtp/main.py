@@ -13,10 +13,13 @@ import ctypes.util
 
 from models import *
 from constants import *
-from exceptions import *
+from errors import *
 
 _module_path = ctypes.util.find_library("mtp")
 _libmtp = ctypes.CDLL(_module_path)
+# Initialize LibMTP (Why are we doing this here? Just to make sure that
+# it only gets initialized once)
+_libmtp.LIBMTP_Init()
 
 # ----------
 # Type Definitions
@@ -44,6 +47,44 @@ Progressfunc = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_uint64, ctypes.c_uint6
 # ----------
 # End Type Definitions
 # ----------
+
+class MTPConnectionManager(object):
+    """
+        MTPConnectionManager
+
+        Provides facilities for managing connections to MTP devices
+    """
+    def __init__(self):
+        """
+            Initializes the internal structures and variables
+        """
+        self._mtp = _libmtp
+        self.connections = {}
+
+    def connect(self, device):
+        """
+            Connects to an MTP device
+            @type device: L{MTPRawDevice}
+            @param device: The L{MTPRawDevice} to connect to
+            @rtype: L{MTPObject}
+            @return: A fresh MTPObject, already connected.
+        """
+        if not device:
+            raise ValueError
+        if device.device_id in self.connections:
+            raise AlreadyConnected
+
+        obj = MTPObject(self, device)
+        obj.connect()
+        return obj
+
+    def _register_object(self, obj):
+        """
+            Registers an object with the internal connections list
+            so we don't reinitialize an MTPObject for that device
+        """
+        #if
+        pass
 
 class MTP:
 	"""
