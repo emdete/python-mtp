@@ -131,6 +131,15 @@ class FixedArray(object):
         if not self.array:
             self.array = ctypes.POINTER(ctypes.c_int(0))
 
+    def _get_item(self, key):
+        """
+            Returns the item with the index specified.
+
+            @type key: int
+            @param key: The index of the object to retrieve
+        """
+        return self.array[key]
+
     def __getitem__(self, key):
         """
             Returns the item with the index specified.
@@ -141,7 +150,7 @@ class FixedArray(object):
         if key > (self.length - 1):
             raise IndexError
 
-        return self.array[key]
+        return self._get_item(key)
 
     def __delitem__(self, key):
         """
@@ -1614,9 +1623,8 @@ class MTPRawDevice(BaseModel):
             @rtype: str
             @return: Identifier
         """
-        de = self.device_entry
         return "%s%s-%s%s" % (self.bus_location, self.devnum,
-            de.vendor_id, de.product_id)
+            self.device_entry.vendor_id, self.device_entry.product_id)
 
     @property
     def device_entry(self):
@@ -1645,3 +1653,22 @@ class MTPRawDevice(BaseModel):
         """
         return int(self.base_structure.devnum)
 
+class MTPRawDevices(FixedArray):
+    """
+        MTPRawDevices
+
+        An object representing a list/array of MTP devices, such as returned
+        from LIBMTP_Detect_Raw_Device
+    """
+    def __init__(self, array, length):
+        FixedArray.__init__(self, array, length, mutable=False)
+
+    def _get_item(self, key):
+        """
+            Returns the object specified by the key
+            @param key: The index to return
+            @type key: int
+            @rtype: L{MTPRawDevice}
+            @return: The object specified
+        """
+        return MTPRawDevice(self.array[key])

@@ -24,7 +24,7 @@ _libmtp.LIBMTP_Init()
 # ----------
 # Type Definitions
 # ----------
-
+_libmtp.LIBMTP_Detect_Raw_Devices = ctypes.c_int
 _libmtp.LIBMTP_Get_Friendlyname.restype = ctypes.c_char_p
 _libmtp.LIBMTP_Get_Serialnumber.restype = ctypes.c_char_p
 _libmtp.LIBMTP_Get_Modelname.restype = ctypes.c_char_p
@@ -78,13 +78,32 @@ class MTPConnectionManager(object):
         obj.connect()
         return obj
 
-    def _register_object(self, obj):
+    def _register_object(self, device, obj):
         """
             Registers an object with the internal connections list
             so we don't reinitialize an MTPObject for that device
         """
-        #if
-        pass
+        self.connections[device.device_id] = obj
+
+    def _unregister_object(self, device):
+        """
+            Unregisters an object after being disconnected
+        """
+        del self.connections[device.device_id]
+
+    def detect_devices(self)
+        """
+            Detects the MTP devices on the USB bus that we can connect to
+            @rtype: L{MTPRawDevices}
+            @return: An array/list of L{MTPRawDevice} objects
+        """
+        numdevices = ctypes.c_int(0)
+        devices = ctypes.POINTER(LIBMTP_RawDevice)
+        ret = self._mtp.LIBMTP_Detect_Raw_Devices(ctypes.byref(numdevices),
+            ctypes.byref(devices))
+
+        if ret != 0:
+            raise
 
 class MTP:
 	"""
