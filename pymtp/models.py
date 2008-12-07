@@ -1603,7 +1603,7 @@ class LIBMTP_RawDevice(ctypes.Structure):
         return self.devnum
 
 LIBMTP_RawDevice._fields_ = [
-    ("device_entry", ctypes.POINTER(LIBMTP_DeviceEntry)),
+    ("device_entry", LIBMTP_DeviceEntry),
     ("bus_location", ctypes.c_uint32),
     ("devnum", ctypes.c_uint8),
     ]

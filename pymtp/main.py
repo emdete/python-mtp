@@ -91,7 +91,7 @@ class MTPConnectionManager(object):
         """
         del self.connections[device.device_id]
 
-    def detect_devices(self)
+    def detect_devices(self):
         """
             Detects the MTP devices on the USB bus that we can connect to
             @rtype: L{MTPRawDevices}
@@ -99,8 +99,8 @@ class MTPConnectionManager(object):
         """
         numdevices = ctypes.c_int(0)
         devices = ctypes.POINTER(LIBMTP_RawDevice)
-        ret = self._mtp.LIBMTP_Detect_Raw_Devices(ctypes.byref(numdevices),
-            ctypes.byref(devices))
+        ret = self._mtp.LIBMTP_Detect_Raw_Devices(ctypes.byref(devices),
+            ctypes.byref(numdevices))
 
         if ret != 0:
             raise
