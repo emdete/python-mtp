@@ -7,8 +7,8 @@
 from pymtp import MTP
 
 def main():
-	MTP.set_debug(255)
-	with MTP() as mtp:
+	# MTP.set_debug(255)
+	with MTP(False) as mtp:
 		# mtp.dump_info()
 		# Print out the device info
 		print "Device Name\t\t: {}".format(mtp.get_devicename())

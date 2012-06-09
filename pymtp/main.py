@@ -28,90 +28,67 @@ def libmtp_error_check(result, func, arguments):
 # Abstracted from libmtp 0.3.3's libmtp.h. This must be kept in sync.
 # ----------
 
-_libmtp.LIBMTP_Init.argtypes = tuple()
-_libmtp.LIBMTP_Init.restype = None
-
 _libmtp.LIBMTP_Detect_Raw_Devices.argtypes = c_void_p, c_void_p,
-_libmtp.LIBMTP_Get_Batterylevel.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Detect_Raw_Devices.errcheck = libmtp_error_check
 _libmtp.LIBMTP_Detect_Raw_Devices.restype = c_int
-
-_libmtp.LIBMTP_Set_Debug.argtypes = c_int,
-_libmtp.LIBMTP_Set_Debug.restype = None
-
-_libmtp.LIBMTP_Get_Friendlyname.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Friendlyname.restype = c_char_p
-
-_libmtp.LIBMTP_Get_Serialnumber.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Serialnumber.restype = c_char_p
-
-_libmtp.LIBMTP_Get_Modelname.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Modelname.restype = c_char_p
-
-_libmtp.LIBMTP_Get_Manufacturername.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Manufacturername.restype = c_char_p
-
-_libmtp.LIBMTP_Get_Deviceversion.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Deviceversion.restype = c_char_p
-
-_libmtp.LIBMTP_Get_Filelisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, c_void_p, c_void_p,
-_libmtp.LIBMTP_Get_Filelisting_With_Callback.restype = LIBMTP_File_p
-
-# _libmtp.LIBMTP_Get_Tracklisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, c_void_p, c_void_p,
-_libmtp.LIBMTP_Get_Tracklisting_With_Callback.restype = LIBMTP_Track_p
-
-# _libmtp.LIBMTP_Get_Filetype_Description.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Filetype_Description.restype = c_char_p
-
-_libmtp.LIBMTP_Get_Filemetadata.argtypes = LIBMTP_MTPDevice_p, c_int
-_libmtp.LIBMTP_Get_Filemetadata.restype = LIBMTP_File_p
-
-# _libmtp.LIBMTP_Get_Trackmetadata.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Trackmetadata.restype = LIBMTP_Track_p
-
-_libmtp.LIBMTP_Get_First_Device.argtypes = tuple()
-_libmtp.LIBMTP_Get_First_Device.restype = LIBMTP_MTPDevice_p
-
-# _libmtp.LIBMTP_Get_Playlist_List.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Playlist_List.restype = LIBMTP_Playlist_p
-
-# _libmtp.LIBMTP_Get_Playlist.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Playlist.restype = LIBMTP_Playlist_p
-
-# _libmtp.LIBMTP_Get_Folder_List.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Folder_List.restype = LIBMTP_Folder_p
-
+_libmtp.LIBMTP_Dump_Device_Info.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Dump_Device_Info.restype = None
 # _libmtp.LIBMTP_Find_Folder.argtypes = LIBMTP_MTPDevice_p,
 _libmtp.LIBMTP_Find_Folder.restype = LIBMTP_Folder_p
-
-# _libmtp.LIBMTP_Get_Errorstack.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Errorstack.restype = LIBMTP_Error_p
-
 _libmtp.LIBMTP_Get_Batterylevel.argtypes = LIBMTP_MTPDevice_p, c_void_p, c_void_p,
 _libmtp.LIBMTP_Get_Batterylevel.errcheck = libmtp_error_check
 _libmtp.LIBMTP_Get_Batterylevel.restype = c_int
-
+_libmtp.LIBMTP_Get_Deviceversion.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Deviceversion.restype = c_char_p
+# _libmtp.LIBMTP_Get_Errorstack.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Errorstack.restype = LIBMTP_Error_p
+_libmtp.LIBMTP_Get_Filelisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, c_void_p, c_void_p,
+_libmtp.LIBMTP_Get_Filelisting_With_Callback.restype = LIBMTP_File_p
+_libmtp.LIBMTP_Get_Filemetadata.argtypes = LIBMTP_MTPDevice_p, c_int
+_libmtp.LIBMTP_Get_Filemetadata.restype = LIBMTP_File_p
+# _libmtp.LIBMTP_Get_Filetype_Description.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Filetype_Description.restype = c_char_p
+_libmtp.LIBMTP_Get_First_Device.argtypes = tuple()
+_libmtp.LIBMTP_Get_First_Device.restype = LIBMTP_MTPDevice_p
+# _libmtp.LIBMTP_Get_Folder_List.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Folder_List.restype = LIBMTP_Folder_p
+_libmtp.LIBMTP_Get_Friendlyname.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Friendlyname.restype = c_char_p
+_libmtp.LIBMTP_Get_Manufacturername.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Manufacturername.restype = c_char_p
+_libmtp.LIBMTP_Get_Modelname.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Modelname.restype = c_char_p
+# _libmtp.LIBMTP_Get_Playlist.argtypes = LIBMTP_MTPDevice_p,
+# _libmtp.LIBMTP_Get_Playlist_List.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Playlist_List.restype = LIBMTP_Playlist_p
+_libmtp.LIBMTP_Get_Playlist.restype = LIBMTP_Playlist_p
+_libmtp.LIBMTP_Get_Serialnumber.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Serialnumber.restype = c_char_p
 _libmtp.LIBMTP_Get_Storage.argtypes = LIBMTP_MTPDevice_p, c_int,
 _libmtp.LIBMTP_Get_Storage.errcheck = libmtp_error_check
 _libmtp.LIBMTP_Get_Storage.restype = c_int
-
-_libmtp.LIBMTP_Reset_Device.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Reset_Device.errcheck = libmtp_error_check
-_libmtp.LIBMTP_Reset_Device.restype = c_int
-
-_libmtp.LIBMTP_Dump_Device_Info.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Dump_Device_Info.restype = None
-
-_libmtp.LIBMTP_Set_Friendlyname.argtypes = LIBMTP_MTPDevice_p, c_char_p
-_libmtp.LIBMTP_Set_Friendlyname.errcheck = libmtp_error_check
-_libmtp.LIBMTP_Set_Friendlyname.restype = c_int
-
+# _libmtp.LIBMTP_Get_Tracklisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, c_void_p, c_void_p,
+_libmtp.LIBMTP_Get_Tracklisting_With_Callback.restype = LIBMTP_Track_p
+# _libmtp.LIBMTP_Get_Trackmetadata.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Trackmetadata.restype = LIBMTP_Track_p
 _libmtp.LIBMTP_Get_Track_To_File.argtypes = LIBMTP_MTPDevice_p, c_uint32, c_char_p, Progressfunc, c_void_p,
 _libmtp.LIBMTP_Get_Track_To_File.errcheck = libmtp_error_check
 _libmtp.LIBMTP_Get_Track_To_File.restype = c_int
-
+_libmtp.LIBMTP_Init.argtypes = tuple()
+_libmtp.LIBMTP_Init.restype = None
+_libmtp.LIBMTP_Open_Raw_Device_Uncached.argtypes = LIBMTP_RawDevice_p,
+_libmtp.LIBMTP_Open_Raw_Device_Uncached.restype = LIBMTP_MTPDevice_p
+_libmtp.LIBMTP_Reset_Device.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Reset_Device.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Reset_Device.restype = c_int
 _libmtp.LIBMTP_Send_File_From_File.argtypes = LIBMTP_MTPDevice_p, c_char_p, LIBMTP_File_p, Progressfunc, c_void_p,
 _libmtp.LIBMTP_Send_File_From_File.errcheck = libmtp_error_check
 _libmtp.LIBMTP_Send_File_From_File.restype = c_int
+_libmtp.LIBMTP_Set_Debug.argtypes = c_int,
+_libmtp.LIBMTP_Set_Debug.restype = None
+_libmtp.LIBMTP_Set_Friendlyname.argtypes = LIBMTP_MTPDevice_p, c_char_p
+_libmtp.LIBMTP_Set_Friendlyname.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Set_Friendlyname.restype = c_int
 
 # Initialize LibMTP here to make sure that it only gets initialized once
 _libmtp.LIBMTP_Init()
@@ -127,7 +104,7 @@ class MTP(object):
 	"""
 
 	@staticmethod
-	def detect_devices(self):
+	def detect_rawdevices():
 		"""
 			Detects the MTP devices on the USB bus that we can connect to
 
@@ -135,11 +112,11 @@ class MTP(object):
 			@return: An array/list of L{MTPRawDevice} objects
 		"""
 		numdevices = c_int(0)
-		devices = LIBMTP_RawDevice_p
+		devices = LIBMTP_RawDevice_p()
 		_libmtp.LIBMTP_Detect_Raw_Devices(byref(devices), byref(numdevices))
-		return devices
+		return [devices[n] for n in range(numdevices.value)]
 
-	def __init__(self):
+	def __init__(self, cached=True, ):
 		"""
 			Initializes the MTP object
 
@@ -147,6 +124,7 @@ class MTP(object):
 			@return: None
 		"""
 		self.device = None
+		self.cached = cached
 
 	def __enter__(self):
 		"""
@@ -158,12 +136,16 @@ class MTP(object):
 		"""
 		if self.device:
 			raise AlreadyConnected()
-		self.device = _libmtp.LIBMTP_Get_First_Device()
+		if self.cached:
+			self.device = _libmtp.LIBMTP_Get_First_Device()
+		else:
+			rawdevices = self.detect_rawdevices()
+			self.device = _libmtp.LIBMTP_Open_Raw_Device_Uncached(rawdevices[0])
 		if not self.device:
 			self.device = None
 			raise NoDeviceFound()
-		_libmtp.LIBMTP_Reset_Device(self.device)
 		_libmtp.LIBMTP_Clear_Errorstack(self.device)
+		#_libmtp.LIBMTP_Reset_Device(self.device)
 		return self
 
 	def __exit__(self, exc_type, exc_value, traceback):
@@ -186,7 +168,7 @@ class MTP(object):
 	@staticmethod
 	def debug_stack(device):
 		"""
-			prints and clears the errorstack.
+			dumps and clears the errorstack.
 
 			@rtype: None
 			@return: None
@@ -295,7 +277,7 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		if callback != None:
+		if callback:
 			callback = Progressfunc(callback)
 		files = _libmtp.LIBMTP_Get_Filelisting_With_Callback(self.device, callback, None)
 		ret = []
@@ -351,7 +333,7 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		if callback != None:
+		if callback:
 			callback = Progressfunc(callback)
 		tracks = _libmtp.LIBMTP_Get_Tracklisting_With_Callback(self.device, callback, None)
 		ret = []
@@ -396,7 +378,7 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		if callback != None:
+		if callback:
 			callback = Progressfunc(callback)
 		ret = _libmtp.LIBMTP_Get_File_To_File(self.device, file_id, target, callback, None)
 		if ret != 0:
@@ -417,7 +399,7 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		if callback != None:
+		if callback:
 			callback = Progressfunc(callback)
 		_libmtp.LIBMTP_Get_Track_To_File(self.device, track_id, target, callback, None)
 
@@ -521,7 +503,7 @@ class MTP(object):
 			raise NotConnected()
 		if not isfile(source):
 			raise IOError()
-		if callback != None:
+		if callback:
 			callback = Progressfunc(callback)
 		metadata = LIBMTP_File(filename=target, filetype=self.find_filetype(source), filesize=stat(source).st_size)
 		_libmtp.LIBMTP_Send_File_From_File(self.device, source, pointer(metadata), callback, None, parent)

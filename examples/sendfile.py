@@ -4,31 +4,22 @@
 # (c) 2008 Nick Devito
 # Released under the GPL v3 or later.
 #
+from os.path import basename
+from pymtp import MTP
 
-import sys
-sys.path.insert(0, "../")
+def progress(sent, total, *data):
+	return 0
 
-import pymtp
-import pyid3lib
+def main(parent, base, *files):
+	parent = int(parent)
+	with MTP(False) as mtp:
+		for source in files:
+			target = base + basename(source)
+			print 'Send {} to {}'.format(source, target)
+			file_id = mtp.send_file_from_file(source, target, parent, progress)
+			print "Created new track with ID: %s".format(target, file_id)
 
-def usage():
-	print "Usage: %s <source> <target> <parent>\n(The parent id can be 0 for the root directory)" % (sys.argv[0])
+if __name__ == '__main__':
+	from sys import argv
+	main(*argv[1:])
 
-def main():
-	if len(sys.argv) <= 3:
-		usage()
-		sys.exit(2)
-		
-	mtp = pymtp.MTP()
-	mtp.connect()
-
-	source = sys.argv[1]
-	target = sys.argv[2]
-	parent = int(sys.argv[3])
-
-	file_id = mtp.send_file_from_file(source, target, parent=parent)
-	print "Created new track with ID: %s" % (file_id)
-	mtp.disconnect()
-		
-if __name__ == "__main__":
-	main()
