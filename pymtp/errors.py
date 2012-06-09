@@ -7,9 +7,9 @@
 # Released under the GPLv3 or later.
 #
 
-class NoDeviceConnected(Exception):
+class NoDeviceFound(Exception):
 	"""
-		Raised when there isn't a device connected to the USB bus
+		Raised when there wasn't a device found
 	"""
 
 class AlreadyConnected(Exception):

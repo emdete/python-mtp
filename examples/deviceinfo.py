@@ -7,15 +7,17 @@
 from pymtp import MTP
 
 def main():
+	MTP.set_debug(255)
 	with MTP() as mtp:
+		# mtp.dump_info()
 		# Print out the device info
 		print "Device Name\t\t: {}".format(mtp.get_devicename())
 		print "Device Manufacturer\t: {}".format(mtp.get_manufacturer())
 		print "Device Model Name\t: {}".format(mtp.get_modelname())
 		print "Serial Number\t\t: {}".format(mtp.get_serialnumber())
-		print "Battery Level\t\t: Max:{}/Cur:{} ({}%%)".format(mtp.get_batterylevel()[0], mtp.get_batterylevel()[1], ((float(mtp.get_batterylevel()[1])/float(mtp.get_batterylevel()[0]))*100))
-		print "Device Version\t\t: {}".format(mtp.get_deviceversion())
+		print "Battery Level\t\t: Max:{}/Cur:{}".format(*mtp.get_batterylevel())
 		print "Total Storage\t\t: {} bytes".format(mtp.get_totalspace())
+		print "Device Version\t\t: {}".format(mtp.get_deviceversion())
 		print "Free Storage\t\t: {} bytes".format(mtp.get_freespace())
 		print "Used Storage\t\t: {} bytes ({}%%)".format(mtp.get_usedspace(), ((float(mtp.get_usedspace()) / float(mtp.get_totalspace())*100)))
 		# Print out the folders

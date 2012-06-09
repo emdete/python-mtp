@@ -422,7 +422,7 @@ class LIBMTP_DeviceStorage(ctypes.Structure):
 	"""
 
 	def __repr__(self):
-		return self.id
+		return 'Storage storage_id=%s'% self.storage_id
 
 LIBMTP_DeviceStorage._fields_ = [
 	("storage_id", ctypes.c_uint32),
@@ -612,13 +612,14 @@ class LIBMTP_MTPDevice(ctypes.Structure):
 	"""
 
 	def __repr__(self):
-		return self.interface_number
+		return 'Device with object_bitsize=%s, maximum_battery_level=%s, cached=%s, storage=%s'% (
+			self.object_bitsize, self.maximum_battery_level, self.cached, self.storage, )
 
 LIBMTP_MTPDevice._fields_ = [
 	("object_bitsize", ctypes.c_uint8),
 	("params", ctypes.c_void_p),
 	("usbinfo", ctypes.c_void_p),
-	("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
+	("storage", ctypes.c_void_p), # ctypes.POINTER(LIBMTP_DeviceStorage)),
 	("errorstack", ctypes.POINTER(LIBMTP_Error)),
 	("maximum_battery_level", ctypes.c_uint8),
 	("default_music_folder", ctypes.c_uint32),
@@ -630,6 +631,8 @@ LIBMTP_MTPDevice._fields_ = [
 	("default_album_folder", ctypes.c_uint32),
 	("default_text_folder", ctypes.c_uint32),
 	("cd", ctypes.c_void_p),
+	("extensions", ctypes.c_void_p),
+	("cached", ctypes.c_int),
 	("next", ctypes.POINTER(LIBMTP_MTPDevice)),
 	]
 
@@ -645,6 +648,7 @@ class MTPDevice(BaseModel):
 	def storage(self):
 		"""
 			The storage objects for the device
+
 			@return: The device storages
 			@rtype: L{MTPDeviceStorages}
 		"""
@@ -655,6 +659,7 @@ class MTPDevice(BaseModel):
 		"""
 			The errorstack for the device - upon initialization,
 			this is set to NULL
+
 			@return: The device's errorstack
 			@rtype: L{MTPErrors}
 		"""
@@ -665,6 +670,7 @@ class MTPDevice(BaseModel):
 		"""
 			The device's maximum battery level - if LibMTP can't
 			get a max battery level, this defaults to 100.
+
 			@return: The device's maximum battery level
 			@rtype: int
 		"""
@@ -674,6 +680,7 @@ class MTPDevice(BaseModel):
 	def default_music_folder(self):
 		"""
 			The ID of the default music folder
+
 			@return: The default music folder ID
 			@rtype: int
 		"""
@@ -683,6 +690,7 @@ class MTPDevice(BaseModel):
 	def default_playlist_folder(self):
 		"""
 			The ID of the default playlist folder
+
 			@return: The default playlist folder ID
 			@rtype: int
 		"""
@@ -692,6 +700,7 @@ class MTPDevice(BaseModel):
 	def default_picture_folder(self):
 		"""
 			The ID of the default picture folder
+
 			@return: The default picture folder ID
 			@rtype: int
 		"""
@@ -701,6 +710,7 @@ class MTPDevice(BaseModel):
 	def default_video_folder(self):
 		"""
 			The ID of the default video folder
+
 			@return: The default video folder ID
 			@rtype: int
 		"""
@@ -710,6 +720,7 @@ class MTPDevice(BaseModel):
 	def default_organizer_folder(self):
 		"""
 			The ID of the default organizer folder
+
 			@return: The default organizer folder ID
 			@rtype: int
 		"""
@@ -719,6 +730,7 @@ class MTPDevice(BaseModel):
 	def default_zencast_folder(self):
 		"""
 			The ID of the default ZENcast folder (only on Creative devices)
+
 			@return: The default ZENcast folder ID
 			@rtype: int
 		"""
@@ -728,6 +740,7 @@ class MTPDevice(BaseModel):
 	def default_album_folder(self):
 		"""
 			The ID of the default album folder
+
 			@return: The default album folder ID
 			@rtype: int
 		"""
@@ -737,6 +750,7 @@ class MTPDevice(BaseModel):
 	def default_text_folder(self):
 		"""
 			The ID of the default text folder
+
 			@return: The default text folder ID
 			@rtype: int
 		"""
@@ -752,6 +766,7 @@ class MTPDevices(IterableModel):
 	def __getitem__(self, key):
 		"""
 			Returns a MTPDevice from the list of devices
+
 			@return: The MTP device with the index specified
 			@rtype: L{MTPDevice}
 		"""

@@ -68,3 +68,7 @@ LIBMTP_Error_Number = {
 	"CANCELLED":			c_int(8),
 	}
 
+class LIBMTP_STORAGE(object):
+	SORTBY_NOTSORTED = 0
+	SORTBY_FREESPACE = 1
+	SORTBY_MAXSPACE = 2
