@@ -4,44 +4,26 @@
 # (c) 2008 Nick Devito
 # Released under the GPL v3 or later.
 #
+from __future__ import print_function
+from os import environ
+from pymtp import MTP, LIBMTP_Track
+from ID3 import ID3 as id3tags
 
-import sys
-sys.path.insert(0, "../")
+def progress(sent, total, *data):
+	print('Sent {} of {} bytes'.format(sent, total))
+	return 0
 
-import pymtp
-import pyid3lib
+def main(parent, base, *files):
+	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
+	parent = int(parent)
+	with MTP(False) as mtp:
+		for source in files:
+			print('Sending track {}'.format(source))
+			tags = id3tags(source).as_dict()
+			metadata = mtp.send_track_from_file(source, tags, parent, progress)
+			print("Created new track with ID: %s" % (metadata.item_id))
 
-def usage():
-	print "Usage: %s <source> <target> <parent>\n(The parent id can be 0 for the root directory)" % (sys.argv[0])
+if __name__ == '__main__':
+	from sys import argv
+	main(*argv[1:])
 
-def main():
-	if len(sys.argv) <= 3:
-		usage()
-		sys.exit(2)
-		
-	mtp = pymtp.MTP()
-	mtp.connect()
-
-	source = sys.argv[1]
-	target = sys.argv[2]
-	parent = int(sys.argv[3])
-
-	id3data = pyid3lib.tag(source)
-
-	metadata = pymtp.LIBMTP_Track()
-
-	if (hasattr(id3data, 'artist')):
-		metadata.artist = id3data.artist
-	if (hasattr(id3data, 'title')):
-		metadata.title = id3data.title
-	if (hasattr(id3data, 'album')):
-		metadata.album = id3data.album
-	if (hasattr(id3data, 'tracknum')):
-		metadata.tracknumber = id3data.tracknum
-		
-	track_id = mtp.send_track_from_file(source, target, metadata, parent=parent)
-	print "Created new track with ID: %s" % (track_id)
-	mtp.disconnect()
-		
-if __name__ == "__main__":
-	main()

@@ -916,7 +916,15 @@ class LIBMTP_Track(ctypes.Structure):
 		Contains the ctypes structure for LIBMTP_track_t
 	"""
 	def __repr__(self):
-		return "%s - %s (%s)" % (self.artist, self.title, self.item_id)
+		return "Track item_id={} title={} artist={} album={} filename={} filetype={} filesize={} ".format(
+			self.item_id,
+			self.title,
+			self.artist,
+			self.album,
+			self.filename,
+			self.filetype,
+			self.filesize,
+			)
 
 LIBMTP_Track._fields_ = [
 	("item_id", ctypes.c_uint32),

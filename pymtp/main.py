@@ -8,7 +8,7 @@
 #
 
 from os import stat
-from os.path import exists, isfile
+from os.path import exists, isfile, basename
 from ctypes.util import find_library
 from ctypes import CDLL, c_int, c_void_p, byref, pointer, c_uint8, c_char_p, c_uint32
 from models import *
@@ -89,6 +89,9 @@ _libmtp.LIBMTP_Set_Debug.restype = None
 _libmtp.LIBMTP_Set_Friendlyname.argtypes = LIBMTP_MTPDevice_p, c_char_p
 _libmtp.LIBMTP_Set_Friendlyname.errcheck = libmtp_error_check
 _libmtp.LIBMTP_Set_Friendlyname.restype = c_int
+_libmtp.LIBMTP_Send_Track_From_File.argtypes = LIBMTP_MTPDevice_p, c_char_p, LIBMTP_Track_p, Progressfunc, c_void_p,
+_libmtp.LIBMTP_Send_Track_From_File.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Send_Track_From_File.restype = c_int
 
 # Initialize LibMTP here to make sure that it only gets initialized once
 _libmtp.LIBMTP_Init()
@@ -509,7 +512,7 @@ class MTP(object):
 		_libmtp.LIBMTP_Send_File_From_File(self.device, source, pointer(metadata), callback, None, parent)
 		return metadata.item_id
 
-	def send_track_from_file(self, source, target, metadata, parent=0, callback=None):
+	def send_track_from_file(self, source, tags, parent=0, callback=None, data=None):
 		"""
 			Sends a track from the filesystem to the connected
 			device
@@ -533,15 +536,22 @@ class MTP(object):
 			raise IOError()
 		if callback:
 			callback = Progressfunc(callback)
-		metadata.filename = target
+		metadata = LIBMTP_Track()
+		if 'ARTIST' in tags:
+			metadata.artist = tags['ARTIST']
+		if 'TITLE' in tags:
+			metadata.title = tags['TITLE']
+		if 'ALBUM' in tags:
+			metadata.album = tags['ALBUM']
+		if 'TRACKNUMBER' in tags:
+			metadata.tracknumber = int(tags['TRACKNUMBER'])
+		metadata.filename = basename(source)
 		metadata.parent_id = parent
+		metadata.storage_id = 0
 		metadata.filetype = self.find_filetype(source)
 		metadata.filesize = stat(source).st_size
-		ret = _libmtp.LIBMTP_Send_Track_From_File(self.device, source, pointer(metadata), callback, None, parent)
-		if ret != 0:
-			self.debug_stack(self.device)
-			raise CommandFailed(ret)
-		return metadata.item_id
+		_libmtp.LIBMTP_Send_Track_From_File(self.device, source, metadata, callback, data)
+		return metadata
 
 	def get_freespace(self):
 		"""
