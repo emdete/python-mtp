@@ -6,7 +6,7 @@
 #
 from __future__ import print_function
 from os import environ
-from pymtp import MTP, LIBMTP_Track
+from pymtp import MTP
 from ID3 import ID3 as id3tags
 
 def progress(sent, total, *data):
@@ -16,10 +16,11 @@ def progress(sent, total, *data):
 def main(parent, base, *files):
 	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
 	parent = int(parent)
-	with MTP(False) as mtp:
+	with MTP() as mtp:
 		for source in files:
 			print('Sending track {}'.format(source))
 			tags = id3tags(source).as_dict()
+			tags['TRACKNUMBER'] = int(tags['TRACKNUMBER'])
 			metadata = mtp.send_track_from_file(source, tags, parent, progress)
 			print("Created new track with ID: %s" % (metadata.item_id))
 

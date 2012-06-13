@@ -16,12 +16,12 @@ def progress(sent, total, *data):
 def main(parent, base, *files):
 	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
 	parent = int(parent)
-	with MTP(False) as mtp:
+	with MTP() as mtp:
 		for source in files:
 			target = base + basename(source)
 			print('Sending {} to {}'.format(source, target))
-			file_id = mtp.send_file_from_file(source, target, parent, progress)
-			print('Created new track with ID: %s'.format(target, file_id))
+			metadata = mtp.send_file_from_file(source, target, parent, progress)
+			print('Created new track with ID: %s'.format(metadata.item_id))
 
 if __name__ == '__main__':
 	from sys import argv

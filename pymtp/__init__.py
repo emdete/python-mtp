@@ -26,4 +26,4 @@ __VERSION__ = "{}.{}.{}".format(*__VERSION_TUPLE__)
 __AUTHOR__ = "Nick Devito <nick@nick125.com>, M. Dietrich <mdt@pyneo.org>"
 __LICENSE__ = "GPLv3"
 
-from main import *
+from main import MTP

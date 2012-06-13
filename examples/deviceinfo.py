@@ -9,7 +9,7 @@ from pymtp import MTP
 
 def main():
 	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
-	with MTP(False) as mtp:
+	with MTP() as mtp:
 		# mtp.dump_info()
 		# Print out the device info
 		print 'Device Name\t\t: {}'.format(mtp.get_devicename())
