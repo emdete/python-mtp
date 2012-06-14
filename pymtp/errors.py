@@ -6,6 +6,7 @@
 # (c) 2008 Nick Devito
 # Released under the GPLv3 or later.
 #
+from constants import LIBMTP_Error_Number
 
 class NoDeviceFound(Exception):
 	"""
@@ -29,6 +30,10 @@ class CommandFailed(Exception):
 		Raised when the connected device returned an error when trying
 		to execute a command
 	"""
+	def __repr__(self):
+		m, r = args
+		n = self.LIBMTP_Error_Number_reverse.get(r, '')
+		return '{}: {} ({})'.format(m, n, r)
 
 class NotConnected(Exception):
 	"""

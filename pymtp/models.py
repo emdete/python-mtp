@@ -791,8 +791,9 @@ LIBMTP_File._fields_ = [
 	("storage_id", ctypes.c_uint32),
 	("filename", ctypes.c_char_p),
 	("filesize", ctypes.c_uint64),
+	("modificationdate", ctypes.c_int),
 	("filetype", ctypes.c_int),
-	("next", ctypes.POINTER(LIBMTP_File))
+	("next", ctypes.POINTER(LIBMTP_File)),
 	]
 
 LIBMTP_File_p = ctypes.POINTER(LIBMTP_File)

@@ -9,6 +9,7 @@
 
 from os import stat
 from os.path import exists, isfile, basename
+from datetime import datetime
 from ctypes.util import find_library
 from ctypes import CDLL, c_int, c_void_p, byref, pointer, c_uint8, c_char_p, c_uint32
 from models import *
@@ -17,10 +18,15 @@ from errors import *
 
 _libmtp = CDLL(find_library("mtp"))
 
-def libmtp_error_check(result, func, arguments):
+def libmtp_check_null(result, func, arguments):
+	if not result:
+		raise ObjectNotFound(func.__name__)
+	return result
+
+def libmtp_check_return(result, func, arguments):
 	if result:
 		MTP.debug_stack(arguments[0])
-		raise CommandFailed(result)
+		raise CommandFailed(func.__name__, result)
 	return result
 
 # ----------
@@ -29,23 +35,15 @@ def libmtp_error_check(result, func, arguments):
 # ----------
 _libmtp.LIBMTP_Clear_Errorstack.argtypes = LIBMTP_MTPDevice_p,
 _libmtp.LIBMTP_Clear_Errorstack.restype = None
-_libmtp.LIBMTP_Create_Folder.argtypes = LIBMTP_MTPDevice_p, c_char_p, c_uint32
-_libmtp.LIBMTP_Create_Folder.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Create_Folder.argtypes = LIBMTP_MTPDevice_p, c_char_p, c_uint32, c_uint32,
+_libmtp.LIBMTP_Create_Folder.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Create_Folder.restype = c_int
-_libmtp.LIBMTP_Delete_Object.argtypes = LIBMTP_MTPDevice_p, c_uint32
-_libmtp.LIBMTP_Delete_Object.errcheck = libmtp_error_check
-_libmtp.LIBMTP_Delete_Object.restype = c_int
-_libmtp.LIBMTP_Dump_Errorstack.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Dump_Errorstack.restype = None
-_libmtp.LIBMTP_Get_File_To_File.argtypes = LIBMTP_MTPDevice_p, c_uint32, c_char_p, Progressfunc, c_void_p
-_libmtp.LIBMTP_Get_File_To_File.errcheck = libmtp_error_check
-_libmtp.LIBMTP_Get_File_To_File.restype = c_int
-_libmtp.LIBMTP_Update_Playlist.argtypes = LIBMTP_MTPDevice_p, LIBMTP_Playlist_p,
-_libmtp.LIBMTP_Update_Playlist.errcheck = libmtp_error_check
-_libmtp.LIBMTP_Update_Playlist.restype = c_int
 _libmtp.LIBMTP_Create_New_Playlist.argtypes = LIBMTP_MTPDevice_p, LIBMTP_Playlist_p, c_uint32
-_libmtp.LIBMTP_Create_New_Playlist.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Create_New_Playlist.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Create_New_Playlist.restype = c_int
+_libmtp.LIBMTP_Delete_Object.argtypes = LIBMTP_MTPDevice_p, c_uint32
+_libmtp.LIBMTP_Delete_Object.errcheck = libmtp_check_return
+_libmtp.LIBMTP_Delete_Object.restype = c_int
 _libmtp.LIBMTP_destroy_file_t.argtypes = LIBMTP_File_p,
 _libmtp.LIBMTP_destroy_file_t.restype = None
 _libmtp.LIBMTP_destroy_folder_t.argtypes = LIBMTP_Folder_p,
@@ -55,70 +53,94 @@ _libmtp.LIBMTP_destroy_playlist_t.restype = None
 _libmtp.LIBMTP_destroy_track_t.argtypes = LIBMTP_Track_p,
 _libmtp.LIBMTP_destroy_track_t.restype = None
 _libmtp.LIBMTP_Detect_Raw_Devices.argtypes = c_void_p, c_void_p,
-_libmtp.LIBMTP_Detect_Raw_Devices.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Detect_Raw_Devices.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Detect_Raw_Devices.restype = c_int
 _libmtp.LIBMTP_Dump_Device_Info.argtypes = LIBMTP_MTPDevice_p,
 _libmtp.LIBMTP_Dump_Device_Info.restype = None
+_libmtp.LIBMTP_Dump_Errorstack.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Dump_Errorstack.restype = None
 _libmtp.LIBMTP_Get_Batterylevel.argtypes = LIBMTP_MTPDevice_p, c_void_p, c_void_p,
-_libmtp.LIBMTP_Get_Batterylevel.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Get_Batterylevel.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Get_Batterylevel.restype = c_int
 _libmtp.LIBMTP_Get_Deviceversion.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Deviceversion.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Deviceversion.restype = c_char_p
 _libmtp.LIBMTP_Get_Errorstack.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Errorstack.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Errorstack.restype = LIBMTP_Error_p
 _libmtp.LIBMTP_Get_Filelisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, Progressfunc, c_void_p,
+_libmtp.LIBMTP_Get_Filelisting_With_Callback.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Filelisting_With_Callback.restype = LIBMTP_File_p
 _libmtp.LIBMTP_Get_Filemetadata.argtypes = LIBMTP_MTPDevice_p, c_int
+_libmtp.LIBMTP_Get_Filemetadata.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Filemetadata.restype = LIBMTP_File_p
 _libmtp.LIBMTP_Get_Files_And_Folders.argtypes = LIBMTP_MTPDevice_p, c_uint32, c_uint32,
+_libmtp.LIBMTP_Get_Files_And_Folders.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Files_And_Folders.restype = LIBMTP_File_p
+_libmtp.LIBMTP_Get_File_To_File.argtypes = LIBMTP_MTPDevice_p, c_uint32, c_char_p, Progressfunc, c_void_p
+_libmtp.LIBMTP_Get_File_To_File.errcheck = libmtp_check_null
+_libmtp.LIBMTP_Get_File_To_File.restype = c_int
 _libmtp.LIBMTP_Get_Filetype_Description.argtypes = LIBMTP_File_p,
+_libmtp.LIBMTP_Get_Filetype_Description.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Filetype_Description.restype = c_char_p
 _libmtp.LIBMTP_Get_First_Device.argtypes = tuple()
+_libmtp.LIBMTP_Get_First_Device.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_First_Device.restype = LIBMTP_MTPDevice_p
 _libmtp.LIBMTP_Get_Folder_List_For_Storage.argtypes = LIBMTP_MTPDevice_p, c_uint32,
+_libmtp.LIBMTP_Get_Folder_List_For_Storage.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Folder_List_For_Storage.restype = LIBMTP_Folder_p
 _libmtp.LIBMTP_Get_Friendlyname.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Friendlyname.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Friendlyname.restype = c_char_p
 _libmtp.LIBMTP_Get_Manufacturername.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Manufacturername.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Manufacturername.restype = c_char_p
 _libmtp.LIBMTP_Get_Modelname.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Modelname.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Modelname.restype = c_char_p
 _libmtp.LIBMTP_Get_Playlist_List.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Playlist_List.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Playlist_List.restype = LIBMTP_Playlist_p
 _libmtp.LIBMTP_Get_Playlist.argtypes = LIBMTP_MTPDevice_p, c_uint32,
-_libmtp.LIBMTP_Get_Playlist.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Get_Playlist.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Playlist.restype = LIBMTP_Playlist_p
 _libmtp.LIBMTP_Get_Serialnumber.argtypes = LIBMTP_MTPDevice_p,
+_libmtp.LIBMTP_Get_Serialnumber.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Serialnumber.restype = c_char_p
 _libmtp.LIBMTP_Get_Storage.argtypes = LIBMTP_MTPDevice_p, c_int,
-_libmtp.LIBMTP_Get_Storage.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Get_Storage.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Get_Storage.restype = c_int
 _libmtp.LIBMTP_Get_Tracklisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, Progressfunc, c_void_p,
+_libmtp.LIBMTP_Get_Tracklisting_With_Callback.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Tracklisting_With_Callback.restype = LIBMTP_Track_p
 _libmtp.LIBMTP_Get_Trackmetadata.argtypes = LIBMTP_MTPDevice_p, c_uint32,
+_libmtp.LIBMTP_Get_Trackmetadata.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Trackmetadata.restype = LIBMTP_Track_p
 _libmtp.LIBMTP_Get_Track_To_File.argtypes = LIBMTP_MTPDevice_p, c_uint32, c_char_p, Progressfunc, c_void_p,
-_libmtp.LIBMTP_Get_Track_To_File.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Get_Track_To_File.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Get_Track_To_File.restype = c_int
 _libmtp.LIBMTP_Init.argtypes = tuple()
 _libmtp.LIBMTP_Init.restype = None
 _libmtp.LIBMTP_Open_Raw_Device_Uncached.argtypes = LIBMTP_RawDevice_p,
+_libmtp.LIBMTP_Open_Raw_Device_Uncached.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Open_Raw_Device_Uncached.restype = LIBMTP_MTPDevice_p
 _libmtp.LIBMTP_Reset_Device.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Reset_Device.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Reset_Device.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Reset_Device.restype = c_int
 _libmtp.LIBMTP_Send_File_From_File.argtypes = LIBMTP_MTPDevice_p, c_char_p, LIBMTP_File_p, Progressfunc, c_void_p,
-_libmtp.LIBMTP_Send_File_From_File.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Send_File_From_File.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Send_File_From_File.restype = c_int
 _libmtp.LIBMTP_Send_Track_From_File.argtypes = LIBMTP_MTPDevice_p, c_char_p, LIBMTP_Track_p, Progressfunc, c_void_p,
-_libmtp.LIBMTP_Send_Track_From_File.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Send_Track_From_File.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Send_Track_From_File.restype = c_int
 _libmtp.LIBMTP_Set_Debug.argtypes = c_int,
 _libmtp.LIBMTP_Set_Debug.restype = None
 _libmtp.LIBMTP_Set_Friendlyname.argtypes = LIBMTP_MTPDevice_p, c_char_p
-_libmtp.LIBMTP_Set_Friendlyname.errcheck = libmtp_error_check
+_libmtp.LIBMTP_Set_Friendlyname.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Set_Friendlyname.restype = c_int
+_libmtp.LIBMTP_Update_Playlist.argtypes = LIBMTP_MTPDevice_p, LIBMTP_Playlist_p,
+_libmtp.LIBMTP_Update_Playlist.errcheck = libmtp_check_return
+_libmtp.LIBMTP_Update_Playlist.restype = c_int
 
 # Initialize LibMTP here to make sure that it only gets initialized once
 _libmtp.LIBMTP_Init()
@@ -205,6 +227,18 @@ class MTP(object):
 		"""
 		_libmtp.LIBMTP_Dump_Errorstack(device)
 		_libmtp.LIBMTP_Clear_Errorstack(device)
+
+	def get_errorstack(self):
+		"""
+			Returns the connected device's errorstack from
+			LIBMTP.
+			@rtype: L{LIBMTP_Error}
+			@return: An array of LIBMTP_Errors.
+		"""
+		if not self.device:
+			raise NotConnected()
+		ret = _libmtp.LIBMTP_Get_Errorstack(self.device)
+		return ret
 
 	def dump_info(self):
 		_libmtp.LIBMTP_Dump_Device_Info(self.device)
@@ -307,12 +341,45 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
+		self._fill_cache()
 		current = _libmtp.LIBMTP_Get_Filelisting_With_Callback(self.device, Progressfunc(callback), None)
 		while current:
-			yield current.contents.item_id #, current.contents.parent_id, current.contents.storage_id, current.contents.filename, current.contents.filesize, current.contents.filetype
+			yield dict(
+				item_id=current.contents.item_id,
+				parent_id=current.contents.parent_id,
+				storage_id=current.contents.storage_id,
+				filename=current.contents.filename,
+				filesize=current.contents.filesize,
+				modificationdate=datetime.fromtimestamp(current.contents.modificationdate),
+				filetype=LIBMTP_Filetype_reverse.get(current.contents.filetype, current.contents.filetype),
+				)
 			tmp = current
 			current = current.contents.next
 			_libmtp.LIBMTP_destroy_file_t(tmp)
+
+	def get_files_and_folders(self, storage=PTP_GOH.ALL_STORAGE, parent=0):
+		"""
+			Returns a list of files.
+
+			@rtype: generator
+			@return: A list of the files.
+		"""
+		if not self.device:
+			raise NotConnected()
+		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage, parent)
+		while current:
+			yield dict(
+				item_id=current.contents.item_id,
+				parent_id=current.contents.parent_id,
+				storage_id=current.contents.storage_id,
+				filename=current.contents.filename,
+				filesize=current.contents.filesize,
+				modificationdate=datetime.fromtimestamp(current.contents.modificationdate),
+				filetype=LIBMTP_Filetype_reverse.get(current.contents.filetype, current.contents.filetype),
+				)
+			tmp = current
+			current = current.contents.next
+			LIBMTP_destroy_file_t(tmp)
 
 	def get_filetype_description(self, filetype):
 		"""
@@ -721,24 +788,11 @@ class MTP(object):
 					for f in out(depth+1, folder.contents.child):
 						yield f
 				folder = folder.contents.sibling
+				# TODO destroy folder mem?
 		for f in out(0, folder):
 			yield f
 
-	def get_files(self, storage=0, parent=0):
-		"""
-			Returns a list of files.
-
-			@rtype: generator
-			@return: A list of the files.
-		"""
-		if not self.device:
-			raise NotConnected()
-		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage, parent)
-		while current:
-			yield current.contents.item_id, current.contents.parent_id, current.contents.storage_id, current.contents.filename, current.contents.filesize, current.contents.filetype
-			current = current.contents.next
-
-	def create_folder(self, name, parent=0):
+	def create_folder(self, name, storage, parent=0):
 		"""
 			This creates a new folder in the parent. If the parent
 			is 0, it will go in the main directory.
@@ -752,18 +806,5 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		_libmtp.LIBMTP_Create_Folder(self.device, name, parent)
-		return ret
-
-	def get_errorstack(self):
-		"""
-			Returns the connected device's errorstack from
-			LIBMTP.
-			@rtype: L{LIBMTP_Error}
-			@return: An array of LIBMTP_Errors.
-		"""
-		if not self.device:
-			raise NotConnected()
-		ret = _libmtp.LIBMTP_Get_Errorstack(self.device)
-		return ret
+		_libmtp.LIBMTP_Create_Folder(self.device, name, parent, storage)
 
