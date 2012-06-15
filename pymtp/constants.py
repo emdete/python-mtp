@@ -7,8 +7,6 @@
 # Released under the GPLv3 or later.
 #
 
-from ctypes import c_int
-
 # Abstracted from libmtp 0.3.3's libmtp.h. This must be kept in sync.
 LIBMTP_Filetype = dict(zip((
 	"FOLDER",

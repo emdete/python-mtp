@@ -619,7 +619,7 @@ LIBMTP_MTPDevice._fields_ = [
 	("object_bitsize", ctypes.c_uint8),
 	("params", ctypes.c_void_p),
 	("usbinfo", ctypes.c_void_p),
-	("storage", ctypes.c_void_p), # ctypes.POINTER(LIBMTP_DeviceStorage)),
+	("storage", ctypes.POINTER(LIBMTP_DeviceStorage)),
 	("errorstack", ctypes.POINTER(LIBMTP_Error)),
 	("maximum_battery_level", ctypes.c_uint8),
 	("default_music_folder", ctypes.c_uint32),

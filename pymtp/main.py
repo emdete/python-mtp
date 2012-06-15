@@ -53,7 +53,7 @@ _libmtp.LIBMTP_destroy_playlist_t.restype = None
 _libmtp.LIBMTP_destroy_track_t.argtypes = LIBMTP_Track_p,
 _libmtp.LIBMTP_destroy_track_t.restype = None
 _libmtp.LIBMTP_Detect_Raw_Devices.argtypes = c_void_p, c_void_p,
-_libmtp.LIBMTP_Detect_Raw_Devices.errcheck = libmtp_check_return
+# _libmtp.LIBMTP_Detect_Raw_Devices.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Detect_Raw_Devices.restype = c_int
 _libmtp.LIBMTP_Dump_Device_Info.argtypes = LIBMTP_MTPDevice_p,
 _libmtp.LIBMTP_Dump_Device_Info.restype = None
@@ -66,7 +66,7 @@ _libmtp.LIBMTP_Get_Deviceversion.argtypes = LIBMTP_MTPDevice_p,
 _libmtp.LIBMTP_Get_Deviceversion.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Deviceversion.restype = c_char_p
 _libmtp.LIBMTP_Get_Errorstack.argtypes = LIBMTP_MTPDevice_p,
-_libmtp.LIBMTP_Get_Errorstack.errcheck = libmtp_check_null
+# _libmtp.LIBMTP_Get_Errorstack.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Errorstack.restype = LIBMTP_Error_p
 _libmtp.LIBMTP_Get_Filelisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, Progressfunc, c_void_p,
 _libmtp.LIBMTP_Get_Filelisting_With_Callback.errcheck = libmtp_check_null
@@ -156,7 +156,7 @@ class MTP(object):
 	"""
 
 	@staticmethod
-	def detect_rawdevices():
+	def _detect_rawdevices():
 		"""
 			Detects the MTP devices on the USB bus that we can connect to
 
@@ -166,6 +166,7 @@ class MTP(object):
 		numdevices = c_int(0)
 		devices = LIBMTP_RawDevice_p()
 		_libmtp.LIBMTP_Detect_Raw_Devices(byref(devices), byref(numdevices))
+		# TODO: free() devices!
 		return [devices[n] for n in range(numdevices.value)]
 
 	def __init__(self, cached=False, ):
@@ -191,7 +192,7 @@ class MTP(object):
 		if self.cached:
 			self.device = _libmtp.LIBMTP_Get_First_Device()
 		else:
-			rawdevices = self.detect_rawdevices()
+			rawdevices = self._detect_rawdevices()
 			self.device = _libmtp.LIBMTP_Open_Raw_Device_Uncached(rawdevices[0])
 		if not self.device:
 			self.device = None
@@ -243,7 +244,7 @@ class MTP(object):
 	def dump_info(self):
 		_libmtp.LIBMTP_Dump_Device_Info(self.device)
 
-	def get_devicename(self):
+	def get_friendly_name(self):
 		"""
 			Returns the connected device's 'friendly name' (or
 			known as the owner name)
@@ -255,7 +256,7 @@ class MTP(object):
 			raise NotConnected()
 		return _libmtp.LIBMTP_Get_Friendlyname(self.device)
 
-	def set_devicename(self, name):
+	def set_friendly_name(self, name):
 		"""
 			Changes the connected device's 'friendly name' to name
 
@@ -345,10 +346,10 @@ class MTP(object):
 		current = _libmtp.LIBMTP_Get_Filelisting_With_Callback(self.device, Progressfunc(callback), None)
 		while current:
 			yield dict(
-				item_id=current.contents.item_id,
+				object_id=current.contents.item_id,
 				parent_id=current.contents.parent_id,
 				storage_id=current.contents.storage_id,
-				filename=current.contents.filename,
+				name=current.contents.filename,
 				filesize=current.contents.filesize,
 				modificationdate=datetime.fromtimestamp(current.contents.modificationdate),
 				filetype=LIBMTP_Filetype_reverse.get(current.contents.filetype, current.contents.filetype),
@@ -369,17 +370,17 @@ class MTP(object):
 		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage, parent)
 		while current:
 			yield dict(
-				item_id=current.contents.item_id,
+				object_id=current.contents.item_id,
 				parent_id=current.contents.parent_id,
 				storage_id=current.contents.storage_id,
-				filename=current.contents.filename,
+				name=current.contents.filename,
 				filesize=current.contents.filesize,
 				modificationdate=datetime.fromtimestamp(current.contents.modificationdate),
 				filetype=LIBMTP_Filetype_reverse.get(current.contents.filetype, current.contents.filetype),
 				)
 			tmp = current
 			current = current.contents.next
-			LIBMTP_destroy_file_t(tmp)
+			_libmtp.LIBMTP_destroy_file_t(tmp)
 
 	def get_filetype_description(self, filetype):
 		"""
@@ -394,7 +395,7 @@ class MTP(object):
 			raise NotConnected()
 		return _libmtp.LIBMTP_Get_Filetype_Description(filetype)
 
-	def get_file_metadata(self, file_id):
+	def get_file_metadata(self, object_id):
 		"""
 			Returns the file metadata from the connected device
 
@@ -402,14 +403,14 @@ class MTP(object):
 			repeatly is not recommended, as it is slow and creates
 			a large amount of USB traffic.
 
-			@type file_id: int
-			@param file_id: The unique numeric file id
+			@type object_id: int
+			@param object_id: The unique numeric file id
 			@rtype: LIBMTP_File
 			@return: The file metadata
 		"""
 		if not self.device:
 			raise NotConnected()
-		ret = _libmtp.LIBMTP_Get_Filemetadata(self.device, file_id)
+		ret = _libmtp.LIBMTP_Get_Filemetadata(self.device, object_id)
 		if not hasattr(ret, 'contents'):
 			raise ObjectNotFound()
 		return ret.contents
@@ -434,21 +435,21 @@ class MTP(object):
 			current = current.contents.next
 			_libmtp.LIBMTP_destroy_track_t(tmp)
 
-	def get_track_metadata(self, track_id):
+	def get_track_metadata(self, object_id):
 		"""
 			Returns the track metadata
 
 			As per the libmtp documentation, calling this function repeatly is not
 			recommended, as it is slow and creates a large amount of USB traffic.
 
-			@type track_id: int
-			@param track_id: The unique numeric track id
+			@type object_id: int
+			@param object_id: The unique numeric track id
 			@rtype: L{LIBMTP_Track}
 			@return: The track metadata
 		"""
 		if not self.device:
 			raise NotConnected()
-		ret = _libmtp.LIBMTP_Get_Trackmetadata(self.device, track_id)
+		ret = _libmtp.LIBMTP_Get_Trackmetadata(self.device, object_id)
 		if not hasattr(ret, 'contents'):
 			raise ObjectNotFound()
 		return ret.contents
@@ -469,13 +470,13 @@ class MTP(object):
 			raise NotConnected()
 		_libmtp.LIBMTP_Get_File_To_File(self.device, file_id, target, Progressfunc(callback), None)
 
-	def get_track_to_file(self, track_id, target, callback=0l):
+	def get_track_to_file(self, object_id, target, callback=0l):
 		"""
 			Downloads the track from the connected device and stores it at
 			the target location
 
-			@type track_id: int
-			@param track_id: The unique numeric track id
+			@type object_id: int
+			@param object_id: The unique numeric track id
 			@type target: str
 			@param target: The location to place the track
 			@type callback: function or None
@@ -483,89 +484,64 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		_libmtp.LIBMTP_Get_Track_To_File(self.device, track_id, target, Progressfunc(callback), None)
+		_libmtp.LIBMTP_Get_Track_To_File(self.device, object_id, target, Progressfunc(callback), None)
 
-	def find_filetype(self, filename):
+	def find_filetype(self, name):
 		"""
-			Attempts to guess the filetype off the filename. Kind of
+			Attempts to guess the filetype off the name. Kind of
 			inaccurate and should be trusted with a grain of salt. It
 			works in most situations, though.
 
-			@type filename: str
-			@param filename: The filename to attempt to guess from
+			@type name: str
+			@param name: The name to attempt to guess from
 			@rtype: int
 			@return: The integer of the Filetype
 		"""
-		fileext = filename.split(".")[-1].lower()
-		if fileext == "wav" or fileext == "wave":
-			return LIBMTP_Filetype["WAV"]
-		elif fileext == "mp3":
-			return LIBMTP_Filetype["MP3"]
-		elif fileext == "wma":
-			return LIBMTP_Filetype["WMA"]
-		elif fileext == "ogg":
-			return LIBMTP_Filetype["OGG"]
-		elif fileext == "mp4":
-			return LIBMTP_Filetype["MP4"]
-		elif fileext == "wmv":
-			return LIBMTP_Filetype["WMV"]
-		elif fileext == "avi":
-			return LIBMTP_Filetype["AVI"]
-		elif fileext == "mpeg" or fileext == "mpg":
-			return LIBMTP_Filetype["MPEG"]
-		elif fileext == "asf":
-			return LIBMTP_Filetype["ASF"]
-		elif fileext == "qt" or fileext == "mov":
-			return LIBMTP_Filetype["QT"]
-		elif fileext == "jpeg" or fileext == "jpg":
-			return LIBMTP_Filetype["JPEG"]
-		elif fileext == "jfif":
-			return LIBMTP_Filetype["JFIF"]
-		elif fileext == "tif" or fileext == "tiff":
-			return LIBMTP_Filetype["TIFF"]
-		elif fileext == "bmp":
-			return LIBMTP_Filetype["BMP"]
-		elif fileext == "gif":
-			return LIBMTP_Filetype["GIF"]
-		elif fileext == "pic" or fileext == "pict":
-			return LIBMTP_Filetype["PICT"]
-		elif fileext == "png":
-			return LIBMTP_Filetype["PNG"]
-		elif fileext == "wmf":
-			return LIBMTP_Filetype["WINDOWSIMAGEFORMAT"]
-		elif fileext == "ics":
-			return LIBMTP_Filetype["VCALENDAR2"]
-		elif fileext == "exe" or fileext == "com" or fileext == "bat" or fileext == "dll" or fileext == "sys":
-			return LIBMTP_Filetype["WINEXEC"]
-		elif fileext == "aac":
-			return LIBMTP_Filetype["AAC"]
-		elif fileext == "mp2":
-			return LIBMTP_Filetype["MP2"]
-		elif fileext == "flac":
-			return LIBMTP_Filetype["FLAC"]
-		elif fileext == "m4a":
-			return LIBMTP_Filetype["M4A"]
-		elif fileext == "doc":
-			return LIBMTP_Filetype["DOC"]
-		elif fileext == "xml":
-			return LIBMTP_Filetype["XML"]
-		elif fileext == "xls":
-			return LIBMTP_Filetype["XLS"]
-		elif fileext == "ppt":
-			return LIBMTP_Filetype["PPT"]
-		elif fileext == "mht":
-			return LIBMTP_Filetype["MHT"]
-		elif fileext == "jp2":
-			return LIBMTP_Filetype["JP2"]
-		elif fileext == "jpx":
-			return LIBMTP_Filetype["JPX"]
+		fileext = name.split(".")[-1].lower()
+		for t, e in dict(
+			AAC=("aac", ),
+			ASF=("asf", ),
+			AVI=("avi", ),
+			BMP=("bmp", ),
+			DOC=("doc", ),
+			FLAC=("flac", ),
+			GIF=("gif", ),
+			JFIF=("jfif", ),
+			JP2=("jp2", ),
+			JPEG=("jpeg", "jpg", ),
+			JPX=("jpx", ),
+			M4A=("m4a", ),
+			MHT=("mht", ),
+			MP2=("mp2", ),
+			MP3=("mp3", ),
+			MP4=("mp4", ),
+			MPEG=("mpeg", "mpg", ),
+			OGG=("ogg", ),
+			PICT=("pic", "pict", ),
+			PNG=("png", ),
+			PPT=("ppt", ),
+			QT=("qt", "mov", ),
+			TIFF=("tif", "tiff", ),
+			VCALENDAR2=("ics", ),
+			WAV=("wav", "wave", ),
+			WINDOWSIMAGEFORMAT=("wmf", ),
+			WINEXEC=("exe", "com", "bat", "dll", "sys", ),
+			WMA=("wma", ),
+			WMV=("wmv", ),
+			XLS=("xls", ),
+			XML=("xml", ),
+			).items():
+			if fileext in e:
+				break
 		else:
-			return LIBMTP_Filetype["UNKNOWN"]
+			t = "UNKNOWN"
+		t = c_int(LIBMTP_Filetype[t])
+		return t
 
 	def send_file_from_file(self, source, target, parent=0, callback=0l):
 		"""
 			Sends a file from the filesystem to the connected device
-			and stores it at the target filename inside the parent.
+			and stores it at the target name inside the parent.
 
 			This will attempt to "guess" the filetype with
 			find_filetype()
@@ -573,7 +549,7 @@ class MTP(object):
 			@type source: str
 			@param source: The path on the filesystem where the file resides
 			@type target: str
-			@param target: The target filename on the device
+			@param target: The target name on the device
 			@type parent: int or 0
 			@param parent: The parent directory for the file to go into; If 0, the file goes into main directory
 			@type callback: function or None
@@ -593,7 +569,15 @@ class MTP(object):
 			filesize=stat(source).st_size,
 			)
 		_libmtp.LIBMTP_Send_File_From_File(self.device, source, pointer(metadata), Progressfunc(callback), None)
-		return metadata
+		return dict(
+			object_id=metadata.item_id,
+			parent_id=metadata.parent_id,
+			storage_id=metadata.storage_id,
+			name=metadata.filename,
+			filesize=metadata.filesize,
+			modificationdate=datetime.fromtimestamp(metadata.modificationdate),
+			filetype=LIBMTP_Filetype_reverse.get(metadata.filetype, metadata.filetype),
+			)
 
 	def send_track_from_file(self, source, tags, parent=0, callback=0l):
 		"""
@@ -603,7 +587,7 @@ class MTP(object):
 			@type source: str
 			@param source: The path where the track resides
 			@type target: str
-			@param target: The target filename on the device
+			@param target: The target name on the device
 			@type tags: dict
 			@param tags: The track metadata
 			@type parent: int or 0
@@ -627,7 +611,15 @@ class MTP(object):
 		for n in tags:
 			setattr(metadata, n.lower(), tags[n])
 		_libmtp.LIBMTP_Send_Track_From_File(self.device, source, byref(metadata), Progressfunc(callback), None)
-		return metadata
+		return dict(
+			object_id=metadata.item_id,
+			parent_id=metadata.parent_id,
+			storage_id=metadata.storage_id,
+			name=metadata.filename,
+			filesize=metadata.filesize,
+			modificationdate=datetime.fromtimestamp(metadata.modificationdate),
+			filetype=LIBMTP_Filetype_reverse.get(metadata.filetype, metadata.filetype),
+			)
 
 	def _fill_cache(self):
 		if not self.device:
@@ -643,7 +635,7 @@ class MTP(object):
 			@return: The amount of free storage in bytes
 		"""
 		self._fill_cache()
-		return self.device.contents.storage.contents.FreeSpaceInBytes
+		return self.device.contents.storage.contents.free_space
 
 	def get_totalspace(self):
 		"""
@@ -652,7 +644,7 @@ class MTP(object):
 			@return: The amount of total storage in bytes
 		"""
 		self._fill_cache()
-		return self.device.contents.storage.contents.MaxCapacity
+		return self.device.contents.storage.contents.max_capacity
 
 	def get_usedspace(self):
 		"""
@@ -664,22 +656,7 @@ class MTP(object):
 
 		self._fill_cache()
 		storage = self.device.contents.storage.contents
-		return (storage.MaxCapacity - storage.FreeSpaceInBytes)
-
-	def get_usedspace_percent(self):
-		"""
-			Returns the amount of used space as a percentage
-
-			@rtype: float
-			@return: The percentage of used storage
-		"""
-		self._fill_cache()
-		storage = self.device.contents.storage.contents
-		# Why don't we call self.get_totalspace/self.get_usedspace
-		# here? That would require 3 *more* calls to
-		# LIBMTP_Get_Storage
-		usedspace = storage.MaxCapacity - storage.FreeSpaceInBytes
-		return ((float(usedspace) / float(storage.MaxCapacity)) * 100)
+		return (storage.max_capacity - storage.free_space)
 
 	def delete_object(self, object_id):
 		"""
@@ -702,7 +679,7 @@ class MTP(object):
 			variable of LIBMTP_Playlist isn't iterable (without
 			segfaults), so, you have to iterate over the no_tracks
 			(through range or xrange) and access it that way (i.e.
-			tracks[track_id]). Kind of sucks.
+			tracks[object_id]). Kind of sucks.
 
 			@rtype: tuple
 			@return: Tuple filled with LIBMTP_Playlist objects
@@ -714,7 +691,7 @@ class MTP(object):
 			yield current.contents
 			tmp = current
 			current = current.contents.next
-			LIBMTP_destroy_playlist_t(tmp)
+			# LIBMTP_destroy_playlist_t(tmp)
 
 	def get_playlist(self, playlist_id):
 		"""
@@ -783,12 +760,19 @@ class MTP(object):
 		folder = _libmtp.LIBMTP_Get_Folder_List_For_Storage(self.device, PTP_GOH.ALL_STORAGE)
 		def out(depth, folder):
 			while folder:
-				yield depth, folder.contents.folder_id, folder.contents.parent_id, folder.contents.storage_id, folder.contents.name,
+				yield dict(
+					depth=depth,
+					object_id=folder.contents.folder_id,
+					parent_id=folder.contents.parent_id,
+					storage_id=folder.contents.storage_id,
+					name=folder.contents.name,
+					)
 				if recurse:
 					for f in out(depth+1, folder.contents.child):
 						yield f
+				tmp = folder
 				folder = folder.contents.sibling
-				# TODO destroy folder mem?
+				# TODO destroy folder mem with _libmtp.LIBMTP_destroy_folder_t(tmp) ?
 		for f in out(0, folder):
 			yield f
 

@@ -21,7 +21,7 @@ def main(parent, base, *files):
 			target = base + basename(source)
 			print('Sending {} to {}'.format(source, target))
 			metadata = mtp.send_file_from_file(source, target, parent, progress)
-			print('Created new track with ID: %s'.format(metadata.item_id))
+			print('Created new file with metadata: {}'.format(metadata))
 
 if __name__ == '__main__':
 	from sys import argv

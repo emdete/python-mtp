@@ -13,7 +13,7 @@ def progress(sent, total, *data):
 	print('Sent {} of {} bytes'.format(sent, total))
 	return 0
 
-def main(parent, base, *files):
+def main(parent, *files):
 	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
 	parent = int(parent)
 	with MTP() as mtp:
@@ -22,7 +22,7 @@ def main(parent, base, *files):
 			tags = id3tags(source).as_dict()
 			tags['TRACKNUMBER'] = int(tags['TRACKNUMBER'])
 			metadata = mtp.send_track_from_file(source, tags, parent, progress)
-			print("Created new track with ID: %s" % (metadata.item_id))
+			print('Created new track with metadata: {}'.format(metadata))
 
 if __name__ == '__main__':
 	from sys import argv

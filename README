@@ -1,51 +1,85 @@
 About
 ------
-PyMTP is a Pythonic wrapper around libmtp, allowing python applications to 
-communicate with MTP devices, such as the Microsoft(R) Zune(TM), Creative(R)
-Zen(TM) devices (except the Creative Zen Stone), and many others. 
+
+PyMTP is a Pythonic wrapper around libmtp, allowing python applications to
+communicate with MTP devices that are supported by libmtp. For supported &
+tested devices see there.
+
+simple test scripts can be found in examples/ for the major operations.
 
 Why
 ----
+
 I decided to write pymtp after I got my Creative(R) Zen V Plus, and I noticed
-there wasn't any libraries to use MTP in python. I grabbed ctypes and went to 
-work. 
+there wasn't any libraries to use MTP in python. I grabbed ctypes and went to
+work.
 
 Requirements
 ------------
+
 PyMTP 0.1.0 requires:
-	* Python 2.4 or above
-	* Ctypes (or Python 2.5, as it includes Ctypes)
-	* LibMTP 0.3.3 or above
+
+	- Python 2.6 or above
+
+	- LibMTP 1.1.3 (sad to say: due to the fact that ctypes is used pymtp is
+	  bound to the exact libmtp version. Other versions may work. If you
+	  encounter crashes adjust the structure design in pymtp/models.py).
 
 Installing
 -----------
+
 To install PyMTP on most systems, run setup.py:
 
 	python setup.py build
+
 	python setup.py install
-	
-After running those commands (on *nix, you'll need to run the install command 
+
+After running those commands (on *nix, you'll need to run the install command
 as root), PyMTP should be installed and ready to go
 
 Generating documentation
 ------------------------
-While PyMTP doesn't come with any documentation with it, you can generate 
+
+While PyMTP doesn't come with any documentation with it, you can generate
 documentation using epydoc:
 
-	epydoc -o <output directory> pymtp.py
-	
+	epydoc -o <output directory> pymtp/*
+
 This, of course, requires epydoc to be installed.
 
 Getting help
 -------------
-If you find you need help getting PyMTP working, or have any questions or 
-comments on PyMTP, please send me a message. I'm usually available on 
+
+If you find you need help getting PyMTP working, or have any questions or
+comments on PyMTP, please send me a message. I'm usually available on
 irc.freenode.net as "nick125", or email me at nick@nick125.com
+
+This version or branch of pymtp was improved by M. Dietrich <mdt@pyneo.org>.
+Please contact me via this email or on irc.freenode.net as "emdete" in
+"#pyneo.org".
+
+Major Pitfalls
+--------------
+
+libmtp has a big drawback that is a cache filled at startup. This takes alot of
+time due to usb communication. Depending on the number of files it takes a
+minute or more. A flag was given that allows creating a connection without
+caching. This renders some functions unusual, others require this mode. for now
+i'm not sure if this is a bug of libmtp or desired behaviour.
+
+On Andriod devices MTP doesn't not work if USB-debugging is enabled.
+
+While libmtp provides errorcodes some functions just return -1 (which is not a
+listed error). Other functions return a pointer and have no way to determine
+the cause of the error (they just return NULL and pymtp creates a
+ObjectNotFound exception for it). Setting the debugging level is of some help
+here.
 
 Thanks
 ------
+
 I would like to take this moment to thank everyone who has ever filed a bug
-report or a patch. You guys have made me feel like my work is actually 
+report or a patch. You guys have made me feel like my work is actually
 important to someone and have given me the encouragement to keep working on it.
 I'd like to give a special thanks to Dan O'Reilly for his patches and other
 contributions to this project.
