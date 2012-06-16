@@ -9,7 +9,8 @@ from pymtp import MTP
 
 def main():
 	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
-	with MTP(True) as mtp:
+	cache = False
+	with MTP(cache) as mtp:
 		try:
 			# mtp.dump_info()
 			# Print out the device info
@@ -22,29 +23,29 @@ def main():
 			print 'Device Version\t\t: {}'.format(mtp.get_deviceversion())
 			print 'Free Storage\t\t: {} bytes'.format(mtp.get_freespace())
 			print 'Used Storage\t\t: {} bytes'.format(mtp.get_usedspace())
+			if not cache:
+				# Print out the all objects
+				print 'All objects\t\t\t:'
+				for folder in mtp.get_files_and_folders():
+					print '\t\t\t {}'.format(folder)
 			# Print out the folders
 			print 'Root folders\t\t:'
-			for folder in mtp.get_folders(False):
-				print '\t\t\t {object_id} {name}'.format(**folder)
-#			# Print out the all objects
-#			print 'All objects\t\t:'
-#			for folder in mtp.get_files_and_folders():
-#				print '\t\t\t {}'.format(folder)
-			# Print out the files
-			print 'File listing\t\t:'
-			for devfile in mtp.get_filelisting():
-				print '\t\t\t {object_id} {name} {filesize}'.format(**devfile)
+			for obj in mtp.get_folderlist(True):
+				print '\t\t\t {object_id} {name}'.format(**obj)
 			# Print out the tracks
 			print 'Track listing\t\t:'
-			for track in mtp.get_tracklisting():
-				print '\t\t\t{object_id} {name}'.format(track)
+			for obj in mtp.get_tracklist():
+				print '\t\t\t{object_id} {name}'.format(**obj)
 			# Print out the playlist
 			print 'Playlist listing\t\t:'
-			for playlist in mtp.get_playlists():
-				print '\t\t\t{object_id} {name}'.format(playlist)
-				for track in playlist:
-					info = mtp.get_track_metadata(track)
-					print '\t\t\t\t{} - {}'.format(info.artist, info.title)
+			for obj in mtp.get_playlistlist():
+				print '\t\t\t{object_id} {name}'.format(**obj)
+				for track in obj:
+					print '\t\t\t\t{} - {}'.format(**track)
+			# Print out the files
+			print 'File listing\t\t:'
+			for obj in mtp.get_filelisting():
+				print '\t\t\t {object_id} {name} {filesize}'.format(**obj)
 		except:
 			print mtp.get_errorstack()
 			raise

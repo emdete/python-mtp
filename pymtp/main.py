@@ -110,9 +110,9 @@ _libmtp.LIBMTP_Get_Serialnumber.restype = c_char_p
 _libmtp.LIBMTP_Get_Storage.argtypes = LIBMTP_MTPDevice_p, c_int,
 _libmtp.LIBMTP_Get_Storage.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Get_Storage.restype = c_int
-_libmtp.LIBMTP_Get_Tracklisting_With_Callback.argtypes = LIBMTP_MTPDevice_p, Progressfunc, c_void_p,
-_libmtp.LIBMTP_Get_Tracklisting_With_Callback.errcheck = libmtp_check_null
-_libmtp.LIBMTP_Get_Tracklisting_With_Callback.restype = LIBMTP_Track_p
+_libmtp.LIBMTP_Get_Tracklisting_With_Callback_For_Storage.argtypes = LIBMTP_MTPDevice_p, c_uint32, Progressfunc, c_void_p,
+_libmtp.LIBMTP_Get_Tracklisting_With_Callback_For_Storage.errcheck = libmtp_check_null
+_libmtp.LIBMTP_Get_Tracklisting_With_Callback_For_Storage.restype = LIBMTP_Track_p
 _libmtp.LIBMTP_Get_Trackmetadata.argtypes = LIBMTP_MTPDevice_p, c_uint32,
 _libmtp.LIBMTP_Get_Trackmetadata.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Trackmetadata.restype = LIBMTP_Track_p
@@ -121,6 +121,9 @@ _libmtp.LIBMTP_Get_Track_To_File.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Get_Track_To_File.restype = c_int
 _libmtp.LIBMTP_Init.argtypes = tuple()
 _libmtp.LIBMTP_Init.restype = None
+_libmtp.LIBMTP_Open_Raw_Device.argtypes = LIBMTP_RawDevice_p,
+_libmtp.LIBMTP_Open_Raw_Device.errcheck = libmtp_check_null
+_libmtp.LIBMTP_Open_Raw_Device.restype = LIBMTP_MTPDevice_p
 _libmtp.LIBMTP_Open_Raw_Device_Uncached.argtypes = LIBMTP_RawDevice_p,
 _libmtp.LIBMTP_Open_Raw_Device_Uncached.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Open_Raw_Device_Uncached.restype = LIBMTP_MTPDevice_p
@@ -158,16 +161,16 @@ class MTP(object):
 	@staticmethod
 	def _detect_rawdevices():
 		"""
-			Detects the MTP devices on the USB bus that we can connect to
+			Detects the MTP rawdevices on the USB bus that we can connect to
 
 			@rtype: L{MTPRawDevices}
 			@return: An array/list of L{MTPRawDevice} objects
 		"""
-		numdevices = c_int(0)
-		devices = LIBMTP_RawDevice_p()
-		_libmtp.LIBMTP_Detect_Raw_Devices(byref(devices), byref(numdevices))
-		# TODO: free() devices!
-		return [devices[n] for n in range(numdevices.value)]
+		numrawdevices = c_int(0)
+		rawdevices = LIBMTP_RawDevice_p()
+		_libmtp.LIBMTP_Detect_Raw_Devices(byref(rawdevices), byref(numrawdevices))
+		return [rawdevices[n] for n in range(numrawdevices.value)]
+		libc.free(rawdevices) # TODO
 
 	def __init__(self, cached=False, ):
 		"""
@@ -189,10 +192,11 @@ class MTP(object):
 		"""
 		if self.device:
 			raise AlreadyConnected()
+		rawdevices = self._detect_rawdevices()
 		if self.cached:
-			self.device = _libmtp.LIBMTP_Get_First_Device()
+			# self.device = _libmtp.LIBMTP_Get_First_Device()
+			self.device = _libmtp.LIBMTP_Open_Raw_Device(rawdevices[0])
 		else:
-			rawdevices = self._detect_rawdevices()
 			self.device = _libmtp.LIBMTP_Open_Raw_Device_Uncached(rawdevices[0])
 		if not self.device:
 			self.device = None
@@ -358,7 +362,7 @@ class MTP(object):
 			current = current.contents.next
 			_libmtp.LIBMTP_destroy_file_t(tmp)
 
-	def get_files_and_folders(self, storage=PTP_GOH.ALL_STORAGE, parent=0):
+	def get_files_and_folders(self, storage_id=PTP_GOH.ALL_STORAGE, parent=0):
 		"""
 			Returns a list of files.
 
@@ -367,7 +371,7 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage, parent)
+		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage_id, parent)
 		while current:
 			yield dict(
 				object_id=current.contents.item_id,
@@ -415,7 +419,7 @@ class MTP(object):
 			raise ObjectNotFound()
 		return ret.contents
 
-	def get_tracklisting(self, callback=0l):
+	def get_tracklist(self, callback=0l, storage_id=0):
 		"""
 			Returns tracks from the connected device
 
@@ -426,11 +430,31 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		tracks = _libmtp.LIBMTP_Get_Tracklisting_With_Callback(self.device, Progressfunc(callback), None)
-		ret = []
-		current = tracks
+		current = _libmtp.LIBMTP_Get_Tracklisting_With_Callback_For_Storage(self.device, storage_id, Progressfunc(callback), None)
 		while current:
-			yield current.contents
+			yield dict(
+				object_id=current.contents.item_id,
+				parent_id=current.contents.parent_id,
+				storage_id=current.contents.storage_id,
+				title=current.contents.title,
+				artist=current.contents.artist,
+				composer=current.contents.composer,
+				genre=current.contents.genre,
+				album=current.contents.album,
+				date=current.contents.date,
+				name=current.contents.filename,
+				tracknumber=current.contents.tracknumber,
+				duration=current.contents.duration,
+				samplerate=current.contents.samplerate,
+				nochannels=current.contents.nochannels,
+				wavecodec=current.contents.wavecodec,
+				bitrate=current.contents.bitrate,
+				bitratetype=current.contents.bitratetype,
+				rating=current.contents.rating,
+				usecount=current.contents.usecount,
+				filesize=current.contents.filesize,
+				filetype=current.contents.filetype,
+				)
 			tmp = current
 			current = current.contents.next
 			_libmtp.LIBMTP_destroy_track_t(tmp)
@@ -624,7 +648,8 @@ class MTP(object):
 	def _fill_cache(self):
 		if not self.device:
 			raise NotConnected()
-		_libmtp.LIBMTP_Get_Storage(self.device, LIBMTP_STORAGE.SORTBY_NOTSORTED)
+		if not self.device.contents.storage:
+			_libmtp.LIBMTP_Get_Storage(self.device, LIBMTP_STORAGE_SORTBY.NOTSORTED)
 		if not self.device.contents.storage:
 			raise AssertionError('no storage')
 
@@ -670,7 +695,7 @@ class MTP(object):
 			raise NotConnected
 		_libmtp.LIBMTP_Delete_Object(self.device, object_id)
 
-	def get_playlists(self):
+	def get_playlistlist(self):
 		"""
 			Returns a tuple filled with L{LIBMTP_Playlist} objects
 			from the connected device.
@@ -693,19 +718,19 @@ class MTP(object):
 			current = current.contents.next
 			# LIBMTP_destroy_playlist_t(tmp)
 
-	def get_playlist(self, playlist_id):
+	def get_playlist(self, object_id):
 		"""
 			Returns a L{LIBMTP_Playlist} object of the requested
-			playlist_id from the connected device
+			object_id from the connected device
 
-			@type playlist_id: int
-			@param playlist_id: The unique playlist identifier
+			@type object_id: int
+			@param object_id: The unique playlist identifier
 			@rtype: LIBMTP_Playlist
 			@return: The playlist object
 		"""
 		if not self.device:
 			raise NotConnected()
-		ret = _libmtp.LIBMTP_Get_Playlist(self.device, playlist_id)
+		ret = _libmtp.LIBMTP_Get_Playlist(self.device, object_id)
 		if not ret:
 			self.debug_stack(self.device)
 			raise ObjectNotFound()
@@ -744,7 +769,7 @@ class MTP(object):
 			raise NotConnected()
 		_libmtp.LIBMTP_Update_Playlist(self.device, pointer(metadata))
 
-	def get_folders(self, recurse=True):
+	def get_folderlist(self, recurse=True, storage_id=0):
 		"""
 			Returns a pythonic generator of the folders on the
 			device.
@@ -757,7 +782,7 @@ class MTP(object):
 		if not self.device:
 			raise NotConnected()
 		self._fill_cache()
-		folder = _libmtp.LIBMTP_Get_Folder_List_For_Storage(self.device, PTP_GOH.ALL_STORAGE)
+		folder = _libmtp.LIBMTP_Get_Folder_List_For_Storage(self.device, storage_id)
 		def out(depth, folder):
 			while folder:
 				yield dict(
@@ -772,7 +797,8 @@ class MTP(object):
 						yield f
 				tmp = folder
 				folder = folder.contents.sibling
-				# TODO destroy folder mem with _libmtp.LIBMTP_destroy_folder_t(tmp) ?
+				if not depth:
+					_libmtp.LIBMTP_destroy_folder_t(tmp)
 		for f in out(0, folder):
 			yield f
 

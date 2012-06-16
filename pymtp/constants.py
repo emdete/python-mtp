@@ -71,10 +71,10 @@ LIBMTP_Error_Number = dict(zip((
 	), range(99)))
 LIBMTP_Error_Number_reverse = dict([(LIBMTP_Error_Number[n], n, ) for n in LIBMTP_Error_Number])
 
-class LIBMTP_STORAGE(object):
-	SORTBY_NOTSORTED = 0
-	SORTBY_FREESPACE = 1
-	SORTBY_MAXSPACE = 2
+class LIBMTP_STORAGE_SORTBY(object):
+	NOTSORTED = 0
+	FREESPACE = 1
+	MAXSPACE = 2
 
 
 class PTP_GOH(object):
