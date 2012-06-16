@@ -8,19 +8,19 @@ from __future__ import print_function
 from os import environ
 from pymtp import MTP
 
-def main(*object_ids):
+def main(name, parent_id):
 	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
 	with MTP() as mtp:
 		try:
-			for object_id in object_ids:
-				mtp.delete_object(int(object_id))
-				print("Deleted object {}".format(object_id))
+			parent_id = int(parent_id)
+			folder_id = mtp.create_folder(name, parent_id)
+			print("Created new folder with ID: {}".format(folder_id))
 		except:
 			for n in mtp.get_errorstack():
 				print('{errornumber}: {error_text}'.format(**n))
 			raise
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	from sys import argv
 	main(*argv[1:])
 

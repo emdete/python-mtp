@@ -36,7 +36,7 @@ def libmtp_check_return(result, func, arguments):
 _libmtp.LIBMTP_Clear_Errorstack.argtypes = LIBMTP_MTPDevice_p,
 _libmtp.LIBMTP_Clear_Errorstack.restype = None
 _libmtp.LIBMTP_Create_Folder.argtypes = LIBMTP_MTPDevice_p, c_char_p, c_uint32, c_uint32,
-_libmtp.LIBMTP_Create_Folder.errcheck = libmtp_check_return
+# _libmtp.LIBMTP_Create_Folder.errcheck = libmtp_check_return
 _libmtp.LIBMTP_Create_Folder.restype = c_int
 _libmtp.LIBMTP_Create_New_Playlist.argtypes = LIBMTP_MTPDevice_p, LIBMTP_Playlist_p, c_uint32
 _libmtp.LIBMTP_Create_New_Playlist.errcheck = libmtp_check_return
@@ -80,7 +80,7 @@ _libmtp.LIBMTP_Get_Files_And_Folders.restype = LIBMTP_File_p
 _libmtp.LIBMTP_Get_File_To_File.argtypes = LIBMTP_MTPDevice_p, c_uint32, c_char_p, Progressfunc, c_void_p
 _libmtp.LIBMTP_Get_File_To_File.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_File_To_File.restype = c_int
-_libmtp.LIBMTP_Get_Filetype_Description.argtypes = LIBMTP_File_p,
+_libmtp.LIBMTP_Get_Filetype_Description.argtypes = c_int,
 _libmtp.LIBMTP_Get_Filetype_Description.errcheck = libmtp_check_null
 _libmtp.LIBMTP_Get_Filetype_Description.restype = c_char_p
 _libmtp.LIBMTP_Get_First_Device.argtypes = tuple()
@@ -242,8 +242,13 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		ret = _libmtp.LIBMTP_Get_Errorstack(self.device)
-		return ret
+		current = _libmtp.LIBMTP_Get_Errorstack(self.device)
+		while current:
+			yield dict(
+				errornumber=current.contents.errornumber,
+				error_text=current.contents.error_text,
+				)
+			current = current.contents.next
 
 	def dump_info(self):
 		_libmtp.LIBMTP_Dump_Device_Info(self.device)
@@ -307,7 +312,7 @@ class MTP(object):
 			raise NotConnected()
 		maximum_level = c_uint8()
 		current_level = c_uint8()
-		ret = _libmtp.LIBMTP_Get_Batterylevel(self.device, byref(maximum_level), byref(current_level))
+		_libmtp.LIBMTP_Get_Batterylevel(self.device, byref(maximum_level), byref(current_level))
 		return (maximum_level.value, current_level.value)
 
 	def get_modelname(self):
@@ -362,7 +367,7 @@ class MTP(object):
 			current = current.contents.next
 			_libmtp.LIBMTP_destroy_file_t(tmp)
 
-	def get_files_and_folders(self, storage_id=PTP_GOH.ALL_STORAGE, parent=0):
+	def get_files_and_folders(self, parent_id=0, storage_id=PTP_GOH.ALL_STORAGE, ):
 		"""
 			Returns a list of files.
 
@@ -371,7 +376,7 @@ class MTP(object):
 		"""
 		if not self.device:
 			raise NotConnected()
-		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage_id, parent)
+		current = _libmtp.LIBMTP_Get_Files_And_Folders(self.device, storage_id, parent_id)
 		while current:
 			yield dict(
 				object_id=current.contents.item_id,
@@ -386,7 +391,8 @@ class MTP(object):
 			current = current.contents.next
 			_libmtp.LIBMTP_destroy_file_t(tmp)
 
-	def get_filetype_description(self, filetype):
+	@staticmethod
+	def get_filetype_description(filetype):
 		"""
 			Returns the description of the filetype
 
@@ -395,8 +401,6 @@ class MTP(object):
 			@rtype: string
 			@return: The file type information
 		"""
-		if not self.device:
-			raise NotConnected()
 		return _libmtp.LIBMTP_Get_Filetype_Description(filetype)
 
 	def get_file_metadata(self, object_id):
@@ -415,11 +419,12 @@ class MTP(object):
 		if not self.device:
 			raise NotConnected()
 		ret = _libmtp.LIBMTP_Get_Filemetadata(self.device, object_id)
-		if not hasattr(ret, 'contents'):
-			raise ObjectNotFound()
-		return ret.contents
+		# TODO
+		return dict(
+			ret.contents,
+			)
 
-	def get_tracklist(self, callback=0l, storage_id=0):
+	def get_tracklist(self, callback=0l, storage_id=PTP_GOH.ALL_STORAGE):
 		"""
 			Returns tracks from the connected device
 
@@ -474,9 +479,10 @@ class MTP(object):
 		if not self.device:
 			raise NotConnected()
 		ret = _libmtp.LIBMTP_Get_Trackmetadata(self.device, object_id)
-		if not hasattr(ret, 'contents'):
-			raise ObjectNotFound()
-		return ret.contents
+		# TODO
+		return dict(
+			ret.contents,
+			)
 
 	def get_file_to_file(self, file_id, target, callback=0l):
 		"""
@@ -562,10 +568,10 @@ class MTP(object):
 		t = c_int(LIBMTP_Filetype[t])
 		return t
 
-	def send_file_from_file(self, source, target, parent=0, callback=0l):
+	def send_file_from_file(self, source, target, storage_id=PTP_GOH.ALL_STORAGE, parent_id=0, callback=0l):
 		"""
 			Sends a file from the filesystem to the connected device
-			and stores it at the target name inside the parent.
+			and stores it at the target name inside the parent_id.
 
 			This will attempt to "guess" the filetype with
 			find_filetype()
@@ -574,8 +580,8 @@ class MTP(object):
 			@param source: The path on the filesystem where the file resides
 			@type target: str
 			@param target: The target name on the device
-			@type parent: int or 0
-			@param parent: The parent directory for the file to go into; If 0, the file goes into main directory
+			@type parent_id: int or 0
+			@param parent_id: The parent directory for the file to go into; If 0, the file goes into main directory
 			@type callback: function or None
 			@param callback: The function provided to libmtp to receive callbacks from ptp. Callback function must take two arguments, sent and total (in bytes)
 			@rtype: int
@@ -587,8 +593,8 @@ class MTP(object):
 			raise IOError()
 		metadata = LIBMTP_File(
 			filename=target,
-			storage_id = 0,
-			parent_id = parent,
+			storage_id = storage_id,
+			parent_id = parent_id,
 			filetype=self.find_filetype(source),
 			filesize=stat(source).st_size,
 			)
@@ -603,7 +609,7 @@ class MTP(object):
 			filetype=LIBMTP_Filetype_reverse.get(metadata.filetype, metadata.filetype),
 			)
 
-	def send_track_from_file(self, source, tags, parent=0, callback=0l):
+	def send_track_from_file(self, source, tags, storage_id=PTP_GOH.ALL_STORAGE, parent_id=0, callback=0l):
 		"""
 			Sends a track from the filesystem to the connected
 			device
@@ -614,8 +620,8 @@ class MTP(object):
 			@param target: The target name on the device
 			@type tags: dict
 			@param tags: The track metadata
-			@type parent: int or 0
-			@param parent: The parent directory for the track; if 0, the track will be placed in the base dir.
+			@type parent_id: int or 0
+			@param parent_id: The parent directory for the track; if 0, the track will be placed in the base dir.
 			@type callback: function or None
 			@param callback: The function provided to libmtp to receive callbacks from ptp. Callback function must take two arguments, sent and total (in bytes)
 			@rtype: int
@@ -627,8 +633,8 @@ class MTP(object):
 			raise IOError()
 		metadata = LIBMTP_Track(
 			filename = basename(source),
-			parent_id = parent,
-			storage_id = 0,
+			parent_id = parent_id,
+			storage_id = storage_id,
 			filetype = self.find_filetype(source),
 			filesize = stat(source).st_size,
 			)
@@ -731,26 +737,26 @@ class MTP(object):
 		if not self.device:
 			raise NotConnected()
 		ret = _libmtp.LIBMTP_Get_Playlist(self.device, object_id)
-		if not ret:
-			self.debug_stack(self.device)
-			raise ObjectNotFound()
-		return ret.contents
+		# TODO
+		return dict(
+			ret.contents,
+			)
 
-	def create_new_playlist(self, metadata, parent=0):
+	def create_new_playlist(self, metadata, parent_id=0):
 		"""
 			Creates a new playlist based on the metadata object
 			passed.
 
 			@type metadata: LIBMTP_Playlist
 			@param metadata: A LIBMTP_Playlist object describing the playlist
-			@type parent: int or 0
-			@param parent: The parent ID or 0 for base
+			@type parent_id: int or 0
+			@param parent_id: The parent ID or 0 for base
 			@rtype: int
 			@return: The object ID of the new playlist
 		"""
 		if not self.device:
 			raise NotConnected()
-		_libmtp.LIBMTP_Create_New_Playlist(self.device, pointer(metadata), parent)
+		_libmtp.LIBMTP_Create_New_Playlist(self.device, pointer(metadata), parent_id)
 
 	def update_playlist(self, metadata):
 		"""
@@ -769,7 +775,7 @@ class MTP(object):
 			raise NotConnected()
 		_libmtp.LIBMTP_Update_Playlist(self.device, pointer(metadata))
 
-	def get_folderlist(self, recurse=True, storage_id=0):
+	def get_folderlist(self, recurse=True, storage_id=PTP_GOH.ALL_STORAGE):
 		"""
 			Returns a pythonic generator of the folders on the
 			device.
@@ -797,24 +803,23 @@ class MTP(object):
 						yield f
 				tmp = folder
 				folder = folder.contents.sibling
-				if not depth:
-					_libmtp.LIBMTP_destroy_folder_t(tmp)
 		for f in out(0, folder):
 			yield f
+		_libmtp.LIBMTP_destroy_folder_t(folder) # LIBMTP_destroy_folder_t is recursive+enumerates!
 
-	def create_folder(self, name, storage, parent=0):
+	def create_folder(self, name, storage, parent_id=0):
 		"""
-			This creates a new folder in the parent. If the parent
+			This creates a new folder in the parent_id. If the parent_id
 			is 0, it will go in the main directory.
 
 			@type name: str
 			@param name: The name for the folder
-			@type parent: int
-			@param parent: The parent ID or 0 for main directory
+			@type parent_id: int
+			@param parent_id: The parent ID or 0 for main directory
 			@rtype: int
 			@return: Returns the object ID of the new folder
 		"""
 		if not self.device:
 			raise NotConnected()
-		_libmtp.LIBMTP_Create_Folder(self.device, name, parent, storage)
+		return _libmtp.LIBMTP_Create_Folder(self.device, name, parent_id, storage)
 
