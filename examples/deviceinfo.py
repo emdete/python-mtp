@@ -5,12 +5,11 @@
 # Released under the GPLv3
 #
 from __future__ import print_function
-from os import environ
-from pymtp import MTP
+from mtp import MTP
 
-def main():
-	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
-	cache = True
+def main(cache):
+	cache = int(cache)
+	print("{}".format(cache))
 	with MTP(cache) as mtp:
 		try:
 			mtp.dump_info()
