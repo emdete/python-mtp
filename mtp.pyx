@@ -12,81 +12,13 @@ This is a thin wrapper on libmtp. it is not meant to be complete.
 '''
 from cython import address, declare, typedef
 from os import environ
+from datetime import datetime
 
 cdef extern from "stdlib.h":
 	void free(void*)
 	ctypedef char* const_char_ptr "const char*"
 
-cdef extern from "libmtp.h":
-	ctypedef int LIBMTP_error_number_t
-	ctypedef struct LIBMTP_Album:
-		pass
-	ctypedef struct LIBMTP_mtpdevice_t:
-		pass
-	ctypedef struct LIBMTP_DeviceEntry:
-		pass
-	ctypedef struct LIBMTP_DeviceStorage:
-		pass
-	ctypedef struct LIBMTP_Error:
-		pass
-	ctypedef struct LIBMTP_mtpdevice_t:
-		pass
-	ctypedef struct LIBMTP_File:
-		pass
-	ctypedef struct LIBMTP_Track:
-		pass
-	ctypedef struct LIBMTP_Playlist:
-		pass
-	ctypedef struct LIBMTP_Folder:
-		pass
-	ctypedef struct LIBMTP_FileSampleData:
-		pass
-	ctypedef struct LIBMTP_error_t:
-		cdef LIBMTP_error_number_t errornumber
-		cdef char *error_text
-		cdef LIBMTP_error_t *next
-	ctypedef struct LIBMTP_raw_device_t:
-		pass
-	void LIBMTP_Init()
-	void LIBMTP_Clear_Errorstack(LIBMTP_mtpdevice_t*)
-	void LIBMTP_Create_Folder()
-	void LIBMTP_Create_New_Playlist()
-	void LIBMTP_Delete_Object()
-	void LIBMTP_destroy_file_t()
-	void LIBMTP_destroy_folder_t()
-	void LIBMTP_destroy_playlist_t()
-	void LIBMTP_destroy_track_t()
-	LIBMTP_error_number_t LIBMTP_Detect_Raw_Devices(LIBMTP_raw_device_t**, int *)
-	void LIBMTP_Dump_Device_Info()
-	void LIBMTP_Dump_Errorstack(LIBMTP_mtpdevice_t*)
-	void LIBMTP_Get_Batterylevel()
-	void LIBMTP_Get_Deviceversion()
-	LIBMTP_error_t* LIBMTP_Get_Errorstack(LIBMTP_raw_device_t*)
-	void LIBMTP_Get_Filelisting_With_Callback()
-	void LIBMTP_Get_Filemetadata()
-	void LIBMTP_Get_Files_And_Folders()
-	void LIBMTP_Get_File_To_File()
-	void LIBMTP_Get_Filetype_Description()
-	void LIBMTP_Get_Folder_List_For_Storage()
-	void LIBMTP_Get_Friendlyname()
-	void LIBMTP_Get_Manufacturername()
-	void LIBMTP_Get_Modelname()
-	void LIBMTP_Get_Playlist()
-	void LIBMTP_Get_Playlist_List()
-	void LIBMTP_Get_Serialnumber()
-	void LIBMTP_Get_Storage()
-	void LIBMTP_Get_Tracklisting_With_Callback_For_Storage()
-	void LIBMTP_Get_Trackmetadata()
-	void LIBMTP_Get_Track_To_File()
-	LIBMTP_mtpdevice_t* LIBMTP_Open_Raw_Device(LIBMTP_raw_device_t*)
-	LIBMTP_mtpdevice_t* LIBMTP_Open_Raw_Device_Uncached(LIBMTP_raw_device_t*)
-	void LIBMTP_Release_Device(LIBMTP_mtpdevice_t*)
-	void LIBMTP_Reset_Device()
-	void LIBMTP_Send_File_From_File()
-	void LIBMTP_Send_Track_From_File()
-	void LIBMTP_Set_Debug(int)
-	void LIBMTP_Set_Friendlyname()
-	void LIBMTP_Update_Playlist()
+from libmtp cimport *
 
 cdef class MTP(object):
 	cdef LIBMTP_mtpdevice_t* device
@@ -122,7 +54,7 @@ cdef class MTP(object):
 		return self
 
 	def __exit__(self, exc_type, exc_value, traceback):
-		if exc_value:
+		if exc_value is not None:
 			LIBMTP_Dump_Errorstack(self.device)
 		if self.device:
 			LIBMTP_Release_Device(self.device)
@@ -134,11 +66,108 @@ cdef class MTP(object):
 		current = LIBMTP_Get_Errorstack(self.device)
 		while current:
 			yield dict(
-				errornumber=current.contents.errornumber,
-				error_text=current.contents.error_text,
+				errornumber=current.errornumber,
+				error_text=current.error_text,
 				)
-			current = current.contents.next
+			current = current.next
 
+	def dump_info(self):
+		LIBMTP_Dump_Device_Info(self.device)
+
+	def set_friendly_name(self, name):
+		if not self.device:
+			raise Exception('Not connected')
+		LIBMTP_Set_Friendlyname(self.device, name)
+
+	def get_deviceinfo(self):
+		cdef uint8_t maximum_level
+		cdef uint8_t current_level
+		if not self.device:
+			raise Exception('Not connected')
+		LIBMTP_Get_Batterylevel(self.device, address(maximum_level), address(current_level))
+		return dict(
+			Friendlyname=str(LIBMTP_Get_Friendlyname(self.device)),
+			Serialnumber=str(LIBMTP_Get_Serialnumber(self.device)),
+			Manufacturername=str(LIBMTP_Get_Manufacturername(self.device)),
+			Modelname=str(LIBMTP_Get_Modelname(self.device)),
+			Deviceversion=str(LIBMTP_Get_Deviceversion(self.device)),
+			maximum_level=str(maximum_level),
+			current_level=str(current_level),
+			)
+
+	def get_storagelist(self):
+		cdef LIBMTP_devicestorage_t* current = self.device.storage
+		while current:
+			yield dict(
+				AccessCapability=str(current.AccessCapability),
+				FilesystemType=str(current.FilesystemType),
+				FreeSpaceInBytes=str(current.FreeSpaceInBytes),
+				FreeSpaceInObjects=str(current.FreeSpaceInObjects),
+				id=str(current.id),
+				MaxCapacity=str(current.MaxCapacity),
+				StorageDescription=str(current.StorageDescription),
+				StorageType=str(current.StorageType),
+				VolumeIdentifier=str(current.VolumeIdentifier),
+				)
+			current = current.next
+
+	def get_files_and_folders(self, parent_id=0, storage_id=0, ):
+		cdef LIBMTP_file_t* current = NULL
+		cdef LIBMTP_file_t* tmp = NULL
+		if not self.device:
+			raise Exception('Not connected')
+		current = LIBMTP_Get_Files_And_Folders(self.device, storage_id, parent_id)
+		while current:
+			yield dict(
+				filesize=str(current.filesize),
+				filetype=str(current.filetype), # TODO reverse map to string
+				modificationdate=datetime.fromtimestamp(current.modificationdate),
+				name=str(current.filename),
+				object_id=str(current.item_id),
+				parent_id=str(current.parent_id),
+				storage_id=str(current.storage_id),
+				)
+			tmp = current
+			current = current.next
+			LIBMTP_destroy_file_t(tmp)
+
+	def get_files(self):
+		cdef LIBMTP_file_t* tmp = NULL
+		cdef LIBMTP_file_t* current = NULL
+		if not self.device:
+			raise Exception('Not connected')
+		current = LIBMTP_Get_Filelisting_With_Callback(self.device, NULL, NULL)
+		while current:
+			yield dict(
+				object_id=current.item_id,
+				parent_id=current.parent_id,
+				storage_id=current.storage_id,
+				name=current.filename,
+				filesize=current.filesize,
+				modificationdate=datetime.fromtimestamp(current.modificationdate),
+				filetype=current.filetype, # TODO map to string
+				)
+			tmp = current
+			current = current.next
+			LIBMTP_destroy_file_t(tmp)
+
+	def get_folders(self, recurse=True, storage_id=0, ):
+		cdef LIBMTP_folder_t* current = NULL
+		cdef LIBMTP_folder_t* tmp = NULL
+		if not self.device:
+			raise Exception('Not connected')
+		current = LIBMTP_Get_Folder_List_For_Storage(self.device, storage_id)
+		tmp = current
+		while current:
+			yield dict(
+				object_id=current.folder_id,
+				parent_id=current.parent_id,
+				storage_id=current.storage_id,
+				name=current.name,
+				)
+			#for f in _folder_out(recurse, depth+1, current.child): yield f # TODO
+			current = current.sibling
+		LIBMTP_destroy_folder_t(tmp) # LIBMTP_destroy_folder_t is recursive+enumerates!
 
 cdef _init_module():
 	LIBMTP_Init()
