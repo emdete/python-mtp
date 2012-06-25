@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 #
-# PyMTP demo scripts
-# (c) 2008 Nick Devito
+# python-mtp demo scripts
 # Released under the GPL v3 or later.
 #
 from __future__ import print_function
 from os import environ
-from pymtp import MTP, LIBMTP_Playlist
+from mtp import MTP
 
 def main(name, *tracks):
 	with MTP() as mtp:
 		try:
-			metadata = LIBMTP_Playlist()
+			metadata = dict()
 			for track in tracks:
 				metadata.append(track)
 			playlist_id = mtp.create_new_playlist(name, metadata)

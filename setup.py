@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# Setup.py for Pymtp
+# python-mtp setup script
+# Setup.py for python-mtp
 #
 from distutils.core import setup
 from distutils.extension import Extension
@@ -17,11 +18,8 @@ setup(
 		libraries=['mtp', ],
 		include_dirs=['/usr/include', ],
 		extra_compile_args=['-Wno-unused-but-set-variable', ],
-		# pyrex_gdb=True,
 		)],
 	author = "M. Dietrich",
 	author_email = "mdt@pyneo.org",
 	url = "http://pyneo.org/python-mtp/",
-	# py_modules = ["mtp"],
-	# data_files=[ ('share/mtp', ('mtp.py', )), ],
 	)

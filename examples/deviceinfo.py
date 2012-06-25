@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #
-# PyMTP Demo program
-# (c) 2008 Nick Devito
+# python-mtp Demo program
 # Released under the GPLv3
 #
 from __future__ import print_function

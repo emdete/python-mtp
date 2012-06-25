@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 #
-# PyMTP demo scripts
-# (c) 2008 Nick Devito
+# python-mtp demo scripts
 # Released under the GPL v3 or later.
 #
 from __future__ import print_function
 from os import environ
-from pymtp import MTP
+from mtp import MTP
 
 def main(name, parent_id):
-	if 'LIBMTP_DEBUG' in environ: MTP.set_debug(int(environ['LIBMTP_DEBUG']))
 	with MTP() as mtp:
 		try:
 			parent_id = int(parent_id)

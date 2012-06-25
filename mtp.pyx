@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = "M. Dietrich <mdt@pyneo.org>"
-__version__ = "prototype"
+__version__ = "1.0.0"
 __copyright__ = "Copyright (c) 2009 M. Dietrich"
 __license__ = "GPLv3"
 __docformat__ = 'reStructuredText'
@@ -13,7 +13,7 @@ This is a thin wrapper on libmtp. It is by far not meant to be complete.
 from cython import address, declare, typedef
 from os import environ
 from datetime import datetime
-from os.path import exists, isfile, basename
+from os.path import exists, isfile
 from os import stat
 
 cdef extern from "stdlib.h":
@@ -254,7 +254,10 @@ cdef class MTP(object):
 	def delete_object(self, object_id):
 		if not self.device:
 			raise Exception('Not connected')
-		LIBMTP_Delete_Object(self.device, object_id)
+		cdef r = LIBMTP_Delete_Object(self.device, object_id)
+		if r != 0:
+			raise Exception('LIBMTP_Delete_Object error {}'.format(r))
+		return r
 
 	def get_metadata(self, object_id):
 		if not self.device:
@@ -337,14 +340,14 @@ cdef class MTP(object):
 			raise Exception('Not connected')
 		cdef int r = LIBMTP_Get_File_To_File(self.device, file_id, target, NULL, NULL)
 		if r != 0:
-			raise Exception('libmtp error {}'.format(r))
+			raise Exception('LIBMTP_Get_File_To_File error {}'.format(r))
 
 	def get_track_to_file(self, object_id, target, ):
 		if not self.device:
 			raise Exception('Not connected')
 		cdef int r = LIBMTP_Get_Track_To_File(self.device, object_id, target, NULL, NULL)
 		if r != 0:
-			raise Exception('libmtp error {}'.format(r))
+			raise Exception('LIBMTP_Get_Track_To_File error {}'.format(r))
 
 	def find_filetype(self, name):
 		fileext = name.split(".")[-1].lower()
@@ -388,17 +391,19 @@ cdef class MTP(object):
 		return t
 
 	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, ):
+		cdef LIBMTP_file_t current
 		if not self.device:
 			raise Exception('Not connected')
 		if not isfile(source):
 			raise IOError()
-		cdef LIBMTP_file_t current
-		# TODO current.filename=target,
-		current.storage_id = storage_id,
-		current.parent_id = parent_id,
-		# TODO current.filetype=self.find_filetype(source),
-		current.filesize=stat(source).st_size,
-		LIBMTP_Send_File_From_File(self.device, source, address(current), NULL, NULL)
+		current.filename = target
+		current.storage_id = storage_id
+		current.parent_id = parent_id
+		#current.filetype = <LIBMTP_filetype_t>filetypes_reverse.get(self.find_filetype(source), -1) # TODO
+		current.filesize = stat(source).st_size
+		cdef r = LIBMTP_Send_File_From_File(self.device, source, address(current), NULL, NULL)
+		if r != 0:
+			raise Exception('LIBMTP_Send_File_From_File error {}'.format(r))
 		return dict(
 			object_id=current.item_id,
 			parent_id=current.parent_id,
@@ -409,21 +414,21 @@ cdef class MTP(object):
 			filetype=filetypes.get(current.filetype, str(current.filetype)),
 			)
 
-	def send_track_from_file(self, source, tags, storage_id=0, parent_id=0, ):
+	def send_track_from_file(self, source, target, tags, storage_id=0, parent_id=0, ):
 		if not self.device:
 			raise Exception('Not connected')
 		if not exists(source):
 			raise IOError()
 		cdef LIBMTP_track_t current
-		# TODO current.filename = basename(source),
-		current.parent_id = parent_id,
-		current.storage_id = storage_id,
-		# TODO current.filetype = self.find_filetype(source),
-		current.filesize = stat(source).st_size,
+		current.filename = target
+		current.parent_id = parent_id
+		current.storage_id = storage_id
+		#current.filetype = <LIBMTP_filetype_t>filetypes_reverse.get(self.find_filetype(source), -1) # TODO
+		current.filesize = stat(source).st_size
 		# TODO for n in tags: setattr(current, n.lower(), tags[n])
 		cdef r = LIBMTP_Send_Track_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
-			raise Exception('libmtp error {}'.format(r))
+			raise Exception('LIBMTP_Send_Track_From_File error {}'.format(r))
 		return dict(
 			object_id=current.item_id,
 			parent_id=current.parent_id,
@@ -441,6 +446,11 @@ cdef class MTP(object):
 		ret = list()
 		while current:
 			ret.append(dict(
+				playlist_id=int(current.playlist_id),
+				parent_id=int(current.parent_id),
+				storage_id=int(current.storage_id),
+				name=str(current.name) if current.name != NULL else None,
+				tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
 				))
 			tmp = current
 			current = current.next
@@ -454,13 +464,13 @@ cdef class MTP(object):
 		return dict(
 			)
 
-	def create_new_playlist(self, TODO, parent_id=0):
+	def create_new_playlist(self, parent_id=0, **metadata):
 		if not self.device:
 			raise Exception('Not connected')
 		cdef LIBMTP_playlist_t current
 		cdef r = LIBMTP_Create_New_Playlist(self.device, address(current))
 
-	def update_playlist(self, TODO):
+	def update_playlist(self, T, **metadata):
 		if not self.device:
 			raise Exception('Not connected')
 		cdef LIBMTP_playlist_t current
@@ -470,6 +480,9 @@ cdef class MTP(object):
 		if not self.device:
 			raise Exception('Not connected')
 		cdef uint32_t r = LIBMTP_Create_Folder(self.device, name, parent_id, storage)
+		if r <= 0:
+			raise Exception('LIBMTP_Create_Folder')
+		return r
 
 
 cdef _init_module():

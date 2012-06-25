@@ -22,6 +22,6 @@ problems if you wait too long after plugging in.
 
 While libmtp provides errorcodes some functions just return -1 (which is not a
 listed error). Other functions return a pointer and have no way to determine
-the cause of the error (they just return NULL and pymtp creates a
-ObjectNotFound exception for it). Setting the debugging level is of some help
-here.
+the cause of the error (they just return NULL).
+
+Setting the debugging level is of some help.
