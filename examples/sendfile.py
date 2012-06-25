@@ -5,12 +5,12 @@
 #
 from __future__ import print_function
 from os import environ
-from mtp import MTP
+from mtp import MediaTransfer
 from os.path import basename
 
 def main(parent, base, *files):
 	parent = int(parent)
-	with MTP() as mtp:
+	with MediaTransfer() as mtp:
 		try:
 			for source in files:
 				target = base + basename(source)

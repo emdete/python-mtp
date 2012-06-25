@@ -4,11 +4,11 @@
 # Released under the GPLv3
 #
 from __future__ import print_function
-from mtp import MTP
+from mtp import MediaTransfer
 
 def main(cached):
 	cached = bool(int(cached))
-	with MTP(cached) as mtp:
+	with MediaTransfer(cached) as mtp:
 		try:
 			mtp.dump_info()
 			print('Infos:')

@@ -17,7 +17,10 @@ setup(
 	ext_modules = [Extension('mtp', ['mtp.pyx', ],
 		libraries=['mtp', ],
 		include_dirs=['/usr/include', ],
-		extra_compile_args=['-Wno-unused-but-set-variable', ],
+		extra_compile_args=[
+			'-Wno-unused-but-set-variable',
+			'-Wno-cast-qual',
+			],
 		)],
 	author = "M. Dietrich",
 	author_email = "mdt@pyneo.org",

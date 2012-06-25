@@ -5,10 +5,10 @@
 #
 from __future__ import print_function
 from os import environ
-from mtp import MTP
+from mtp import MediaTransfer
 
 def main(*object_ids):
-	with MTP() as mtp:
+	with MediaTransfer() as mtp:
 		try:
 			for object_id in object_ids:
 				mtp.delete_object(int(object_id))

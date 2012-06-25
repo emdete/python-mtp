@@ -5,10 +5,10 @@
 #
 from __future__ import print_function
 from os import environ
-from mtp import MTP
+from mtp import MediaTransfer
 
 def main(name, parent_id):
-	with MTP() as mtp:
+	with MediaTransfer() as mtp:
 		try:
 			parent_id = int(parent_id)
 			folder_id = mtp.create_folder(name, parent_id)

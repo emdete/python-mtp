@@ -5,10 +5,10 @@
 #
 from __future__ import print_function
 from os import environ
-from mtp import MTP
+from mtp import MediaTransfer
 
 def main(name, *tracks):
-	with MTP() as mtp:
+	with MediaTransfer() as mtp:
 		try:
 			metadata = dict()
 			for track in tracks:

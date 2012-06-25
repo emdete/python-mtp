@@ -1,1 +1,3 @@
-M. Dietrich <mdt@pyneo.org>
+M. Dietrich <mdt@pyneo.org> (reimplementation using cython)
+Nick Devito <nick@nick125.com> (original pymtp)
+Nathan Bullock <nathanbullock@gmail.com> (syntactical fixes)
