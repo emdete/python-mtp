@@ -8,7 +8,7 @@ __docformat__ = 'reStructuredText'
 see file:///usr/share/doc/libmtp-doc/html/modules.html
 see http://docs.cython.org/
 
-This is a thin wrapper on libmtp. it is not meant to be complete.
+This is a thin wrapper on libmtp. It is by far not meant to be complete.
 '''
 from cython import address, declare, typedef
 from os import environ
@@ -58,21 +58,28 @@ cdef class _MTP(object):
 			#if LIBMTP_Get_Connected_Devices(&device_list) == 0: self.device = device_list
 		else:
 			self.device = LIBMTP_Open_Raw_Device_Uncached(rawdevices)
-		#free(rawdevices)
+#		free(rawdevices)
 		if self.device == NULL:
 			raise Exception("Device not found")
-		#LIBMTP_Reset_Device(self.device)
-		LIBMTP_Clear_Errorstack(self.device)
+#		LIBMTP_Reset_Device(self.device)
+#		LIBMTP_Clear_Errorstack(self.device)
 		return self
 
 	def __exit__(self, exc_type, exc_value, traceback):
-		if exc_value is not None:
-			LIBMTP_Dump_Errorstack(self.device)
-			LIBMTP_Clear_Errorstack(self.device)
-		if self.device != NULL:
-			LIBMTP_Release_Device(self.device)
-		self.device = NULL
+#		if exc_value is not None:
+#			LIBMTP_Dump_Errorstack(self.device)
+#			LIBMTP_Clear_Errorstack(self.device)
+#		if self.device != NULL:
+#			LIBMTP_Release_Device(self.device)
+#		self.device = NULL
 		return True
+
+	def _cache(self):
+		if not self.cached:
+			r = LIBMTP_Get_Storage(self.device, LIBMTP_STORAGE_SORTBY_NOTSORTED)
+			if r not in (0, 1, ):
+				raise Exception('Get storage failed with error={}'.format(r))
+			self.cached = True
 
 	def get_errorstack(self):
 		if self.device == NULL:
@@ -97,25 +104,28 @@ cdef class _MTP(object):
 	def get_deviceinfo(self):
 		cdef uint8_t maximum_level = 0
 		cdef uint8_t current_level = 0
+		cdef char* deviceversion = NULL
+		cdef char* friendlyname = NULL
+		cdef char* manufacturername = NULL
+		cdef char* modelname = NULL
+		cdef char* serialnumber = NULL
 		if self.device == NULL:
 			raise Exception('Not connected')
 		LIBMTP_Get_Batterylevel(self.device, address(maximum_level), address(current_level))
+		deviceversion = LIBMTP_Get_Deviceversion(self.device)
+		friendlyname = LIBMTP_Get_Friendlyname(self.device)
+		manufacturername = LIBMTP_Get_Manufacturername(self.device)
+		modelname = LIBMTP_Get_Modelname(self.device)
+		serialnumber = LIBMTP_Get_Serialnumber(self.device)
 		return dict(
 			battery_current_level=int(current_level),
-			deviceversion=str(LIBMTP_Get_Deviceversion(self.device)),
-			friendlyname=str(LIBMTP_Get_Friendlyname(self.device)),
-			manufacturername=str(LIBMTP_Get_Manufacturername(self.device)),
 			battery_maximum_level=int(maximum_level),
-			modelname=str(LIBMTP_Get_Modelname(self.device)),
-			serialnumber=str(LIBMTP_Get_Serialnumber(self.device)),
+			deviceversion=str(deviceversion) if deviceversion != NULL else None,
+			friendlyname=str(friendlyname) if friendlyname != NULL else None,
+			manufacturername=str(manufacturername) if manufacturername != NULL else None,
+			modelname=str(modelname) if modelname != NULL else None,
+			serialnumber=str(serialnumber) if serialnumber != NULL else None,
 			)
-
-	def _cache(self):
-		if not self.cached:
-			r = LIBMTP_Get_Storage(self.device, LIBMTP_STORAGE_SORTBY_NOTSORTED)
-			if r not in (0, 1, ):
-				raise Exception('Get storage failed with error={}'.format(r))
-			self.cached = True
 
 	def get_storages(self):
 		cdef LIBMTP_devicestorage_t* current = NULL
@@ -207,7 +217,7 @@ cdef class _MTP(object):
 		ret = LIBMTP_Get_Filemetadata(self.device, object_id)
 		return dict(
 			)
-	def get_tracklist(self, callback=0l, storage_id=0):
+	def get_tracklist(self, storage_id=0, ):
 		if not self.device:
 			raise Exception('Not connected')
 		current = LIBMTP_Get_Tracklisting_With_Callback_For_Storage(self.device, storage_id, NULL, NULL)
@@ -244,11 +254,11 @@ cdef class _MTP(object):
 		ret = LIBMTP_Get_Trackmetadata(self.device, object_id)
 		return dict(
 			)
-	def get_file_to_file(self, file_id, target, callback=0l):
+	def get_file_to_file(self, file_id, target, ):
 		if not self.device:
 			raise Exception('Not connected')
 		LIBMTP_Get_File_To_File(self.device, file_id, target, NULL, NULL)
-	def get_track_to_file(self, object_id, target, callback=0l):
+	def get_track_to_file(self, object_id, target, ):
 		if not self.device:
 			raise Exception('Not connected')
 		LIBMTP_Get_Track_To_File(self.device, object_id, target, NULL, NULL)
@@ -292,7 +302,7 @@ cdef class _MTP(object):
 		else:
 			t = "UNKNOWN"
 		return t
-	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, callback=0l):
+	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, ):
 		if not self.device:
 			raise Exception('Not connected')
 		if not isfile(source):
@@ -313,7 +323,7 @@ cdef class _MTP(object):
 			modificationdate=datetime.fromtimestamp(metadata.modificationdate),
 			# TODO filetype=metadata.filetype, # TODO
 			)
-	def send_track_from_file(self, source, tags, storage_id=0, parent_id=0, callback=0l):
+	def send_track_from_file(self, source, tags, storage_id=0, parent_id=0, ):
 		if not self.device:
 			raise Exception('Not connected')
 		if not exists(source):
@@ -372,7 +382,8 @@ cdef class _MTP(object):
 
 
 class MTP(_MTP):
-	pass
+	def __init__(self, cached):
+		pass
 
 cdef _init_module():
 	LIBMTP_Init()
