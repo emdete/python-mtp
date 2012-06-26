@@ -30,14 +30,6 @@ def main():
 						try: makedirs(dirname(name))
 						except: pass
 						mtp.get_file_to_file(object_id, name)
-				#name
-				#filetype
-				#object_id
-				#parent_id
-				#filesize
-				#storage_id
-				#modificationdate
-
 		except:
 			for n in mtp.get_errorstack():
 				print('{errornumber}: {error_text}'.format(**n))

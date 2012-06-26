@@ -353,7 +353,7 @@ cdef class MediaTransfer(object):
 		if r != 0:
 			raise Exception('LIBMTP_Get_File_To_File error {}'.format(r))
 
-	def find_filetype(self, name):
+	cdef LIBMTP_filetype_t find_filetype(self, name):
 		fileext = name.split(".")[-1].lower()
 		for t, e in dict(
 			AAC=("aac", ),
@@ -392,7 +392,7 @@ cdef class MediaTransfer(object):
 				break
 		else:
 			t = "UNKNOWN"
-		return t
+		return filetypes_reverse.get(t, LIBMTP_FILETYPE_UNKNOWN)
 
 	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, ):
 		cdef LIBMTP_file_t current
@@ -403,7 +403,7 @@ cdef class MediaTransfer(object):
 		current.filename = target
 		current.storage_id = storage_id
 		current.parent_id = parent_id
-		#current.filetype = <LIBMTP_filetype_t>filetypes_reverse.get(self.find_filetype(source), -1) # TODO
+		current.filetype = self.find_filetype(source)
 		current.filesize = stat(source).st_size
 		cdef r = LIBMTP_Send_File_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
@@ -433,7 +433,7 @@ cdef class MediaTransfer(object):
 		current.next = NULL
 		current.filename = target
 		current.filesize = s.st_size
-		current.modificationdate = s.mtime
+		current.modificationdate = s.st_mtime
 		#current.filetype = self.find_filetype(source) # TODO
 		current.parent_id = parent_id
 		current.storage_id = storage_id
@@ -452,7 +452,7 @@ cdef class MediaTransfer(object):
 		if tracknumber : current.tracknumber = tracknumber
 		if usecount : current.usecount = usecount
 		if wavecodec : current.wavecodec = wavecodec
-		cdef r = 0 # LIBMTP_Send_Track_From_File(self.device, source, address(current), NULL, NULL)
+		cdef r = LIBMTP_Send_Track_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
 			raise Exception('LIBMTP_Send_Track_From_File error {}'.format(r))
 		return dict(
