@@ -490,11 +490,20 @@ cdef class MediaTransfer(object):
 		return dict(
 			)
 
-	def create_new_playlist(self, parent_id=0, **metadata):
+	def create_new_playlist(self, name, tracks, parent_id=0, storage_id=0):
 		if not self.device:
 			raise Exception('Not connected')
 		cdef LIBMTP_playlist_t current
+		current.playlist_id = 0
+		current.parent_id = int(parent_id)
+		current.storage_id = int(storage_id)
+		current.name = name
+		current.tracks = NULL
+		current.no_tracks = int(len(tracks))
 		cdef r = LIBMTP_Create_New_Playlist(self.device, address(current))
+		if r < 0:
+			raise Exception('LIBMTP_Create_New_Playlist error {}'.format(r))
+		return current.playlist_id
 
 	def update_playlist(self, T, **metadata):
 		if not self.device:

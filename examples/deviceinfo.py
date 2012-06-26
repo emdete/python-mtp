@@ -27,7 +27,7 @@ def main(cached):
 			print('Folders:')
 			for obj in mtp.get_folders():
 				print(' {object_id} {name}'.format(**obj))
-			print('Tracklists:')
+			print('Tracks:')
 			for obj in mtp.get_tracks():
 				print(' {object_id} {name}'.format(**obj))
 			print('Playlists:')
