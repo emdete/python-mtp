@@ -16,7 +16,11 @@ from datetime import datetime
 from os.path import exists, isfile
 from os import stat
 
+cdef extern from "string.h":
+	void memset(void*, int, int)
+
 cdef extern from "stdlib.h":
+	void* malloc(int)
 	void free(void*)
 	ctypedef char* const_char_ptr "const char*"
 
@@ -205,10 +209,11 @@ cdef class MediaTransfer(object):
 
 	objects = lambda self, storage_id: dict([(n['object_id'], n, ) for n in self.get_files_and_folders(storage_id)])
 
-	def create_folder(self, name, storage, parent_id=0):
+	def create_folder(self, name, storage_id, parent_id=0):
+		cdef uint32_t r = 0
 		if not self.device:
 			raise Exception('Not connected')
-		cdef uint32_t r = LIBMTP_Create_Folder(self.device, name, parent_id, storage)
+		r = LIBMTP_Create_Folder(self.device, name, parent_id, storage_id)
 		if r <= 0:
 			raise Exception('LIBMTP_Create_Folder')
 		return r
@@ -263,17 +268,19 @@ cdef class MediaTransfer(object):
 		return str(p)
 
 	def delete_object(self, object_id):
+		cdef int r = 0
 		if not self.device:
 			raise Exception('Not connected')
-		cdef r = LIBMTP_Delete_Object(self.device, object_id)
+		r = LIBMTP_Delete_Object(self.device, object_id)
 		if r != 0:
 			raise Exception('LIBMTP_Delete_Object error {}'.format(r))
 		return r
 
 	def get_metadata(self, object_id):
+		cdef LIBMTP_file_t* NULL
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_file_t* current = LIBMTP_Get_Filemetadata(self.device, object_id)
+		current = LIBMTP_Get_Filemetadata(self.device, object_id)
 		return dict(
 			object_id=int(current.item_id),
 			parent_id=current.parent_id,
@@ -285,9 +292,10 @@ cdef class MediaTransfer(object):
 			)
 
 	def get_tracklist(self, storage_id=0, ):
+		cdef LIBMTP_track_t * current = NULL
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_track_t * current = LIBMTP_Get_Tracklisting_With_Callback_For_Storage(self.device, storage_id, NULL, NULL)
+		current = LIBMTP_Get_Tracklisting_With_Callback_For_Storage(self.device, storage_id, NULL, NULL)
 		ret = list()
 		while current:
 			ret.append(dict(
@@ -319,9 +327,10 @@ cdef class MediaTransfer(object):
 		return ret
 
 	def get_track_metadata(self, object_id):
+		cdef LIBMTP_track_t * current = NULL
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_track_t * current = LIBMTP_Get_Trackmetadata(self.device, object_id)
+		current = LIBMTP_Get_Trackmetadata(self.device, object_id)
 		return dict(
 			object_id=int(current.item_id),
 			parent_id=current.parent_id,
@@ -347,9 +356,10 @@ cdef class MediaTransfer(object):
 			)
 
 	def get_file_to_file(self, object_id, target, ):
+		cdef int r = 0
 		if not self.device:
 			raise Exception('Not connected')
-		cdef int r = LIBMTP_Get_File_To_File(self.device, object_id, target, NULL, NULL)
+		r = LIBMTP_Get_File_To_File(self.device, object_id, target, NULL, NULL)
 		if r != 0:
 			raise Exception('LIBMTP_Get_File_To_File error {}'.format(r))
 
@@ -396,16 +406,18 @@ cdef class MediaTransfer(object):
 
 	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, ):
 		cdef LIBMTP_file_t current
+		cdef int r = 0
 		if not self.device:
 			raise Exception('Not connected')
 		if not isfile(source):
 			raise IOError()
+		memset(address(current), 0, sizeof(current))
 		current.filename = target
 		current.storage_id = storage_id
 		current.parent_id = parent_id
 		current.filetype = self.find_filetype(source)
 		current.filesize = stat(source).st_size
-		cdef r = LIBMTP_Send_File_From_File(self.device, source, address(current), NULL, NULL)
+		r = LIBMTP_Send_File_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
 			raise Exception('LIBMTP_Send_File_From_File error {}'.format(r))
 		return dict(
@@ -424,11 +436,13 @@ cdef class MediaTransfer(object):
 			name=None, nochannels=None, rating=None, samplerate=None,
 			title=None, tracknumber=None, usecount=None, wavecodec=None, ):
 		cdef LIBMTP_track_t current
+		cdef int r = 0
 		if not self.device:
 			raise Exception('Not connected')
 		if not exists(source):
 			raise IOError()
 		s = stat(source)
+		memset(address(current), 0, sizeof(current))
 		current.item_id = 0
 		current.next = NULL
 		current.filename = target
@@ -452,7 +466,7 @@ cdef class MediaTransfer(object):
 		if tracknumber : current.tracknumber = tracknumber
 		if usecount : current.usecount = usecount
 		if wavecodec : current.wavecodec = wavecodec
-		cdef r = LIBMTP_Send_Track_From_File(self.device, source, address(current), NULL, NULL)
+		r = LIBMTP_Send_Track_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
 			raise Exception('LIBMTP_Send_Track_From_File error {}'.format(r))
 		return dict(
@@ -466,9 +480,10 @@ cdef class MediaTransfer(object):
 			)
 
 	def get_playlistlist(self):
+		cdef LIBMTP_playlist_t* current = NULL
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_playlist_t* current = LIBMTP_Get_Playlist_List(self.device)
+		current = LIBMTP_Get_Playlist_List(self.device)
 		ret = list()
 		while current:
 			ret.append(dict(
@@ -484,32 +499,44 @@ cdef class MediaTransfer(object):
 		return ret
 
 	def get_playlist(self, object_id):
+		cdef LIBMTP_playlist_t * ret = NULL
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_playlist_t * ret = LIBMTP_Get_Playlist(self.device, object_id)
+		ret = LIBMTP_Get_Playlist(self.device, object_id)
 		return dict(
 			)
 
 	def create_new_playlist(self, name, tracks, parent_id=0, storage_id=0):
+		cdef LIBMTP_playlist_t current
+		cdef int no_tracks = 0
+		cdef uint32_t* ts = NULL
+		cdef int r = 0
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_playlist_t current
+		memset(address(current), 0, sizeof(current))
 		current.playlist_id = 0
 		current.parent_id = int(parent_id)
 		current.storage_id = int(storage_id)
 		current.name = name
-		current.tracks = NULL
-		current.no_tracks = int(len(tracks))
-		cdef r = LIBMTP_Create_New_Playlist(self.device, address(current))
+		no_tracks = int(len(tracks))
+		ts = <uint32_t*>malloc(sizeof(int) * no_tracks)
+		for n, object_id in enumerate(tracks):
+			ts[n] = object_id
+		current.tracks = ts
+		current.no_tracks = no_tracks
+		r = LIBMTP_Create_New_Playlist(self.device, address(current))
+		free(ts)
 		if r < 0:
 			raise Exception('LIBMTP_Create_New_Playlist error {}'.format(r))
 		return current.playlist_id
 
 	def update_playlist(self, T, **metadata):
+		cdef LIBMTP_playlist_t current
+		cdef int r = 0
 		if not self.device:
 			raise Exception('Not connected')
-		cdef LIBMTP_playlist_t current
-		cdef r = LIBMTP_Update_Playlist(self.device, address(current))
+		memset(address(current), 0, sizeof(current))
+		r = LIBMTP_Update_Playlist(self.device, address(current))
 
 
 cdef _init_module():
