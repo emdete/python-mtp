@@ -13,7 +13,7 @@ def main(name, *tracks):
 			metadata = dict()
 			for track in tracks:
 				metadata.append(track)
-			playlist_id = mtp.create_new_playlist(name, metadata)
+			playlist_id = mtp.create_playlist(name, metadata)
 			print("Created new playlist with ID: {}".format(playlist_id))
 		except:
 			for n in mtp.get_errorstack():

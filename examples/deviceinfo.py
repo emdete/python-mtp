@@ -17,19 +17,19 @@ def main(cached):
 			print('Storages:')
 			for obj in mtp.get_storages():
 				print('Storage "{storage_description}" id={storage_id} {free_space_in_bytes}/{max_capacity}bytes'.format(**obj))
-			print('Files:')
-			for obj in mtp.get_files():
-				print(' {object_id} {name} {filesize}'.format(**obj))
 			if not cached:
 				print('Files and Folders:')
 				for obj in mtp.get_files_and_folders():
-					print(' {}'.format(obj))
-			print('Folders:')
-			for obj in mtp.get_folders():
-				print(' {object_id} {name}'.format(**obj))
+					print(' {object_id} {filetype} {name}'.format(**obj))
 			print('Tracks:')
 			for obj in mtp.get_tracks():
 				print(' {object_id} {name}'.format(**obj))
+			print('Folders:')
+			for obj in mtp.get_folders():
+				print(' {object_id} {name}'.format(**obj))
+			print('Files:')
+			for obj in mtp.get_files():
+				print(' {object_id} {name} {filetype} {filesize}bytes'.format(**obj))
 			print('Playlists:')
 			for obj in mtp.get_playlists():
 				print(' {object_id} {name}'.format(**obj))
