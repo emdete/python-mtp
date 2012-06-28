@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-__author__ = "M. Dietrich <mdt@pyneo.org>"
-__version__ = "1.0.0"
-__copyright__ = "Copyright (c) 2009 M. Dietrich"
-__license__ = "GPLv3"
+__author__ = 'M. Dietrich <mdt@pyneo.org>'
+__version__ = '1.0.0'
+__copyright__ = 'Copyright (c) 2009 M. Dietrich'
+__license__ = 'GPLv3'
 __docformat__ = 'reStructuredText'
 '''
 see file:///usr/share/doc/libmtp-doc/html/modules.html
@@ -16,13 +16,13 @@ from datetime import datetime
 from os.path import exists, isfile
 from os import stat
 
-cdef extern from "string.h":
+cdef extern from 'string.h':
 	void memset(void*, int, int)
 
-cdef extern from "stdlib.h":
+cdef extern from 'stdlib.h':
 	void* malloc(int)
 	void free(void*)
-	ctypedef char* const_char_ptr "const char*"
+	ctypedef char* const_char_ptr 'const char*'
 
 from libmtp cimport *
 
@@ -72,15 +72,17 @@ cdef class MediaTransfer(object):
 		LIBMTP_Set_Debug(int(debug))
 
 	def __enter__(self):
+		cdef int r = 0
 		cdef LIBMTP_raw_device_t* rawdevices = NULL
 		cdef LIBMTP_mtpdevice_t* device_list = NULL
 		cdef int numrawdevices = 0
 		if self.device:
-			raise Exception("Already connected")
-		if LIBMTP_Detect_Raw_Devices(address(rawdevices), address(numrawdevices)) != 0:
-			raise Exception('Detect failed')
+			raise Exception('Already connected')
+		r = LIBMTP_Detect_Raw_Devices(address(rawdevices), address(numrawdevices))
+		if r != 0:
+			raise Exception('LIBMTP_Detect_Raw_Devices error={}'.format(r))
 		if not numrawdevices:
-			raise Exception("Object not found")
+			raise Exception('Zero devices found')
 		if self.cached:
 			self.device = LIBMTP_Open_Raw_Device(rawdevices)
 			# cached alternatives:
@@ -90,7 +92,7 @@ cdef class MediaTransfer(object):
 			self.device = LIBMTP_Open_Raw_Device_Uncached(rawdevices)
 		free(rawdevices)
 		if self.device == NULL:
-			raise Exception("Device not found")
+			raise Exception('LIBMTP_Open_Raw_Device[_Uncached] failed')
 		LIBMTP_Reset_Device(self.device)
 		LIBMTP_Clear_Errorstack(self.device)
 		return self
@@ -108,12 +110,12 @@ cdef class MediaTransfer(object):
 		if not self.cached:
 			r = LIBMTP_Get_Storage(self.device, LIBMTP_STORAGE_SORTBY_NOTSORTED)
 			if r not in (0, 1, ):
-				raise Exception('Get storage failed with error={}'.format(r))
+				raise Exception('LIBMTP_Get_Storage error={}'.format(r))
 			self.cached = True
 
 	def get_errorstack(self):
 		if self.device == NULL:
-			raise Exception("Not connected")
+			raise Exception('Not connected')
 		current = LIBMTP_Get_Errorstack(self.device)
 		ret = list()
 		while current != NULL:
@@ -215,7 +217,7 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		r = LIBMTP_Create_Folder(self.device, name, parent_id, storage_id)
 		if r <= 0:
-			raise Exception('LIBMTP_Create_Folder')
+			raise Exception('LIBMTP_Create_Folder error={}'.format(r))
 		return r
 
 	def get_folders(self, storage_id=0, recurse=False, ):
@@ -273,7 +275,7 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		r = LIBMTP_Delete_Object(self.device, object_id)
 		if r != 0:
-			raise Exception('LIBMTP_Delete_Object error {}'.format(r))
+			raise Exception('LIBMTP_Delete_Object error={}'.format(r))
 		return r
 
 	def get_metadata(self, object_id):
@@ -361,47 +363,47 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		r = LIBMTP_Get_File_To_File(self.device, object_id, target, NULL, NULL)
 		if r != 0:
-			raise Exception('LIBMTP_Get_File_To_File error {}'.format(r))
+			raise Exception('LIBMTP_Get_File_To_File error={}'.format(r))
 
 	cdef LIBMTP_filetype_t find_filetype(self, name):
-		fileext = name.split(".")[-1].lower()
+		fileext = name.split('.')[-1].lower()
 		for t, e in dict(
-			AAC=("aac", ),
-			ASF=("asf", ),
-			AVI=("avi", ),
-			BMP=("bmp", ),
-			DOC=("doc", ),
-			FLAC=("flac", ),
-			GIF=("gif", ),
-			JFIF=("jfif", ),
-			JP2=("jp2", ),
-			JPEG=("jpeg", "jpg", ),
-			JPX=("jpx", ),
-			M4A=("m4a", ),
-			MHT=("mht", ),
-			MP2=("mp2", ),
-			MP3=("mp3", ),
-			MP4=("mp4", ),
-			MPEG=("mpeg", "mpg", ),
-			OGG=("ogg", ),
-			PICT=("pic", "pict", ),
-			PNG=("png", ),
-			PPT=("ppt", ),
-			QT=("qt", "mov", ),
-			TIFF=("tif", "tiff", ),
-			VCALENDAR2=("ics", ),
-			WAV=("wav", "wave", ),
-			WINDOWSIMAGEFORMAT=("wmf", ),
-			WINEXEC=("exe", "com", "bat", "dll", "sys", ),
-			WMA=("wma", ),
-			WMV=("wmv", ),
-			XLS=("xls", ),
-			XML=("xml", ),
+			AAC=('aac', ),
+			ASF=('asf', ),
+			AVI=('avi', ),
+			BMP=('bmp', ),
+			DOC=('doc', ),
+			FLAC=('flac', ),
+			GIF=('gif', ),
+			JFIF=('jfif', ),
+			JP2=('jp2', ),
+			JPEG=('jpeg', 'jpg', ),
+			JPX=('jpx', ),
+			M4A=('m4a', ),
+			MHT=('mht', ),
+			MP2=('mp2', ),
+			MP3=('mp3', ),
+			MP4=('mp4', ),
+			MPEG=('mpeg', 'mpg', ),
+			OGG=('ogg', ),
+			PICT=('pic', 'pict', ),
+			PNG=('png', ),
+			PPT=('ppt', ),
+			QT=('qt', 'mov', ),
+			TIFF=('tif', 'tiff', ),
+			VCALENDAR2=('ics', ),
+			WAV=('wav', 'wave', ),
+			WINDOWSIMAGEFORMAT=('wmf', ),
+			WINEXEC=('exe', 'com', 'bat', 'dll', 'sys', ),
+			WMA=('wma', ),
+			WMV=('wmv', ),
+			XLS=('xls', ),
+			XML=('xml', ),
 			).items():
 			if fileext in e:
 				break
 		else:
-			t = "UNKNOWN"
+			t = 'UNKNOWN'
 		return filetypes_reverse.get(t, LIBMTP_FILETYPE_UNKNOWN)
 
 	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, ):
@@ -419,7 +421,7 @@ cdef class MediaTransfer(object):
 		current.filesize = stat(source).st_size
 		r = LIBMTP_Send_File_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
-			raise Exception('LIBMTP_Send_File_From_File error {}'.format(r))
+			raise Exception('LIBMTP_Send_File_From_File error={}'.format(r))
 		return dict(
 			object_id=int(current.item_id),
 			parent_id=current.parent_id,
@@ -468,7 +470,7 @@ cdef class MediaTransfer(object):
 		if wavecodec : current.wavecodec = wavecodec
 		r = LIBMTP_Send_Track_From_File(self.device, source, address(current), NULL, NULL)
 		if r != 0:
-			raise Exception('LIBMTP_Send_Track_From_File error {}'.format(r))
+			raise Exception('LIBMTP_Send_Track_From_File error={}'.format(r))
 		return dict(
 			object_id=int(current.item_id),
 			parent_id=current.parent_id,
@@ -519,15 +521,16 @@ cdef class MediaTransfer(object):
 		current.storage_id = int(storage_id)
 		current.name = name
 		no_tracks = int(len(tracks))
-		ts = <uint32_t*>malloc(sizeof(int) * no_tracks)
-		for n, object_id in enumerate(tracks):
-			ts[n] = object_id
+		if no_tracks > 0:
+			ts = <uint32_t*>malloc(sizeof(int) * no_tracks)
+			for n, object_id in enumerate(tracks):
+				ts[n] = object_id
 		current.tracks = ts
 		current.no_tracks = no_tracks
 		r = LIBMTP_Create_New_Playlist(self.device, address(current))
 		free(ts)
 		if r < 0:
-			raise Exception('LIBMTP_Create_New_Playlist error {}'.format(r))
+			raise Exception('LIBMTP_Create_New_Playlist error={}'.format(r))
 		return current.playlist_id
 
 	def update_playlist(self, T, **metadata):

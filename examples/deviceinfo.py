@@ -16,7 +16,7 @@ def main(cached):
 				print('Info {}={}'.format(n, m))
 			print('Storages:')
 			for obj in mtp.get_storages():
-				print('Storage "{storage_description}" id={object_id} {free_space_in_bytes}/{max_capacity}bytes'.format(**obj))
+				print('Storage "{storage_description}" id={storage_id} {free_space_in_bytes}/{max_capacity}bytes'.format(**obj))
 			print('Files:')
 			for obj in mtp.get_files():
 				print(' {object_id} {name} {filesize}'.format(**obj))
