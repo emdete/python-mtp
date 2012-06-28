@@ -1,11 +1,24 @@
 About
 -----
 
-python-mtp is a wrapper for libmtp, allowing python applications to
-communicate with MTP devices that are supported by libmtp. For supported &
-tested devices see there. It is implemented using cython.
+python-mtp is a wrapper for libmtp, allowing python applications to communicate
+with all MTP devices that are supported by libmtp. For supported & tested
+devices see there. It is implemented using cython.
 
 Simple test scripts can be found in examples/ for all major operations.
+
+Usage
+-----
+
+The wrapper makes use of the with statement and can be used as simple as:
+
+	from mtp import MediaTransfer
+	with MediaTransfer() as mtp:
+		pass # do something
+
+The examples include a simple backup script that copies all files reachable by
+MTP from the device to the local directory creating a backup directory named
+after the serialnumber of the device.
 
 Major Pitfalls
 --------------
@@ -27,4 +40,8 @@ While libmtp provides errorcodes some functions just return -1 (which is not a
 listed error). Other functions return a pointer and have no way to determine
 the cause of the error (they just return NULL).
 
+If you for example upload a file to a location / name that already exists you
+get no explicit error code but often just a -1.
+
 Setting the debugging level is of some help.
+

@@ -264,7 +264,7 @@ cdef class MediaTransfer(object):
 			LIBMTP_destroy_file_t(tmp)
 		return ret
 
-	def get_filetype_description(self, filetype):
+	cdef _get_filetype_description(self, LIBMTP_filetype_t filetype):
 		cdef char* p = LIBMTP_Get_Filetype_Description(filetype)
 		if p == NULL:
 			return None
@@ -368,8 +368,8 @@ cdef class MediaTransfer(object):
 			raise Exception('LIBMTP_Get_File_To_File error={}'.format(r))
 
 	cdef LIBMTP_filetype_t find_filetype(self, name):
-		fileext = name.split('.')[-1].lower()
-		for t, e in dict(
+		extension = name.split('.')[-1].lower()
+		for filetype, extensions in dict(
 			AAC=('aac', ),
 			ASF=('asf', ),
 			AVI=('avi', ),
@@ -402,11 +402,10 @@ cdef class MediaTransfer(object):
 			XLS=('xls', ),
 			XML=('xml', ),
 			).items():
-			if fileext in e:
-				break
+			if extension in extensions:
+				return filetypes.get(filetype, LIBMTP_FILETYPE_UNKNOWN)
 		else:
-			t = 'UNKNOWN'
-		return filetypes_reverse.get(t, LIBMTP_FILETYPE_UNKNOWN)
+			return LIBMTP_FILETYPE_UNKNOWN
 
 	def send_file_from_file(self, source, target, storage_id=0, parent_id=0, ):
 		cdef LIBMTP_file_t current
@@ -452,7 +451,7 @@ cdef class MediaTransfer(object):
 		current.filename = target
 		current.filesize = s.st_size
 		current.modificationdate = s.st_mtime
-		#current.filetype = self.find_filetype(source) # TODO
+		current.filetype = self.find_filetype(source)
 		current.parent_id = parent_id
 		current.storage_id = storage_id
 		if album : current.album = album
@@ -504,11 +503,18 @@ cdef class MediaTransfer(object):
 		return ret
 
 	def get_playlist(self, object_id):
-		cdef LIBMTP_playlist_t * ret = NULL
+		cdef LIBMTP_playlist_t * current = NULL
 		if not self.device:
 			raise Exception('Not connected')
-		ret = LIBMTP_Get_Playlist(self.device, object_id)
+		current = LIBMTP_Get_Playlist(self.device, object_id)
+		if current == NULL:
+			raise Exception('LIBMTP_Get_Playlist failed')
 		return dict(
+			playlist_id=int(current.playlist_id),
+			parent_id=int(current.parent_id),
+			storage_id=int(current.storage_id),
+			name=str(current.name) if current.name != NULL else None,
+			tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
 			)
 
 	def create_playlist(self, name, tracks, parent_id=0, storage_id=0):
@@ -543,6 +549,9 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		memset(address(current), 0, sizeof(current))
 		r = LIBMTP_Update_Playlist(self.device, address(current))
+		if r < 0:
+			raise Exception('LIBMTP_Update_Playlist error={}'.format(r))
+		return current.playlist_id
 
 
 cdef _init_module():
