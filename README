@@ -14,11 +14,19 @@ The wrapper makes use of the with statement and can be used as simple as:
 
 	from mtp import MediaTransfer
 	with MediaTransfer() as mtp:
-		pass # do something
+		print('Infos: {}'.format(mtp.get_deviceinfo())
 
 The examples include a simple backup script that copies all files reachable by
 MTP from the device to the local directory creating a backup directory named
 after the serialnumber of the device.
+
+Tools
+-----
+
+	- backup: there is a script in the examples/ section that implemtns a
+	  backup of your mtp-capable device
+
+	- playlist: 
 
 Major Pitfalls
 --------------

@@ -7,19 +7,31 @@ from __future__ import print_function
 from mtp import MediaTransfer
 from os.path import dirname
 from os import makedirs
+'''
+This small program is intended to backup you MTP capable device. It enumerates
+over all given storages and retrieves all files from each. The files are stored
+in a directory named like the serialnumber of the device followed by a directory
+name as the storage. The directory structure below is kept as MTP exposes it.
+
+Be aware that on most devices contacts and messages are not backed up this way.
+Most Android devices have a feature to store all contacts to the storage in a
+single huge vcard file (and can then backed up), messages can be stored to the
+storage by apps like MessageSync and backed up then with this program out of
+the device.
+'''
 
 def determine_name(objects, name, parent_id=None, **v):
 	if not parent_id:
 		return name
 	return determine_name(objects, **objects[parent_id]) + '/' + name
 
-def main():
+def main(root='.'):
 	with MediaTransfer() as mtp:
 		try:
 			info = mtp.get_deviceinfo()
 			#print('Backup serialnumber: "{serialnumber}"'.format(**info))
-			base = info['serialnumber']
-			for storage_id, storage in mtp.storages().items():
+			base = root + '/' + info['serialnumber']
+			for storage_id, storage in mtp.storages.items():
 				#print('Backup storage: "{storage_description}"'.format(**storage))
 				base = base + '/' + storage['storage_description']
 				objects = mtp.objects(storage_id)
