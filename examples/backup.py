@@ -8,10 +8,11 @@ from mtp import MediaTransfer
 from os.path import dirname
 from os import makedirs
 '''
-This small program is intended to backup you MTP capable device. It enumerates
-over all given storages and retrieves all files from each. The files are stored
-in a directory named like the serialnumber of the device followed by a directory
-name as the storage. The directory structure below is kept as MTP exposes it.
+This small program is intended to backup all files from your MTP capable
+device. It enumerates over all given storages and retrieves all folders and
+files from each. The files are stored in a directory named as the
+serialnumber of the device followed by a directory name as the storage. The
+directory structure below is kept as MTP exposes it.
 
 Be aware that on most devices contacts and messages are not backed up this way.
 Most Android devices have a feature to store all contacts to the storage in a
@@ -36,7 +37,10 @@ def main(root='.'):
 				base = base + '/' + storage['storage_description']
 				objects = mtp.objects(storage_id)
 				for object_id, _object in objects.items():
-					if _object['filetype'] != 'FOLDER':
+					if (_object['filetype'] != 'FOLDER'
+					# here you could filter files, i.e. by name:
+					#and _object['name'].startswith('IMG_')
+					):
 						name = base + '/' + determine_name(objects, **_object)
 						print('{} {} {filetype}'.format(object_id, name, **_object))
 						try: makedirs(dirname(name))

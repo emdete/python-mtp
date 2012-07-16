@@ -8,14 +8,13 @@ from os import environ
 from mtp import MediaTransfer
 from os.path import basename
 
-def main(parent, base, *files):
-	parent = int(parent)
+def main(base, *files):
 	with MediaTransfer() as mtp:
 		try:
 			for source in files:
 				target = base + basename(source)
 				print('Sending {} to {}'.format(source, target))
-				metadata = mtp.send_file_from_file(source, target, parent)
+				metadata = mtp.send_file_from_file(source, target)
 				print('Created new file with metadata: {}'.format(metadata))
 		except:
 			for n in mtp.get_errorstack():

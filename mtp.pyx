@@ -423,6 +423,7 @@ cdef class MediaTransfer(object):
 		current.parent_id = parent_id
 		current.filetype = self.find_filetype(source)
 		current.filesize = stat(source).st_size
+		print('sending starts')
 		r = LIBMTP_Send_File_From_File(self.device, source, current, NULL, NULL)
 		if r != 0:
 			raise Exception('LIBMTP_Send_File_From_File error={}'.format(r))
