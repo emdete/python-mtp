@@ -39,13 +39,17 @@ def main(root='.'):
 				for object_id, _object in objects.items():
 					if (_object['filetype'] != 'FOLDER'
 					# here you could filter files, i.e. by name:
-					#and _object['name'].startswith('IMG_')
+					and '20120813' in _object['name']
+					and _object['filetype'] == 'JPEG'
+					# and 'mp4' in _object['name']
 					):
 						name = base + '/' + determine_name(objects, **_object)
 						print('{} {} {filetype}'.format(object_id, name, **_object))
 						try: makedirs(dirname(name))
 						except: pass
 						mtp.get_file_to_file(object_id, name)
+					else:
+						pass # print('{}: {}'.format(object_id, _object))
 		except:
 			for n in mtp.get_errorstack():
 				print('{errornumber}: {error_text}'.format(**n))

@@ -18,16 +18,14 @@ def upload_track(mtp, parent_id, source):
 def main(name, *files):
 	with MediaTransfer() as mtp:
 		try:
-			parent_id = mtp.get_deviceinfo()['default_music_folder'] or 0xffffffff
-			if 1:
-				tracks = 3605, 3606,
-			else:
-				tracks = list()
-				for track in files:
-					track = upload_track(mtp, parent_id, track)
-					tracks.append(track)
-			parent_id = mtp.get_deviceinfo()['default_playlist_folder'] or 0
-			object_id = mtp.create_playlist(name, tracks, parent_id)
+#			parent_id = mtp.get_deviceinfo()['default_music_folder'] or 0xffffffff
+#			tracks = list()
+#			for track in files:
+#				track = upload_track(mtp, parent_id, track)
+#				tracks.append(track)
+#			parent_id = mtp.get_deviceinfo()['default_playlist_folder'] or 0
+#			object_id = mtp.create_playlist(name, tracks, parent_id)
+			object_id = mtp.create_playlist(name, [4265, ])
 			print("Created new playlist with ID: {object_id}".format(object_id=object_id))
 		except Exception, e:
 			for n in mtp.get_errorstack():
