@@ -229,18 +229,20 @@ cdef class MediaTransfer(object):
 		if self.device == NULL:
 			raise Exception('Not connected')
 		current = self._cache(storage_id, parent_id)
-		while current != NULL:
-			yield dict(
-				filesize=int(current.filesize),
-				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-				modificationdate=datetime.fromtimestamp(current.modificationdate),
-				name=current.filename,
-				object_id=int(current.item_id),
-				parent_id=int(current.parent_id),
-				storage_id=int(current.storage_id),
-				)
-			tmp = current
-			current = current.next
+		tmp = current
+		try:
+			while current != NULL:
+				yield dict(
+					filesize=int(current.filesize),
+					filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
+					modificationdate=datetime.fromtimestamp(current.modificationdate),
+					name=current.filename,
+					object_id=int(current.item_id),
+					parent_id=int(current.parent_id),
+					storage_id=int(current.storage_id),
+					)
+				current = current.next
+		finally:
 			LIBMTP_destroy_file_t(tmp)
 
 	objects = lambda self, storage_id: dict([(n['object_id'], n, ) for n in self.get_files_and_folders(storage_id)])
@@ -262,16 +264,18 @@ cdef class MediaTransfer(object):
 		self._cache(storage_id, 0)
 		current = LIBMTP_Get_Folder_List_For_Storage(self.device, storage_id)
 		tmp = current
-		while current != NULL:
-			yield dict(
-				object_id=int(current.folder_id),
-				parent_id=int(current.parent_id),
-				storage_id=int(current.storage_id),
-				name=current.name if current.name != NULL else None,
-				)
-			#for f in _folder_out(recurse, depth+1, current.child): yield f # TODO
-			current = current.sibling
-		LIBMTP_destroy_folder_t(tmp) # LIBMTP_destroy_folder_t is recursive+enumerates!
+		try:
+			while current != NULL:
+				yield dict(
+					object_id=int(current.folder_id),
+					parent_id=int(current.parent_id),
+					storage_id=int(current.storage_id),
+					name=current.name if current.name != NULL else None,
+					)
+				#for f in _folder_out(recurse, depth+1, current.child): yield f # TODO
+				current = current.sibling
+		finally:
+			LIBMTP_destroy_folder_t(tmp) # LIBMTP_destroy_folder_t is recursive+enumerates!
 
 	def get_files(self):
 		cdef LIBMTP_file_t* tmp = NULL
@@ -280,18 +284,20 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		self._cache(0, 0)
 		current = LIBMTP_Get_Filelisting_With_Callback(self.device, NULL, NULL)
-		while current != NULL:
-			yield dict(
-				object_id=int(current.item_id),
-				parent_id=current.parent_id,
-				storage_id=current.storage_id,
-				name=current.filename,
-				filesize=current.filesize,
-				modificationdate=datetime.fromtimestamp(current.modificationdate),
-				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-				)
-			tmp = current
-			current = current.next
+		tmp = current
+		try:
+			while current != NULL:
+				yield dict(
+					object_id=int(current.item_id),
+					parent_id=current.parent_id,
+					storage_id=current.storage_id,
+					name=current.filename,
+					filesize=current.filesize,
+					modificationdate=datetime.fromtimestamp(current.modificationdate),
+					filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
+					)
+				current = current.next
+		finally:
 			LIBMTP_destroy_file_t(tmp)
 
 	# cdef const_char_ptr p = LIBMTP_Get_Filetype_Description(filetype)
@@ -326,32 +332,34 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		self._cache(0, 0)
 		current = LIBMTP_Get_Tracklisting_With_Callback_For_Storage(self.device, storage_id, NULL, NULL)
-		while current:
-			yield dict(
-				object_id=int(current.item_id),
-				parent_id=int(current.parent_id),
-				storage_id=int(current.storage_id),
-				title=current.title if current.title != NULL else None,
-				artist=current.artist if current.artist != NULL else None,
-				composer=current.composer if current.composer != NULL else None,
-				genre=current.genre if current.genre != NULL else None,
-				album=current.album if current.album != NULL else None,
-				date=current.date if current.date != NULL else None,
-				name=current.filename if current.filename != NULL else None,
-				tracknumber=int(current.tracknumber),
-				duration=int(current.duration),
-				samplerate=int(current.samplerate),
-				nochannels=int(current.nochannels),
-				wavecodec=int(current.wavecodec),
-				bitrate=int(current.bitrate),
-				bitratetype=int(current.bitratetype),
-				rating=int(current.rating),
-				usecount=int(current.usecount),
-				filesize=int(current.filesize),
-				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-				)
-			tmp = current
-			current = current.next
+		tmp = current
+		try:
+			while current:
+				yield dict(
+					object_id=int(current.item_id),
+					parent_id=int(current.parent_id),
+					storage_id=int(current.storage_id),
+					title=current.title if current.title != NULL else None,
+					artist=current.artist if current.artist != NULL else None,
+					composer=current.composer if current.composer != NULL else None,
+					genre=current.genre if current.genre != NULL else None,
+					album=current.album if current.album != NULL else None,
+					date=current.date if current.date != NULL else None,
+					name=current.filename if current.filename != NULL else None,
+					tracknumber=int(current.tracknumber),
+					duration=int(current.duration),
+					samplerate=int(current.samplerate),
+					nochannels=int(current.nochannels),
+					wavecodec=int(current.wavecodec),
+					bitrate=int(current.bitrate),
+					bitratetype=int(current.bitratetype),
+					rating=int(current.rating),
+					usecount=int(current.usecount),
+					filesize=int(current.filesize),
+					filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
+					)
+				current = current.next
+		finally:
 			LIBMTP_destroy_track_t(tmp)
 
 	def get_track_metadata(self, object_id):
@@ -498,16 +506,18 @@ cdef class MediaTransfer(object):
 		self._cache(0, 0)
 		current = LIBMTP_Get_Playlist_List(self.device)
 		tmp = current
-		while current:
-			yield dict(
-				object_id=int(current.playlist_id),
-				parent_id=int(current.parent_id),
-				storage_id=int(current.storage_id),
-				name=current.name if current.name != NULL else None,
-				tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
-				)
-			current = current.next
-		LIBMTP_destroy_playlist_t(tmp)
+		try:
+			while current:
+				yield dict(
+					object_id=int(current.playlist_id),
+					parent_id=int(current.parent_id),
+					storage_id=int(current.storage_id),
+					name=current.name if current.name != NULL else None,
+					tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
+					)
+				current = current.next
+		finally:
+			LIBMTP_destroy_playlist_t(tmp)
 
 	def get_playlist(self, object_id):
 		cdef LIBMTP_playlist_t * current = NULL
