@@ -526,13 +526,16 @@ cdef class MediaTransfer(object):
 		current = LIBMTP_Get_Playlist(self.device, object_id)
 		if current == NULL:
 			raise Exception('LIBMTP_Get_Playlist failed')
-		return dict(
-			object_id=int(current.playlist_id),
-			parent_id=int(current.parent_id),
-			storage_id=int(current.storage_id),
-			name=current.name if current.name != NULL else None,
-			tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
-			)
+		try:
+			return dict(
+				object_id=int(current.playlist_id),
+				parent_id=int(current.parent_id),
+				storage_id=int(current.storage_id),
+				name=current.name if current.name != NULL else None,
+				tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
+				)
+		finally:
+			LIBMTP_destroy_playlist_t(current)
 
 	def create_playlist(self, name, tracks, parent_id=0, storage_id=0):
 		cdef LIBMTP_playlist_t* current = NULL
@@ -566,7 +569,7 @@ cdef class MediaTransfer(object):
 			current.name = NULL # libmtp will free() this otherwise
 			LIBMTP_destroy_playlist_t(current)
 
-	def update_playlist(self, **metadata):
+	def update_playlist(self, object_id, name=None, tracks=None):
 		cdef LIBMTP_playlist_t* current = NULL
 		cdef int r = 0
 		if not self.device:
@@ -575,11 +578,24 @@ cdef class MediaTransfer(object):
 		if current == NULL:
 			raise Exception('LIBMTP_new_playlist_t failed')
 		try:
+			current.playlist_id = int(object_id)
+			if name:
+				current.name = name
+			if tracks:
+				current.no_tracks = int(len(tracks))
+				if current.no_tracks > 0:
+					current.tracks = <uint32_t*>malloc(sizeof(int) * current.no_tracks)
+					memset(current.tracks, 0, sizeof(int) * current.no_tracks)
+					for n, object_id in enumerate(tracks):
+						current.tracks[n] = object_id
 			r = LIBMTP_Update_Playlist(self.device, current)
 			if r < 0:
 				raise Exception('LIBMTP_Update_Playlist error={}'.format(r))
 			return current.playlist_id
 		finally:
+			if current.tracks != NULL:
+				free(current.tracks)
+				current.tracks = NULL # libmtp will free() this otherwise
 			current.name = NULL # libmtp will free() this otherwise
 			LIBMTP_destroy_playlist_t(current)
 
