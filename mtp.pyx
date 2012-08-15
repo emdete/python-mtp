@@ -149,15 +149,13 @@ cdef class MediaTransfer(object):
 		if self.device == NULL:
 			raise Exception('Not connected')
 		current = LIBMTP_Get_Errorstack(self.device)
-		ret = list()
 		while current != NULL:
-			ret.append(dict(
+			yield dict(
 				errornumber=current.errornumber,
 				error_text=current.error_text if current.error_text != NULL else None,
-				))
+				)
 			current = current.next
 		LIBMTP_Clear_Errorstack(self.device)
-		return ret
 
 	def dump_info(self):
 		LIBMTP_Dump_Device_Info(self.device)
@@ -209,9 +207,8 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		self._cache(0, 0)
 		current = self.device.storage
-		ret = list()
 		while current != NULL:
-			ret.append(dict(
+			yield dict(
 				access_capability=int(current.AccessCapability),
 				filesystem_type=int(current.FilesystemType),
 				free_space_in_bytes=int(current.FreeSpaceInBytes),
@@ -221,9 +218,8 @@ cdef class MediaTransfer(object):
 				storage_type=int(current.StorageType),
 				storage_description=current.StorageDescription if current.StorageDescription != NULL else None,
 				volume_identifier=current.VolumeIdentifier if current.VolumeIdentifier != NULL else None,
-				))
+				)
 			current = current.next
-		return ret
 
 	storages = property(lambda self: dict([(n['storage_id'], n, ) for n in self.get_storages()]))
 
@@ -233,9 +229,8 @@ cdef class MediaTransfer(object):
 		if self.device == NULL:
 			raise Exception('Not connected')
 		current = self._cache(storage_id, parent_id)
-		ret = list()
 		while current != NULL:
-			ret.append(dict(
+			yield dict(
 				filesize=int(current.filesize),
 				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
 				modificationdate=datetime.fromtimestamp(current.modificationdate),
@@ -243,11 +238,10 @@ cdef class MediaTransfer(object):
 				object_id=int(current.item_id),
 				parent_id=int(current.parent_id),
 				storage_id=int(current.storage_id),
-				))
+				)
 			tmp = current
 			current = current.next
 			LIBMTP_destroy_file_t(tmp)
-		return ret
 
 	objects = lambda self, storage_id: dict([(n['object_id'], n, ) for n in self.get_files_and_folders(storage_id)])
 
@@ -268,18 +262,16 @@ cdef class MediaTransfer(object):
 		self._cache(storage_id, 0)
 		current = LIBMTP_Get_Folder_List_For_Storage(self.device, storage_id)
 		tmp = current
-		ret = list()
 		while current != NULL:
-			ret.append(dict(
+			yield dict(
 				object_id=int(current.folder_id),
 				parent_id=int(current.parent_id),
 				storage_id=int(current.storage_id),
 				name=current.name if current.name != NULL else None,
-				))
+				)
 			#for f in _folder_out(recurse, depth+1, current.child): yield f # TODO
 			current = current.sibling
 		LIBMTP_destroy_folder_t(tmp) # LIBMTP_destroy_folder_t is recursive+enumerates!
-		return ret
 
 	def get_files(self):
 		cdef LIBMTP_file_t* tmp = NULL
@@ -288,9 +280,8 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		self._cache(0, 0)
 		current = LIBMTP_Get_Filelisting_With_Callback(self.device, NULL, NULL)
-		ret = list()
 		while current != NULL:
-			ret.append(dict(
+			yield dict(
 				object_id=int(current.item_id),
 				parent_id=current.parent_id,
 				storage_id=current.storage_id,
@@ -298,11 +289,10 @@ cdef class MediaTransfer(object):
 				filesize=current.filesize,
 				modificationdate=datetime.fromtimestamp(current.modificationdate),
 				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-				))
+				)
 			tmp = current
 			current = current.next
 			LIBMTP_destroy_file_t(tmp)
-		return ret
 
 	# cdef const_char_ptr p = LIBMTP_Get_Filetype_Description(filetype)
 
@@ -336,9 +326,8 @@ cdef class MediaTransfer(object):
 			raise Exception('Not connected')
 		self._cache(0, 0)
 		current = LIBMTP_Get_Tracklisting_With_Callback_For_Storage(self.device, storage_id, NULL, NULL)
-		ret = list()
 		while current:
-			ret.append(dict(
+			yield dict(
 				object_id=int(current.item_id),
 				parent_id=int(current.parent_id),
 				storage_id=int(current.storage_id),
@@ -360,11 +349,10 @@ cdef class MediaTransfer(object):
 				usecount=int(current.usecount),
 				filesize=int(current.filesize),
 				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-				))
+				)
 			tmp = current
 			current = current.next
 			LIBMTP_destroy_track_t(tmp)
-		return ret
 
 	def get_track_metadata(self, object_id):
 		cdef LIBMTP_track_t * current = NULL
@@ -510,18 +498,16 @@ cdef class MediaTransfer(object):
 		self._cache(0, 0)
 		current = LIBMTP_Get_Playlist_List(self.device)
 		tmp = current
-		ret = list()
 		while current:
-			ret.append(dict(
+			yield dict(
 				object_id=int(current.playlist_id),
 				parent_id=int(current.parent_id),
 				storage_id=int(current.storage_id),
 				name=current.name if current.name != NULL else None,
 				tracks=list([current.tracks[i] for i in range(int(current.no_tracks))]),
-				))
+				)
 			current = current.next
 		LIBMTP_destroy_playlist_t(tmp)
-		return ret
 
 	def get_playlist(self, object_id):
 		cdef LIBMTP_playlist_t * current = NULL
