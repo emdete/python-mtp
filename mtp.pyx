@@ -22,6 +22,7 @@ cdef extern from 'stdlib.h':
 	void free(void*)
 	ctypedef char* const_char_ptr 'const char*'
 	char* strdup(const_char_ptr)
+	void memset(void*, int, int)
 
 from libmtp cimport *
 
@@ -419,25 +420,27 @@ cdef class MediaTransfer(object):
 		current = LIBMTP_new_file_t()
 		if current == NULL:
 			raise Exception('LIBMTP_new_file_t failed')
-		current.filename = target
-		current.storage_id = storage_id
-		current.parent_id = parent_id
-		current.filetype = self.find_filetype(source)
-		current.filesize = stat(source).st_size
-		r = LIBMTP_Send_File_From_File(self.device, source, current, NULL, NULL)
-		current.filename = NULL
-		LIBMTP_destroy_file_t(current)
-		if r != 0:
-			raise Exception('LIBMTP_Send_File_From_File error={}'.format(r))
-		return dict(
-			object_id=int(current.item_id),
-			parent_id=current.parent_id,
-			storage_id=current.storage_id,
-			name=current.filename,
-			filesize=current.filesize,
-			modificationdate=datetime.fromtimestamp(current.modificationdate),
-			filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-			)
+		try:
+			current.filename = target
+			current.storage_id = storage_id
+			current.parent_id = parent_id
+			current.filetype = self.find_filetype(source)
+			current.filesize = stat(source).st_size
+			r = LIBMTP_Send_File_From_File(self.device, source, current, NULL, NULL)
+			if r != 0:
+				raise Exception('LIBMTP_Send_File_From_File error={}'.format(r))
+			return dict(
+				object_id=int(current.item_id),
+				parent_id=current.parent_id,
+				storage_id=current.storage_id,
+				name=current.filename,
+				filesize=current.filesize,
+				modificationdate=datetime.fromtimestamp(current.modificationdate),
+				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
+				)
+		finally:
+			current.filename = NULL
+			LIBMTP_destroy_file_t(current)
 
 	def send_track_from_file(self, source, target, storage_id=0, parent_id=0,
 			album=None, artist=None, bitrate=None, bitratetype=None,
@@ -453,50 +456,52 @@ cdef class MediaTransfer(object):
 		current = LIBMTP_new_track_t()
 		if current == NULL:
 			raise Exception('LIBMTP_new_file_t failed')
-		s = stat(source)
-		current.item_id = 0
-		current.next = NULL
-		current.filename = target
-		current.filesize = s.st_size
-		current.modificationdate = s.st_mtime
-		current.filetype = self.find_filetype(source)
-		current.parent_id = parent_id
-		current.storage_id = storage_id
-		if album : current.album = album
-		if artist : current.artist = artist
-		if bitrate : current.bitrate = int(bitrate)
-		if bitratetype : current.bitratetype = int(bitratetype)
-		if composer : current.composer = composer
-		if date : current.date = date
-		if duration : current.duration = int(duration)
-		if genre : current.genre = genre
-		if nochannels : current.nochannels = int(nochannels)
-		if rating : current.rating = int(rating)
-		if samplerate : current.samplerate = int(samplerate)
-		if title : current.title = title
-		if tracknumber : current.tracknumber = int(tracknumber)
-		if usecount : current.usecount = int(usecount)
-		if wavecodec : current.wavecodec = int(wavecodec)
-		r = LIBMTP_Send_Track_From_File(self.device, source, current, NULL, NULL)
-		current.album = NULL
-		current.artist = NULL
-		current.composer = NULL
-		current.date = NULL
-		current.filename = NULL
-		current.genre = NULL
-		current.title = NULL
-		LIBMTP_destroy_track_t(current)
-		if r != 0:
-			raise Exception('LIBMTP_Send_Track_From_File error={}'.format(r))
-		return dict(
-			object_id=int(current.item_id),
-			parent_id=current.parent_id,
-			storage_id=current.storage_id,
-			name=current.filename,
-			filesize=current.filesize,
-			modificationdate=datetime.fromtimestamp(current.modificationdate),
-			filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
-			)
+		try:
+			s = stat(source)
+			current.item_id = 0
+			current.next = NULL
+			current.filename = target
+			current.filesize = s.st_size
+			current.modificationdate = s.st_mtime
+			current.filetype = self.find_filetype(source)
+			current.parent_id = parent_id
+			current.storage_id = storage_id
+			if album : current.album = album
+			if artist : current.artist = artist
+			if bitrate : current.bitrate = int(bitrate)
+			if bitratetype : current.bitratetype = int(bitratetype)
+			if composer : current.composer = composer
+			if date : current.date = date
+			if duration : current.duration = int(duration)
+			if genre : current.genre = genre
+			if nochannels : current.nochannels = int(nochannels)
+			if rating : current.rating = int(rating)
+			if samplerate : current.samplerate = int(samplerate)
+			if title : current.title = title
+			if tracknumber : current.tracknumber = int(tracknumber)
+			if usecount : current.usecount = int(usecount)
+			if wavecodec : current.wavecodec = int(wavecodec)
+			r = LIBMTP_Send_Track_From_File(self.device, source, current, NULL, NULL)
+			if r != 0:
+				raise Exception('LIBMTP_Send_Track_From_File error={}'.format(r))
+			return dict(
+				object_id=int(current.item_id),
+				parent_id=current.parent_id,
+				storage_id=current.storage_id,
+				name=current.filename,
+				filesize=current.filesize,
+				modificationdate=datetime.fromtimestamp(current.modificationdate),
+				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
+				)
+		finally:
+			current.album = NULL
+			current.artist = NULL
+			current.composer = NULL
+			current.date = NULL
+			current.filename = NULL
+			current.genre = NULL
+			current.title = NULL
+			LIBMTP_destroy_track_t(current)
 
 	def get_playlists(self):
 		cdef LIBMTP_playlist_t* current = NULL
@@ -541,27 +546,29 @@ cdef class MediaTransfer(object):
 		current = LIBMTP_new_playlist_t()
 		if current == NULL:
 			raise Exception('LIBMTP_new_playlist_t failed')
-		current.playlist_id = 0
-		current.parent_id = int(parent_id)
-		current.storage_id = int(storage_id)
-		current.name = name
-		current.next = NULL
-		current.tracks = NULL
-		current.no_tracks = int(len(tracks))
-		if current.no_tracks > 0:
-			current.tracks = <uint32_t*>malloc(sizeof(int) * current.no_tracks)
-			for n, object_id in enumerate(tracks):
-				current.tracks[n] = object_id
-		r = LIBMTP_Create_New_Playlist(self.device, current)
-		if current.tracks != NULL:
-			free(current.tracks)
-			current.tracks = NULL # libmtp will free() this otherwise
-		current.name = NULL # libmtp will free() this otherwise
-		object_id = current.playlist_id
-		LIBMTP_destroy_playlist_t(current)
-		if r < 0:
-			raise Exception('LIBMTP_Create_New_Playlist error={}'.format(r))
-		return object_id
+		try:
+			current.playlist_id = 0
+			current.parent_id = int(parent_id)
+			current.storage_id = int(storage_id)
+			current.name = name
+			current.next = NULL
+			current.tracks = NULL
+			current.no_tracks = int(len(tracks))
+			if current.no_tracks > 0:
+				current.tracks = <uint32_t*>malloc(sizeof(int) * current.no_tracks)
+				memset(current.tracks, 0, sizeof(int) * current.no_tracks)
+				for n, object_id in enumerate(tracks):
+					current.tracks[n] = object_id
+			r = LIBMTP_Create_New_Playlist(self.device, current)
+			if r < 0:
+				raise Exception('LIBMTP_Create_New_Playlist error={}'.format(r))
+			return current.playlist_id
+		finally:
+			if current.tracks != NULL:
+				free(current.tracks)
+				current.tracks = NULL # libmtp will free() this otherwise
+			current.name = NULL # libmtp will free() this otherwise
+			LIBMTP_destroy_playlist_t(current)
 
 	def update_playlist(self, **metadata):
 		cdef LIBMTP_playlist_t* current = NULL
@@ -571,12 +578,14 @@ cdef class MediaTransfer(object):
 		current = LIBMTP_new_playlist_t()
 		if current == NULL:
 			raise Exception('LIBMTP_new_playlist_t failed')
-		r = LIBMTP_Update_Playlist(self.device, current)
-		current.name = NULL # libmtp will free() this otherwise
-		LIBMTP_destroy_playlist_t(current)
-		if r < 0:
-			raise Exception('LIBMTP_Update_Playlist error={}'.format(r))
-		return current.playlist_id
+		try:
+			r = LIBMTP_Update_Playlist(self.device, current)
+			if r < 0:
+				raise Exception('LIBMTP_Update_Playlist error={}'.format(r))
+			return current.playlist_id
+		finally:
+			current.name = NULL # libmtp will free() this otherwise
+			LIBMTP_destroy_playlist_t(current)
 
 
 cdef _init_module():
