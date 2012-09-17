@@ -497,31 +497,8 @@ cdef extern from 'libmtp.h':
 	ctypedef LIBMTP_filesampledata_struct LIBMTP_filesampledata_t
 	LIBMTP_filesampledata_t * LIBMTP_new_filesampledata_t()
 	int LIBMTP_Get_Representative_Sample(LIBMTP_mtpdevice_t *, uint32_t, LIBMTP_filesampledata_t *)
-	ctypedef unsigned int uint32_t
-	cdef struct LIBMTP_album_struct:
-		uint32_t album_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		char * artist
-		char * composer
-		char * genre
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_album_struct * next
-	cdef struct LIBMTP_album_struct:
-		uint32_t album_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		char * artist
-		char * composer
-		char * genre
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_album_struct * next
-	ctypedef LIBMTP_album_struct LIBMTP_album_t
-	int LIBMTP_Update_Album(LIBMTP_mtpdevice_t *, LIBMTP_album_t *)
+	ctypedef int(*LIBMTP_progressfunc_t)(uint64_t, uint64_t, void *)
+	int LIBMTP_Get_Track_To_File_Descriptor(LIBMTP_mtpdevice_t *, uint32_t, int, LIBMTP_progressfunc_t, void *)
 	uint32_t LIBMTP_Number_Devices_In_List(LIBMTP_mtpdevice_t *)
 	ctypedef long int __time_t
 	ctypedef __time_t time_t
@@ -882,27 +859,9 @@ cdef extern from 'libmtp.h':
 	LIBMTP_file_t * LIBMTP_Get_Filemetadata(LIBMTP_mtpdevice_t *, uint32_t)
 	LIBMTP_track_t * LIBMTP_new_track_t()
 	int LIBMTP_Get_Secure_Time(LIBMTP_mtpdevice_t *, char * *)
-	ctypedef int(*LIBMTP_progressfunc_t)(uint64_t, uint64_t, void *)
 	int LIBMTP_Get_File_To_File(LIBMTP_mtpdevice_t *, uint32_t, char *, LIBMTP_progressfunc_t, void *)
-	ctypedef unsigned int uint32_t
-	cdef struct LIBMTP_playlist_struct:
-		uint32_t playlist_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_playlist_struct * next
-	cdef struct LIBMTP_playlist_struct:
-		uint32_t playlist_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_playlist_struct * next
-	ctypedef LIBMTP_playlist_struct LIBMTP_playlist_t
-	int LIBMTP_Set_Playlist_Name(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *, char *)
+	int LIBMTP_Set_File_Name(LIBMTP_mtpdevice_t *, LIBMTP_file_t *, char *)
+	void LIBMTP_destroy_file_t(LIBMTP_file_t *)
 	cdef struct LIBMTP_device_entry_struct:
 		char * vendor
 		uint16_t vendor_id
@@ -1427,10 +1386,28 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	int LIBMTP_Set_Object_String(LIBMTP_mtpdevice_t *, uint32_t, int, char *)
 	LIBMTP_track_t * LIBMTP_Get_Tracklisting_With_Callback(LIBMTP_mtpdevice_t *, LIBMTP_progressfunc_t, void *)
-	int LIBMTP_Get_Device_Certificate(LIBMTP_mtpdevice_t *, char * *)
+	int LIBMTP_Send_Track_From_Handler(LIBMTP_mtpdevice_t *, MTPDataGetFunc, void *, LIBMTP_track_t *, LIBMTP_progressfunc_t, void *)
 	char * LIBMTP_Get_Deviceversion(LIBMTP_mtpdevice_t *)
 	ctypedef uint16_t(*MTPDataPutFunc)(void *, void *, uint32_t, unsigned char *, uint32_t *)
 	int LIBMTP_Get_File_To_Handler(LIBMTP_mtpdevice_t *, uint32_t, MTPDataPutFunc, void *, LIBMTP_progressfunc_t, void *)
+	ctypedef unsigned int uint32_t
+	cdef struct LIBMTP_playlist_struct:
+		uint32_t playlist_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_playlist_struct * next
+	cdef struct LIBMTP_playlist_struct:
+		uint32_t playlist_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_playlist_struct * next
+	ctypedef LIBMTP_playlist_struct LIBMTP_playlist_t
 	LIBMTP_playlist_t * LIBMTP_Get_Playlist_List(LIBMTP_mtpdevice_t *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
@@ -1939,8 +1916,31 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	int LIBMTP_Set_Object_u16(LIBMTP_mtpdevice_t *, uint32_t, int, uint16_t)
 	int LIBMTP_Set_Syncpartner(LIBMTP_mtpdevice_t *, char *)
-	LIBMTP_mtpdevice_t * LIBMTP_Get_First_Device()
 	char * LIBMTP_Get_Friendlyname(LIBMTP_mtpdevice_t *)
+	ctypedef unsigned int uint32_t
+	cdef struct LIBMTP_album_struct:
+		uint32_t album_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		char * artist
+		char * composer
+		char * genre
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_album_struct * next
+	cdef struct LIBMTP_album_struct:
+		uint32_t album_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		char * artist
+		char * composer
+		char * genre
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_album_struct * next
+	ctypedef LIBMTP_album_struct LIBMTP_album_t
 	int LIBMTP_Set_Album_Name(LIBMTP_mtpdevice_t *, LIBMTP_album_t *, char *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
@@ -2452,7 +2452,7 @@ cdef extern from 'libmtp.h':
 	int LIBMTP_Get_Batterylevel(LIBMTP_mtpdevice_t *, uint8_t *, uint8_t *)
 	void LIBMTP_Release_Device(LIBMTP_mtpdevice_t *)
 	void LIBMTP_destroy_folder_t(LIBMTP_folder_t *)
-	int LIBMTP_Send_Track_From_Handler(LIBMTP_mtpdevice_t *, MTPDataGetFunc, void *, LIBMTP_track_t *, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_Get_Device_Certificate(LIBMTP_mtpdevice_t *, char * *)
 	void LIBMTP_destroy_track_t(LIBMTP_track_t *)
 	int LIBMTP_Set_Track_Name(LIBMTP_mtpdevice_t *, LIBMTP_track_t *, char *)
 	cdef enum:
@@ -2492,7 +2492,7 @@ cdef extern from 'libmtp.h':
 	void LIBMTP_Dump_Errorstack(LIBMTP_mtpdevice_t *)
 	void LIBMTP_Set_Debug(int)
 	LIBMTP_folder_t * LIBMTP_Get_Folder_List(LIBMTP_mtpdevice_t *)
-	int LIBMTP_Send_Track_From_File_Descriptor(LIBMTP_mtpdevice_t *, int, LIBMTP_track_t *, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_Get_Storage(LIBMTP_mtpdevice_t *, int)
 	LIBMTP_file_t * LIBMTP_new_file_t()
 	char * LIBMTP_Get_Filetype_Description(LIBMTP_filetype_t)
 	LIBMTP_file_t * LIBMTP_Get_Filelisting(LIBMTP_mtpdevice_t *)
@@ -3002,7 +3002,7 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_BuyFlag = 166
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	int LIBMTP_Set_Object_u32(LIBMTP_mtpdevice_t *, uint32_t, int, uint32_t)
-	void LIBMTP_destroy_file_t(LIBMTP_file_t *)
+	int LIBMTP_Set_Playlist_Name(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *, char *)
 	int LIBMTP_Create_New_Album(LIBMTP_mtpdevice_t *, LIBMTP_album_t *)
 	cdef enum:
 		LIBMTP_ERROR_NONE = 0
@@ -3541,7 +3541,7 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	char * LIBMTP_Get_Property_Description(int)
 	int LIBMTP_Set_Object_Filename(LIBMTP_mtpdevice_t *, uint32_t, char *)
-	int LIBMTP_Set_File_Name(LIBMTP_mtpdevice_t *, LIBMTP_file_t *, char *)
+	int LIBMTP_Delete_Object(LIBMTP_mtpdevice_t *, uint32_t)
 	void LIBMTP_destroy_album_t(LIBMTP_album_t *)
 	int LIBMTP_Send_File_From_File(LIBMTP_mtpdevice_t *, char *, LIBMTP_file_t *, LIBMTP_progressfunc_t, void *)
 	int LIBMTP_Format_Storage(LIBMTP_mtpdevice_t *, LIBMTP_devicestorage_t *)
@@ -4132,7 +4132,7 @@ cdef extern from 'libmtp.h':
 	LIBMTP_album_t * LIBMTP_new_album_t()
 	int LIBMTP_Reset_Device(LIBMTP_mtpdevice_t *)
 	LIBMTP_album_t * LIBMTP_Get_Album(LIBMTP_mtpdevice_t *, uint32_t)
-	int LIBMTP_Update_Playlist(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *)
+	LIBMTP_folder_t * LIBMTP_Get_Folder_List_For_Storage(LIBMTP_mtpdevice_t *, uint32_t)
 	uint32_t LIBMTP_Create_Folder(LIBMTP_mtpdevice_t *, char *, uint32_t, uint32_t)
 	LIBMTP_track_t * LIBMTP_Get_Tracklisting(LIBMTP_mtpdevice_t *)
 	int LIBMTP_Get_Track_To_File(LIBMTP_mtpdevice_t *, uint32_t, char *, LIBMTP_progressfunc_t, void *)
@@ -5154,13 +5154,13 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	uint32_t LIBMTP_Get_u32_From_Object(LIBMTP_mtpdevice_t *, uint32_t, int, uint32_t)
 	int LIBMTP_Get_Track_To_Handler(LIBMTP_mtpdevice_t *, uint32_t, MTPDataPutFunc, void *, LIBMTP_progressfunc_t, void *)
-	int LIBMTP_Get_Track_To_File_Descriptor(LIBMTP_mtpdevice_t *, uint32_t, int, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_Update_Album(LIBMTP_mtpdevice_t *, LIBMTP_album_t *)
 	char * LIBMTP_Get_Manufacturername(LIBMTP_mtpdevice_t *)
 	void LIBMTP_Release_Device_List(LIBMTP_mtpdevice_t *)
 	LIBMTP_folder_t * LIBMTP_Find_Folder(LIBMTP_folder_t *, uint32_t)
 	LIBMTP_playlist_t * LIBMTP_Get_Playlist(LIBMTP_mtpdevice_t *, uint32_t)
 	LIBMTP_playlist_t * LIBMTP_new_playlist_t()
-	int LIBMTP_Get_Storage(LIBMTP_mtpdevice_t *, int)
+	int LIBMTP_Send_Track_From_File_Descriptor(LIBMTP_mtpdevice_t *, int, LIBMTP_track_t *, LIBMTP_progressfunc_t, void *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
 	cdef enum:
@@ -5669,7 +5669,7 @@ cdef extern from 'libmtp.h':
 	int LIBMTP_Get_Allowed_Property_Values(LIBMTP_mtpdevice_t *, int, LIBMTP_filetype_t, LIBMTP_allowed_values_t *)
 	int LIBMTP_Get_Supported_Filetypes(LIBMTP_mtpdevice_t *, uint16_t * *, uint16_t *)
 	int LIBMTP_Send_File_From_File_Descriptor(LIBMTP_mtpdevice_t *, int, LIBMTP_file_t *, LIBMTP_progressfunc_t, void *)
-	int LIBMTP_Delete_Object(LIBMTP_mtpdevice_t *, uint32_t)
+	LIBMTP_mtpdevice_t * LIBMTP_Get_First_Device()
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
 	cdef enum:
@@ -6682,7 +6682,7 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_BuyFlag = 166
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	int LIBMTP_Is_Property_Supported(LIBMTP_mtpdevice_t *, int, LIBMTP_filetype_t)
-	LIBMTP_folder_t * LIBMTP_Get_Folder_List_For_Storage(LIBMTP_mtpdevice_t *, uint32_t)
+	int LIBMTP_Update_Playlist(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *)
 	LIBMTP_track_t * LIBMTP_Get_Trackmetadata(LIBMTP_mtpdevice_t *, uint32_t)
 	int LIBMTP_Create_New_Playlist(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *)
 	LIBMTP_album_t * LIBMTP_Get_Album_List(LIBMTP_mtpdevice_t *)
