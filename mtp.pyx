@@ -417,22 +417,26 @@ cdef class MediaTransfer(object):
 		if current == NULL:
 			raise Exception('LIBMTP_new_file_t failed')
 		try:
+			s = stat(source)
 			current.filename = target
-			current.storage_id = storage_id
-			current.parent_id = parent_id
+			current.filesize = s.st_size
 			current.filetype = self.find_filetype(source)
-			current.filesize = stat(source).st_size
+			current.item_id = 0
+			current.modificationdate = s.st_mtime
+			current.next = NULL
+			current.parent_id = parent_id
+			current.storage_id = storage_id
 			r = LIBMTP_Send_File_From_File(self.device, source, current, NULL, NULL)
 			if r != 0:
 				raise Exception('LIBMTP_Send_File_From_File error={}'.format(r))
 			return dict(
+				filesize=current.filesize,
+				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
+				modificationdate=datetime.fromtimestamp(current.modificationdate),
+				name=current.filename,
 				object_id=int(current.item_id),
 				parent_id=current.parent_id,
 				storage_id=current.storage_id,
-				name=current.filename,
-				filesize=current.filesize,
-				modificationdate=datetime.fromtimestamp(current.modificationdate),
-				filetype=_filetypes_reverse.get(current.filetype, str(current.filetype)),
 				)
 		finally:
 			current.filename = NULL
@@ -440,7 +444,7 @@ cdef class MediaTransfer(object):
 
 	def send_track_from_file(self, source, target, storage_id=0, parent_id=0,
 			album=None, artist=None, bitrate=None, bitratetype=None,
-			composer=None, date=None, duration=None, filename=None, genre=None,
+			composer=None, date=None, duration=None, genre=None,
 			name=None, nochannels=None, rating=None, samplerate=None,
 			title=None, tracknumber=None, usecount=None, wavecodec=None, **unused):
 		cdef LIBMTP_track_t* current = NULL
