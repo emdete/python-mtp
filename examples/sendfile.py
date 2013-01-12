@@ -16,10 +16,10 @@ def main(base, *files):
 				print('Sending {} to {}'.format(source, target))
 				metadata = mtp.send_file_from_file(source, target)
 				print('Created new file with metadata: {}'.format(metadata))
-		except:
+		except object, e:
 			for n in mtp.get_errorstack():
 				print('{errornumber}: {error_text}'.format(**n))
-			raise
+			raise e
 
 if __name__ == '__main__':
 	from sys import argv
