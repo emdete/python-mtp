@@ -1,7 +1,11 @@
+*.py[cod]
 *.c
-*.pyo
-*.pyc
 *~
 .*.sw?
 build/
+dist/
+eggs/
+sdist/
+lib/
+lib64/
 libmtp.xml
