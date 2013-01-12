@@ -17,8 +17,9 @@ directory structure below is kept as MTP exposes it.
 Be aware that on most devices contacts and messages are not backed up this way.
 Most Android devices have a feature to store all contacts to the storage in a
 single huge vcard file (and can then backed up), messages can be stored to the
-storage by apps like MessageSync and backed up then with this program out of
-the device.
+storage by apps like Message Sync (mind the space - there is another app
+without, the one i used has a letter with blue/green arrows as icon) and backed
+up then with this program out of the device.
 '''
 
 def determine_name(objects, name, parent_id=None, **v):
@@ -39,21 +40,22 @@ def main(root='.'):
 				for object_id, _object in objects.items():
 					if (_object['filetype'] != 'FOLDER'
 					# here you could filter files, i.e. by name:
-					and '20120813' in _object['name']
-					and _object['filetype'] == 'JPEG'
+					# and '2012-10' in _object['name']
 					# and 'mp4' in _object['name']
+					# or by type:
+					# and _object['filetype'] == 'JPEG'
 					):
 						name = base + '/' + determine_name(objects, **_object)
-						print('{} {} {filetype}'.format(object_id, name, **_object))
+						print('backuped: {} {} {filetype}'.format(object_id, name, **_object))
 						try: makedirs(dirname(name))
 						except: pass
 						mtp.get_file_to_file(object_id, name)
 					else:
-						pass # print('{}: {}'.format(object_id, _object))
-		except:
+						print('ignored: {} {} {filetype}'.format(object_id, _object.get('name', '-'), **_object))
+		except object, e:
 			for n in mtp.get_errorstack():
 				print('{errornumber}: {error_text}'.format(**n))
-			raise
+			raise e
 
 if __name__ == '__main__':
 	from sys import argv
