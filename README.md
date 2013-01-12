@@ -12,6 +12,9 @@ devices see there. It is implemented using cython.
 
 Simple test scripts can be found in examples/ for all major operations.
 
+Little warning: MTP is a crap and doesn't work well or reliable. Neither this
+	wrapper nor libmtp are to blame.
+
 Usage
 -----
 
