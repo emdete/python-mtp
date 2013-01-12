@@ -1,3 +1,8 @@
+python-mtp
+==========
+
+python wrapper around libmtp to talk the media transfer protocol
+
 About
 -----
 
