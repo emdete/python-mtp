@@ -9,3 +9,5 @@ sdist/
 lib/
 lib64/
 libmtp.xml
+Makefile
+sitecustomize.py
