@@ -44,7 +44,7 @@ unusual, others require this mode.
 
 On Andriod devices MTP sometimes doesn't not work if USB-debugging is enabled.
 
-If the scrennlock is active MTP is known not to work well on some devices.
+If the screenlock is active MTP is known not to work well on some devices.
 
 Some devices have problems if you wait too long with the connect after plugging
 in.
@@ -56,5 +56,8 @@ the cause of the error (they just return NULL).
 If you for example upload a file to a location / name that already exists you
 get no explicit error code but often just a -1.
 
-Setting the debugging level is of some help.
+Setting the debugging level is of some help (LIBMTP\_DEBUG=255)
+
+Some files doesn't seem to be "Media" and are not shown via mtp (for me .gpx
+files did not apear).
 
