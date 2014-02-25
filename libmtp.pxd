@@ -497,36 +497,168 @@ cdef extern from 'libmtp.h':
 	ctypedef LIBMTP_filesampledata_struct LIBMTP_filesampledata_t
 	LIBMTP_filesampledata_t * LIBMTP_new_filesampledata_t()
 	int LIBMTP_BeginEditObject(LIBMTP_mtpdevice_t *, uint32_t)
+	cdef enum:
+		LIBMTP_EVENT_NONE = 0
+	cdef enum:
+		LIBMTP_EVENT_STORE_ADDED = 1
+	cdef enum:
+		LIBMTP_EVENT_STORE_REMOVED = 2
+	cdef enum:
+		LIBMTP_EVENT_OBJECT_ADDED = 3
+	cdef enum:
+		LIBMTP_EVENT_OBJECT_REMOVED = 4
+	cdef enum LIBMTP_event_enum:
+		LIBMTP_EVENT_NONE = 0
+		LIBMTP_EVENT_STORE_ADDED = 1
+		LIBMTP_EVENT_STORE_REMOVED = 2
+		LIBMTP_EVENT_OBJECT_ADDED = 3
+		LIBMTP_EVENT_OBJECT_REMOVED = 4
+	ctypedef LIBMTP_event_enum LIBMTP_event_t
+	int LIBMTP_Read_Event(LIBMTP_mtpdevice_t *, LIBMTP_event_t *, uint32_t *)
 	int LIBMTP_Get_Representative_Sample(LIBMTP_mtpdevice_t *, uint32_t, LIBMTP_filesampledata_t *)
-	ctypedef unsigned int uint32_t
-	cdef struct LIBMTP_album_struct:
-		uint32_t album_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		char * artist
-		char * composer
-		char * genre
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_album_struct * next
-	cdef struct LIBMTP_album_struct:
-		uint32_t album_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		char * artist
-		char * composer
-		char * genre
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_album_struct * next
-	ctypedef LIBMTP_album_struct LIBMTP_album_t
-	int LIBMTP_Update_Album(LIBMTP_mtpdevice_t *, LIBMTP_album_t *)
+	ctypedef int(*LIBMTP_progressfunc_t)(uint64_t, uint64_t, void *)
+	int LIBMTP_Get_Track_To_File_Descriptor(LIBMTP_mtpdevice_t *, uint32_t, int, LIBMTP_progressfunc_t, void *)
 	uint32_t LIBMTP_Number_Devices_In_List(LIBMTP_mtpdevice_t *)
 	int LIBMTP_GetPartialObject(LIBMTP_mtpdevice_t *, uint32_t, uint64_t, uint32_t, unsigned char * *, unsigned int *)
 	ctypedef long int __time_t
 	ctypedef __time_t time_t
+	cdef enum:
+		LIBMTP_FILETYPE_FOLDER = 0
+	cdef enum:
+		LIBMTP_FILETYPE_WAV = 1
+	cdef enum:
+		LIBMTP_FILETYPE_MP3 = 2
+	cdef enum:
+		LIBMTP_FILETYPE_WMA = 3
+	cdef enum:
+		LIBMTP_FILETYPE_OGG = 4
+	cdef enum:
+		LIBMTP_FILETYPE_AUDIBLE = 5
+	cdef enum:
+		LIBMTP_FILETYPE_MP4 = 6
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+	cdef enum:
+		LIBMTP_FILETYPE_WMV = 8
+	cdef enum:
+		LIBMTP_FILETYPE_AVI = 9
+	cdef enum:
+		LIBMTP_FILETYPE_MPEG = 10
+	cdef enum:
+		LIBMTP_FILETYPE_ASF = 11
+	cdef enum:
+		LIBMTP_FILETYPE_QT = 12
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+	cdef enum:
+		LIBMTP_FILETYPE_JPEG = 14
+	cdef enum:
+		LIBMTP_FILETYPE_JFIF = 15
+	cdef enum:
+		LIBMTP_FILETYPE_TIFF = 16
+	cdef enum:
+		LIBMTP_FILETYPE_BMP = 17
+	cdef enum:
+		LIBMTP_FILETYPE_GIF = 18
+	cdef enum:
+		LIBMTP_FILETYPE_PICT = 19
+	cdef enum:
+		LIBMTP_FILETYPE_PNG = 20
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD2 = 23
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD3 = 24
+	cdef enum:
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+	cdef enum:
+		LIBMTP_FILETYPE_WINEXEC = 26
+	cdef enum:
+		LIBMTP_FILETYPE_TEXT = 27
+	cdef enum:
+		LIBMTP_FILETYPE_HTML = 28
+	cdef enum:
+		LIBMTP_FILETYPE_FIRMWARE = 29
+	cdef enum:
+		LIBMTP_FILETYPE_AAC = 30
+	cdef enum:
+		LIBMTP_FILETYPE_MEDIACARD = 31
+	cdef enum:
+		LIBMTP_FILETYPE_FLAC = 32
+	cdef enum:
+		LIBMTP_FILETYPE_MP2 = 33
+	cdef enum:
+		LIBMTP_FILETYPE_M4A = 34
+	cdef enum:
+		LIBMTP_FILETYPE_DOC = 35
+	cdef enum:
+		LIBMTP_FILETYPE_XML = 36
+	cdef enum:
+		LIBMTP_FILETYPE_XLS = 37
+	cdef enum:
+		LIBMTP_FILETYPE_PPT = 38
+	cdef enum:
+		LIBMTP_FILETYPE_MHT = 39
+	cdef enum:
+		LIBMTP_FILETYPE_JP2 = 40
+	cdef enum:
+		LIBMTP_FILETYPE_JPX = 41
+	cdef enum:
+		LIBMTP_FILETYPE_ALBUM = 42
+	cdef enum:
+		LIBMTP_FILETYPE_PLAYLIST = 43
+	cdef enum:
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	cdef enum __LIBMTP_filetype_t:
+		LIBMTP_FILETYPE_FOLDER = 0
+		LIBMTP_FILETYPE_WAV = 1
+		LIBMTP_FILETYPE_MP3 = 2
+		LIBMTP_FILETYPE_WMA = 3
+		LIBMTP_FILETYPE_OGG = 4
+		LIBMTP_FILETYPE_AUDIBLE = 5
+		LIBMTP_FILETYPE_MP4 = 6
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+		LIBMTP_FILETYPE_WMV = 8
+		LIBMTP_FILETYPE_AVI = 9
+		LIBMTP_FILETYPE_MPEG = 10
+		LIBMTP_FILETYPE_ASF = 11
+		LIBMTP_FILETYPE_QT = 12
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+		LIBMTP_FILETYPE_JPEG = 14
+		LIBMTP_FILETYPE_JFIF = 15
+		LIBMTP_FILETYPE_TIFF = 16
+		LIBMTP_FILETYPE_BMP = 17
+		LIBMTP_FILETYPE_GIF = 18
+		LIBMTP_FILETYPE_PICT = 19
+		LIBMTP_FILETYPE_PNG = 20
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+		LIBMTP_FILETYPE_VCARD2 = 23
+		LIBMTP_FILETYPE_VCARD3 = 24
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+		LIBMTP_FILETYPE_WINEXEC = 26
+		LIBMTP_FILETYPE_TEXT = 27
+		LIBMTP_FILETYPE_HTML = 28
+		LIBMTP_FILETYPE_FIRMWARE = 29
+		LIBMTP_FILETYPE_AAC = 30
+		LIBMTP_FILETYPE_MEDIACARD = 31
+		LIBMTP_FILETYPE_FLAC = 32
+		LIBMTP_FILETYPE_MP2 = 33
+		LIBMTP_FILETYPE_M4A = 34
+		LIBMTP_FILETYPE_DOC = 35
+		LIBMTP_FILETYPE_XML = 36
+		LIBMTP_FILETYPE_XLS = 37
+		LIBMTP_FILETYPE_PPT = 38
+		LIBMTP_FILETYPE_MHT = 39
+		LIBMTP_FILETYPE_JP2 = 40
+		LIBMTP_FILETYPE_JPX = 41
+		LIBMTP_FILETYPE_ALBUM = 42
+		LIBMTP_FILETYPE_PLAYLIST = 43
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	ctypedef __LIBMTP_filetype_t LIBMTP_filetype_t
 	ctypedef unsigned int uint32_t
 	ctypedef short unsigned int uint16_t
 	ctypedef long unsigned int uint64_t
@@ -719,9 +851,145 @@ cdef extern from 'libmtp.h':
 		LIBMTP_track_struct * next
 	ctypedef LIBMTP_track_struct LIBMTP_track_t
 	int LIBMTP_Update_Track_Metadata(LIBMTP_mtpdevice_t *, LIBMTP_track_t *)
-	int LIBMTP_Delete_Object(LIBMTP_mtpdevice_t *, uint32_t)
 	void LIBMTP_Clear_Errorstack(LIBMTP_mtpdevice_t *)
 	void LIBMTP_Init()
+	cdef enum:
+		LIBMTP_FILETYPE_FOLDER = 0
+	cdef enum:
+		LIBMTP_FILETYPE_WAV = 1
+	cdef enum:
+		LIBMTP_FILETYPE_MP3 = 2
+	cdef enum:
+		LIBMTP_FILETYPE_WMA = 3
+	cdef enum:
+		LIBMTP_FILETYPE_OGG = 4
+	cdef enum:
+		LIBMTP_FILETYPE_AUDIBLE = 5
+	cdef enum:
+		LIBMTP_FILETYPE_MP4 = 6
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+	cdef enum:
+		LIBMTP_FILETYPE_WMV = 8
+	cdef enum:
+		LIBMTP_FILETYPE_AVI = 9
+	cdef enum:
+		LIBMTP_FILETYPE_MPEG = 10
+	cdef enum:
+		LIBMTP_FILETYPE_ASF = 11
+	cdef enum:
+		LIBMTP_FILETYPE_QT = 12
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+	cdef enum:
+		LIBMTP_FILETYPE_JPEG = 14
+	cdef enum:
+		LIBMTP_FILETYPE_JFIF = 15
+	cdef enum:
+		LIBMTP_FILETYPE_TIFF = 16
+	cdef enum:
+		LIBMTP_FILETYPE_BMP = 17
+	cdef enum:
+		LIBMTP_FILETYPE_GIF = 18
+	cdef enum:
+		LIBMTP_FILETYPE_PICT = 19
+	cdef enum:
+		LIBMTP_FILETYPE_PNG = 20
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD2 = 23
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD3 = 24
+	cdef enum:
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+	cdef enum:
+		LIBMTP_FILETYPE_WINEXEC = 26
+	cdef enum:
+		LIBMTP_FILETYPE_TEXT = 27
+	cdef enum:
+		LIBMTP_FILETYPE_HTML = 28
+	cdef enum:
+		LIBMTP_FILETYPE_FIRMWARE = 29
+	cdef enum:
+		LIBMTP_FILETYPE_AAC = 30
+	cdef enum:
+		LIBMTP_FILETYPE_MEDIACARD = 31
+	cdef enum:
+		LIBMTP_FILETYPE_FLAC = 32
+	cdef enum:
+		LIBMTP_FILETYPE_MP2 = 33
+	cdef enum:
+		LIBMTP_FILETYPE_M4A = 34
+	cdef enum:
+		LIBMTP_FILETYPE_DOC = 35
+	cdef enum:
+		LIBMTP_FILETYPE_XML = 36
+	cdef enum:
+		LIBMTP_FILETYPE_XLS = 37
+	cdef enum:
+		LIBMTP_FILETYPE_PPT = 38
+	cdef enum:
+		LIBMTP_FILETYPE_MHT = 39
+	cdef enum:
+		LIBMTP_FILETYPE_JP2 = 40
+	cdef enum:
+		LIBMTP_FILETYPE_JPX = 41
+	cdef enum:
+		LIBMTP_FILETYPE_ALBUM = 42
+	cdef enum:
+		LIBMTP_FILETYPE_PLAYLIST = 43
+	cdef enum:
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	cdef enum __LIBMTP_filetype_t:
+		LIBMTP_FILETYPE_FOLDER = 0
+		LIBMTP_FILETYPE_WAV = 1
+		LIBMTP_FILETYPE_MP3 = 2
+		LIBMTP_FILETYPE_WMA = 3
+		LIBMTP_FILETYPE_OGG = 4
+		LIBMTP_FILETYPE_AUDIBLE = 5
+		LIBMTP_FILETYPE_MP4 = 6
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+		LIBMTP_FILETYPE_WMV = 8
+		LIBMTP_FILETYPE_AVI = 9
+		LIBMTP_FILETYPE_MPEG = 10
+		LIBMTP_FILETYPE_ASF = 11
+		LIBMTP_FILETYPE_QT = 12
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+		LIBMTP_FILETYPE_JPEG = 14
+		LIBMTP_FILETYPE_JFIF = 15
+		LIBMTP_FILETYPE_TIFF = 16
+		LIBMTP_FILETYPE_BMP = 17
+		LIBMTP_FILETYPE_GIF = 18
+		LIBMTP_FILETYPE_PICT = 19
+		LIBMTP_FILETYPE_PNG = 20
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+		LIBMTP_FILETYPE_VCARD2 = 23
+		LIBMTP_FILETYPE_VCARD3 = 24
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+		LIBMTP_FILETYPE_WINEXEC = 26
+		LIBMTP_FILETYPE_TEXT = 27
+		LIBMTP_FILETYPE_HTML = 28
+		LIBMTP_FILETYPE_FIRMWARE = 29
+		LIBMTP_FILETYPE_AAC = 30
+		LIBMTP_FILETYPE_MEDIACARD = 31
+		LIBMTP_FILETYPE_FLAC = 32
+		LIBMTP_FILETYPE_MP2 = 33
+		LIBMTP_FILETYPE_M4A = 34
+		LIBMTP_FILETYPE_DOC = 35
+		LIBMTP_FILETYPE_XML = 36
+		LIBMTP_FILETYPE_XLS = 37
+		LIBMTP_FILETYPE_PPT = 38
+		LIBMTP_FILETYPE_MHT = 39
+		LIBMTP_FILETYPE_JP2 = 40
+		LIBMTP_FILETYPE_JPX = 41
+		LIBMTP_FILETYPE_ALBUM = 42
+		LIBMTP_FILETYPE_PLAYLIST = 43
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	ctypedef __LIBMTP_filetype_t LIBMTP_filetype_t
 	ctypedef unsigned int uint32_t
 	ctypedef long unsigned int uint64_t
 	ctypedef long int __time_t
@@ -885,27 +1153,8 @@ cdef extern from 'libmtp.h':
 	LIBMTP_file_t * LIBMTP_Get_Filemetadata(LIBMTP_mtpdevice_t *, uint32_t)
 	LIBMTP_track_t * LIBMTP_new_track_t()
 	int LIBMTP_Get_Secure_Time(LIBMTP_mtpdevice_t *, char * *)
-	ctypedef int(*LIBMTP_progressfunc_t)(uint64_t, uint64_t, void *)
 	int LIBMTP_Get_File_To_File(LIBMTP_mtpdevice_t *, uint32_t, char *, LIBMTP_progressfunc_t, void *)
-	ctypedef unsigned int uint32_t
-	cdef struct LIBMTP_playlist_struct:
-		uint32_t playlist_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_playlist_struct * next
-	cdef struct LIBMTP_playlist_struct:
-		uint32_t playlist_id
-		uint32_t parent_id
-		uint32_t storage_id
-		char * name
-		uint32_t * tracks
-		uint32_t no_tracks
-		LIBMTP_playlist_struct * next
-	ctypedef LIBMTP_playlist_struct LIBMTP_playlist_t
-	int LIBMTP_Set_Playlist_Name(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *, char *)
+	void LIBMTP_destroy_file_t(LIBMTP_file_t *)
 	cdef struct LIBMTP_device_entry_struct:
 		char * vendor
 		uint16_t vendor_id
@@ -1434,6 +1683,24 @@ cdef extern from 'libmtp.h':
 	char * LIBMTP_Get_Deviceversion(LIBMTP_mtpdevice_t *)
 	ctypedef uint16_t(*MTPDataPutFunc)(void *, void *, uint32_t, unsigned char *, uint32_t *)
 	int LIBMTP_Get_File_To_Handler(LIBMTP_mtpdevice_t *, uint32_t, MTPDataPutFunc, void *, LIBMTP_progressfunc_t, void *)
+	ctypedef unsigned int uint32_t
+	cdef struct LIBMTP_playlist_struct:
+		uint32_t playlist_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_playlist_struct * next
+	cdef struct LIBMTP_playlist_struct:
+		uint32_t playlist_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_playlist_struct * next
+	ctypedef LIBMTP_playlist_struct LIBMTP_playlist_t
 	LIBMTP_playlist_t * LIBMTP_Get_Playlist_List(LIBMTP_mtpdevice_t *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
@@ -1942,7 +2209,32 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	int LIBMTP_Set_Object_u16(LIBMTP_mtpdevice_t *, uint32_t, int, uint16_t)
 	int LIBMTP_Set_Syncpartner(LIBMTP_mtpdevice_t *, char *)
+	LIBMTP_mtpdevice_t * LIBMTP_Get_First_Device()
 	char * LIBMTP_Get_Friendlyname(LIBMTP_mtpdevice_t *)
+	ctypedef unsigned int uint32_t
+	cdef struct LIBMTP_album_struct:
+		uint32_t album_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		char * artist
+		char * composer
+		char * genre
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_album_struct * next
+	cdef struct LIBMTP_album_struct:
+		uint32_t album_id
+		uint32_t parent_id
+		uint32_t storage_id
+		char * name
+		char * artist
+		char * composer
+		char * genre
+		uint32_t * tracks
+		uint32_t no_tracks
+		LIBMTP_album_struct * next
+	ctypedef LIBMTP_album_struct LIBMTP_album_t
 	int LIBMTP_Set_Album_Name(LIBMTP_mtpdevice_t *, LIBMTP_album_t *, char *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
@@ -2489,7 +2781,650 @@ cdef extern from 'libmtp.h':
 	void LIBMTP_destroy_playlist_t(LIBMTP_playlist_t *)
 	int LIBMTP_Track_Exists(LIBMTP_mtpdevice_t *, uint32_t)
 	LIBMTP_file_t * LIBMTP_Get_Files_And_Folders(LIBMTP_mtpdevice_t *, uint32_t, uint32_t)
-	int LIBMTP_Get_Representative_Sample_Format(LIBMTP_mtpdevice_t *, LIBMTP_filetype_t, LIBMTP_filesampledata_t * *)
+	cdef enum:
+		LIBMTP_PROPERTY_StorageID = 0
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectFormat = 1
+	cdef enum:
+		LIBMTP_PROPERTY_ProtectionStatus = 2
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectSize = 3
+	cdef enum:
+		LIBMTP_PROPERTY_AssociationType = 4
+	cdef enum:
+		LIBMTP_PROPERTY_AssociationDesc = 5
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectFileName = 6
+	cdef enum:
+		LIBMTP_PROPERTY_DateCreated = 7
+	cdef enum:
+		LIBMTP_PROPERTY_DateModified = 8
+	cdef enum:
+		LIBMTP_PROPERTY_Keywords = 9
+	cdef enum:
+		LIBMTP_PROPERTY_ParentObject = 10
+	cdef enum:
+		LIBMTP_PROPERTY_AllowedFolderContents = 11
+	cdef enum:
+		LIBMTP_PROPERTY_Hidden = 12
+	cdef enum:
+		LIBMTP_PROPERTY_SystemObject = 13
+	cdef enum:
+		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
+	cdef enum:
+		LIBMTP_PROPERTY_SyncID = 15
+	cdef enum:
+		LIBMTP_PROPERTY_PropertyBag = 16
+	cdef enum:
+		LIBMTP_PROPERTY_Name = 17
+	cdef enum:
+		LIBMTP_PROPERTY_CreatedBy = 18
+	cdef enum:
+		LIBMTP_PROPERTY_Artist = 19
+	cdef enum:
+		LIBMTP_PROPERTY_DateAuthored = 20
+	cdef enum:
+		LIBMTP_PROPERTY_Description = 21
+	cdef enum:
+		LIBMTP_PROPERTY_URLReference = 22
+	cdef enum:
+		LIBMTP_PROPERTY_LanguageLocale = 23
+	cdef enum:
+		LIBMTP_PROPERTY_CopyrightInformation = 24
+	cdef enum:
+		LIBMTP_PROPERTY_Source = 25
+	cdef enum:
+		LIBMTP_PROPERTY_OriginLocation = 26
+	cdef enum:
+		LIBMTP_PROPERTY_DateAdded = 27
+	cdef enum:
+		LIBMTP_PROPERTY_NonConsumable = 28
+	cdef enum:
+		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
+	cdef enum:
+		LIBMTP_PROPERTY_ProducerSerialNumber = 30
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleData = 36
+	cdef enum:
+		LIBMTP_PROPERTY_Width = 37
+	cdef enum:
+		LIBMTP_PROPERTY_Height = 38
+	cdef enum:
+		LIBMTP_PROPERTY_Duration = 39
+	cdef enum:
+		LIBMTP_PROPERTY_Rating = 40
+	cdef enum:
+		LIBMTP_PROPERTY_Track = 41
+	cdef enum:
+		LIBMTP_PROPERTY_Genre = 42
+	cdef enum:
+		LIBMTP_PROPERTY_Credits = 43
+	cdef enum:
+		LIBMTP_PROPERTY_Lyrics = 44
+	cdef enum:
+		LIBMTP_PROPERTY_SubscriptionContentID = 45
+	cdef enum:
+		LIBMTP_PROPERTY_ProducedBy = 46
+	cdef enum:
+		LIBMTP_PROPERTY_UseCount = 47
+	cdef enum:
+		LIBMTP_PROPERTY_SkipCount = 48
+	cdef enum:
+		LIBMTP_PROPERTY_LastAccessed = 49
+	cdef enum:
+		LIBMTP_PROPERTY_ParentalRating = 50
+	cdef enum:
+		LIBMTP_PROPERTY_MetaGenre = 51
+	cdef enum:
+		LIBMTP_PROPERTY_Composer = 52
+	cdef enum:
+		LIBMTP_PROPERTY_EffectiveRating = 53
+	cdef enum:
+		LIBMTP_PROPERTY_Subtitle = 54
+	cdef enum:
+		LIBMTP_PROPERTY_OriginalReleaseDate = 55
+	cdef enum:
+		LIBMTP_PROPERTY_AlbumName = 56
+	cdef enum:
+		LIBMTP_PROPERTY_AlbumArtist = 57
+	cdef enum:
+		LIBMTP_PROPERTY_Mood = 58
+	cdef enum:
+		LIBMTP_PROPERTY_DRMStatus = 59
+	cdef enum:
+		LIBMTP_PROPERTY_SubDescription = 60
+	cdef enum:
+		LIBMTP_PROPERTY_IsCropped = 61
+	cdef enum:
+		LIBMTP_PROPERTY_IsColorCorrected = 62
+	cdef enum:
+		LIBMTP_PROPERTY_ImageBitDepth = 63
+	cdef enum:
+		LIBMTP_PROPERTY_Fnumber = 64
+	cdef enum:
+		LIBMTP_PROPERTY_ExposureTime = 65
+	cdef enum:
+		LIBMTP_PROPERTY_ExposureIndex = 66
+	cdef enum:
+		LIBMTP_PROPERTY_DisplayName = 67
+	cdef enum:
+		LIBMTP_PROPERTY_BodyText = 68
+	cdef enum:
+		LIBMTP_PROPERTY_Subject = 69
+	cdef enum:
+		LIBMTP_PROPERTY_Priority = 70
+	cdef enum:
+		LIBMTP_PROPERTY_GivenName = 71
+	cdef enum:
+		LIBMTP_PROPERTY_MiddleNames = 72
+	cdef enum:
+		LIBMTP_PROPERTY_FamilyName = 73
+	cdef enum:
+		LIBMTP_PROPERTY_Prefix = 74
+	cdef enum:
+		LIBMTP_PROPERTY_Suffix = 75
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneticGivenName = 76
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneticFamilyName = 77
+	cdef enum:
+		LIBMTP_PROPERTY_EmailPrimary = 78
+	cdef enum:
+		LIBMTP_PROPERTY_EmailPersonal1 = 79
+	cdef enum:
+		LIBMTP_PROPERTY_EmailPersonal2 = 80
+	cdef enum:
+		LIBMTP_PROPERTY_EmailBusiness1 = 81
+	cdef enum:
+		LIBMTP_PROPERTY_EmailBusiness2 = 82
+	cdef enum:
+		LIBMTP_PROPERTY_EmailOthers = 83
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberMobile = 89
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
+	cdef enum:
+		LIBMTP_PROPERTY_FaxNumberPrimary = 91
+	cdef enum:
+		LIBMTP_PROPERTY_FaxNumberPersonal = 92
+	cdef enum:
+		LIBMTP_PROPERTY_FaxNumberBusiness = 93
+	cdef enum:
+		LIBMTP_PROPERTY_PagerNumber = 94
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberOthers = 95
+	cdef enum:
+		LIBMTP_PROPERTY_PrimaryWebAddress = 96
+	cdef enum:
+		LIBMTP_PROPERTY_PersonalWebAddress = 97
+	cdef enum:
+		LIBMTP_PROPERTY_BusinessWebAddress = 98
+	cdef enum:
+		LIBMTP_PROPERTY_InstantMessengerAddress = 99
+	cdef enum:
+		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
+	cdef enum:
+		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
+	cdef enum:
+		LIBMTP_PROPERTY_OrganizationName = 123
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
+	cdef enum:
+		LIBMTP_PROPERTY_Role = 125
+	cdef enum:
+		LIBMTP_PROPERTY_Birthdate = 126
+	cdef enum:
+		LIBMTP_PROPERTY_MessageTo = 127
+	cdef enum:
+		LIBMTP_PROPERTY_MessageCC = 128
+	cdef enum:
+		LIBMTP_PROPERTY_MessageBCC = 129
+	cdef enum:
+		LIBMTP_PROPERTY_MessageRead = 130
+	cdef enum:
+		LIBMTP_PROPERTY_MessageReceivedTime = 131
+	cdef enum:
+		LIBMTP_PROPERTY_MessageSender = 132
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityBeginTime = 133
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityEndTime = 134
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityLocation = 135
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityResources = 138
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityAccepted = 139
+	cdef enum:
+		LIBMTP_PROPERTY_Owner = 140
+	cdef enum:
+		LIBMTP_PROPERTY_Editor = 141
+	cdef enum:
+		LIBMTP_PROPERTY_Webmaster = 142
+	cdef enum:
+		LIBMTP_PROPERTY_URLSource = 143
+	cdef enum:
+		LIBMTP_PROPERTY_URLDestination = 144
+	cdef enum:
+		LIBMTP_PROPERTY_TimeBookmark = 145
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectBookmark = 146
+	cdef enum:
+		LIBMTP_PROPERTY_ByteBookmark = 147
+	cdef enum:
+		LIBMTP_PROPERTY_LastBuildDate = 148
+	cdef enum:
+		LIBMTP_PROPERTY_TimetoLive = 149
+	cdef enum:
+		LIBMTP_PROPERTY_MediaGUID = 150
+	cdef enum:
+		LIBMTP_PROPERTY_TotalBitRate = 151
+	cdef enum:
+		LIBMTP_PROPERTY_BitRateType = 152
+	cdef enum:
+		LIBMTP_PROPERTY_SampleRate = 153
+	cdef enum:
+		LIBMTP_PROPERTY_NumberOfChannels = 154
+	cdef enum:
+		LIBMTP_PROPERTY_AudioBitDepth = 155
+	cdef enum:
+		LIBMTP_PROPERTY_ScanDepth = 156
+	cdef enum:
+		LIBMTP_PROPERTY_AudioWAVECodec = 157
+	cdef enum:
+		LIBMTP_PROPERTY_AudioBitRate = 158
+	cdef enum:
+		LIBMTP_PROPERTY_VideoFourCCCodec = 159
+	cdef enum:
+		LIBMTP_PROPERTY_VideoBitRate = 160
+	cdef enum:
+		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
+	cdef enum:
+		LIBMTP_PROPERTY_KeyFrameDistance = 162
+	cdef enum:
+		LIBMTP_PROPERTY_BufferSize = 163
+	cdef enum:
+		LIBMTP_PROPERTY_EncodingQuality = 164
+	cdef enum:
+		LIBMTP_PROPERTY_EncodingProfile = 165
+	cdef enum:
+		LIBMTP_PROPERTY_BuyFlag = 166
+	cdef enum:
+		LIBMTP_PROPERTY_UNKNOWN = 167
+	cdef enum LIBMTP_property_t:
+		LIBMTP_PROPERTY_StorageID = 0
+		LIBMTP_PROPERTY_ObjectFormat = 1
+		LIBMTP_PROPERTY_ProtectionStatus = 2
+		LIBMTP_PROPERTY_ObjectSize = 3
+		LIBMTP_PROPERTY_AssociationType = 4
+		LIBMTP_PROPERTY_AssociationDesc = 5
+		LIBMTP_PROPERTY_ObjectFileName = 6
+		LIBMTP_PROPERTY_DateCreated = 7
+		LIBMTP_PROPERTY_DateModified = 8
+		LIBMTP_PROPERTY_Keywords = 9
+		LIBMTP_PROPERTY_ParentObject = 10
+		LIBMTP_PROPERTY_AllowedFolderContents = 11
+		LIBMTP_PROPERTY_Hidden = 12
+		LIBMTP_PROPERTY_SystemObject = 13
+		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
+		LIBMTP_PROPERTY_SyncID = 15
+		LIBMTP_PROPERTY_PropertyBag = 16
+		LIBMTP_PROPERTY_Name = 17
+		LIBMTP_PROPERTY_CreatedBy = 18
+		LIBMTP_PROPERTY_Artist = 19
+		LIBMTP_PROPERTY_DateAuthored = 20
+		LIBMTP_PROPERTY_Description = 21
+		LIBMTP_PROPERTY_URLReference = 22
+		LIBMTP_PROPERTY_LanguageLocale = 23
+		LIBMTP_PROPERTY_CopyrightInformation = 24
+		LIBMTP_PROPERTY_Source = 25
+		LIBMTP_PROPERTY_OriginLocation = 26
+		LIBMTP_PROPERTY_DateAdded = 27
+		LIBMTP_PROPERTY_NonConsumable = 28
+		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
+		LIBMTP_PROPERTY_ProducerSerialNumber = 30
+		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
+		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
+		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
+		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
+		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
+		LIBMTP_PROPERTY_RepresentativeSampleData = 36
+		LIBMTP_PROPERTY_Width = 37
+		LIBMTP_PROPERTY_Height = 38
+		LIBMTP_PROPERTY_Duration = 39
+		LIBMTP_PROPERTY_Rating = 40
+		LIBMTP_PROPERTY_Track = 41
+		LIBMTP_PROPERTY_Genre = 42
+		LIBMTP_PROPERTY_Credits = 43
+		LIBMTP_PROPERTY_Lyrics = 44
+		LIBMTP_PROPERTY_SubscriptionContentID = 45
+		LIBMTP_PROPERTY_ProducedBy = 46
+		LIBMTP_PROPERTY_UseCount = 47
+		LIBMTP_PROPERTY_SkipCount = 48
+		LIBMTP_PROPERTY_LastAccessed = 49
+		LIBMTP_PROPERTY_ParentalRating = 50
+		LIBMTP_PROPERTY_MetaGenre = 51
+		LIBMTP_PROPERTY_Composer = 52
+		LIBMTP_PROPERTY_EffectiveRating = 53
+		LIBMTP_PROPERTY_Subtitle = 54
+		LIBMTP_PROPERTY_OriginalReleaseDate = 55
+		LIBMTP_PROPERTY_AlbumName = 56
+		LIBMTP_PROPERTY_AlbumArtist = 57
+		LIBMTP_PROPERTY_Mood = 58
+		LIBMTP_PROPERTY_DRMStatus = 59
+		LIBMTP_PROPERTY_SubDescription = 60
+		LIBMTP_PROPERTY_IsCropped = 61
+		LIBMTP_PROPERTY_IsColorCorrected = 62
+		LIBMTP_PROPERTY_ImageBitDepth = 63
+		LIBMTP_PROPERTY_Fnumber = 64
+		LIBMTP_PROPERTY_ExposureTime = 65
+		LIBMTP_PROPERTY_ExposureIndex = 66
+		LIBMTP_PROPERTY_DisplayName = 67
+		LIBMTP_PROPERTY_BodyText = 68
+		LIBMTP_PROPERTY_Subject = 69
+		LIBMTP_PROPERTY_Priority = 70
+		LIBMTP_PROPERTY_GivenName = 71
+		LIBMTP_PROPERTY_MiddleNames = 72
+		LIBMTP_PROPERTY_FamilyName = 73
+		LIBMTP_PROPERTY_Prefix = 74
+		LIBMTP_PROPERTY_Suffix = 75
+		LIBMTP_PROPERTY_PhoneticGivenName = 76
+		LIBMTP_PROPERTY_PhoneticFamilyName = 77
+		LIBMTP_PROPERTY_EmailPrimary = 78
+		LIBMTP_PROPERTY_EmailPersonal1 = 79
+		LIBMTP_PROPERTY_EmailPersonal2 = 80
+		LIBMTP_PROPERTY_EmailBusiness1 = 81
+		LIBMTP_PROPERTY_EmailBusiness2 = 82
+		LIBMTP_PROPERTY_EmailOthers = 83
+		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
+		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
+		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
+		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
+		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
+		LIBMTP_PROPERTY_PhoneNumberMobile = 89
+		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
+		LIBMTP_PROPERTY_FaxNumberPrimary = 91
+		LIBMTP_PROPERTY_FaxNumberPersonal = 92
+		LIBMTP_PROPERTY_FaxNumberBusiness = 93
+		LIBMTP_PROPERTY_PagerNumber = 94
+		LIBMTP_PROPERTY_PhoneNumberOthers = 95
+		LIBMTP_PROPERTY_PrimaryWebAddress = 96
+		LIBMTP_PROPERTY_PersonalWebAddress = 97
+		LIBMTP_PROPERTY_BusinessWebAddress = 98
+		LIBMTP_PROPERTY_InstantMessengerAddress = 99
+		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
+		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
+		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
+		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
+		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
+		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
+		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
+		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
+		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
+		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
+		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
+		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
+		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
+		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
+		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
+		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
+		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
+		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
+		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
+		LIBMTP_PROPERTY_OrganizationName = 123
+		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
+		LIBMTP_PROPERTY_Role = 125
+		LIBMTP_PROPERTY_Birthdate = 126
+		LIBMTP_PROPERTY_MessageTo = 127
+		LIBMTP_PROPERTY_MessageCC = 128
+		LIBMTP_PROPERTY_MessageBCC = 129
+		LIBMTP_PROPERTY_MessageRead = 130
+		LIBMTP_PROPERTY_MessageReceivedTime = 131
+		LIBMTP_PROPERTY_MessageSender = 132
+		LIBMTP_PROPERTY_ActivityBeginTime = 133
+		LIBMTP_PROPERTY_ActivityEndTime = 134
+		LIBMTP_PROPERTY_ActivityLocation = 135
+		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
+		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
+		LIBMTP_PROPERTY_ActivityResources = 138
+		LIBMTP_PROPERTY_ActivityAccepted = 139
+		LIBMTP_PROPERTY_Owner = 140
+		LIBMTP_PROPERTY_Editor = 141
+		LIBMTP_PROPERTY_Webmaster = 142
+		LIBMTP_PROPERTY_URLSource = 143
+		LIBMTP_PROPERTY_URLDestination = 144
+		LIBMTP_PROPERTY_TimeBookmark = 145
+		LIBMTP_PROPERTY_ObjectBookmark = 146
+		LIBMTP_PROPERTY_ByteBookmark = 147
+		LIBMTP_PROPERTY_LastBuildDate = 148
+		LIBMTP_PROPERTY_TimetoLive = 149
+		LIBMTP_PROPERTY_MediaGUID = 150
+		LIBMTP_PROPERTY_TotalBitRate = 151
+		LIBMTP_PROPERTY_BitRateType = 152
+		LIBMTP_PROPERTY_SampleRate = 153
+		LIBMTP_PROPERTY_NumberOfChannels = 154
+		LIBMTP_PROPERTY_AudioBitDepth = 155
+		LIBMTP_PROPERTY_ScanDepth = 156
+		LIBMTP_PROPERTY_AudioWAVECodec = 157
+		LIBMTP_PROPERTY_AudioBitRate = 158
+		LIBMTP_PROPERTY_VideoFourCCCodec = 159
+		LIBMTP_PROPERTY_VideoBitRate = 160
+		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
+		LIBMTP_PROPERTY_KeyFrameDistance = 162
+		LIBMTP_PROPERTY_BufferSize = 163
+		LIBMTP_PROPERTY_EncodingQuality = 164
+		LIBMTP_PROPERTY_EncodingProfile = 165
+		LIBMTP_PROPERTY_BuyFlag = 166
+		LIBMTP_PROPERTY_UNKNOWN = 167
+	uint32_t LIBMTP_Get_u32_From_Object(LIBMTP_mtpdevice_t *, uint32_t, int, uint32_t)
+	cdef enum:
+		LIBMTP_FILETYPE_FOLDER = 0
+	cdef enum:
+		LIBMTP_FILETYPE_WAV = 1
+	cdef enum:
+		LIBMTP_FILETYPE_MP3 = 2
+	cdef enum:
+		LIBMTP_FILETYPE_WMA = 3
+	cdef enum:
+		LIBMTP_FILETYPE_OGG = 4
+	cdef enum:
+		LIBMTP_FILETYPE_AUDIBLE = 5
+	cdef enum:
+		LIBMTP_FILETYPE_MP4 = 6
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+	cdef enum:
+		LIBMTP_FILETYPE_WMV = 8
+	cdef enum:
+		LIBMTP_FILETYPE_AVI = 9
+	cdef enum:
+		LIBMTP_FILETYPE_MPEG = 10
+	cdef enum:
+		LIBMTP_FILETYPE_ASF = 11
+	cdef enum:
+		LIBMTP_FILETYPE_QT = 12
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+	cdef enum:
+		LIBMTP_FILETYPE_JPEG = 14
+	cdef enum:
+		LIBMTP_FILETYPE_JFIF = 15
+	cdef enum:
+		LIBMTP_FILETYPE_TIFF = 16
+	cdef enum:
+		LIBMTP_FILETYPE_BMP = 17
+	cdef enum:
+		LIBMTP_FILETYPE_GIF = 18
+	cdef enum:
+		LIBMTP_FILETYPE_PICT = 19
+	cdef enum:
+		LIBMTP_FILETYPE_PNG = 20
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD2 = 23
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD3 = 24
+	cdef enum:
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+	cdef enum:
+		LIBMTP_FILETYPE_WINEXEC = 26
+	cdef enum:
+		LIBMTP_FILETYPE_TEXT = 27
+	cdef enum:
+		LIBMTP_FILETYPE_HTML = 28
+	cdef enum:
+		LIBMTP_FILETYPE_FIRMWARE = 29
+	cdef enum:
+		LIBMTP_FILETYPE_AAC = 30
+	cdef enum:
+		LIBMTP_FILETYPE_MEDIACARD = 31
+	cdef enum:
+		LIBMTP_FILETYPE_FLAC = 32
+	cdef enum:
+		LIBMTP_FILETYPE_MP2 = 33
+	cdef enum:
+		LIBMTP_FILETYPE_M4A = 34
+	cdef enum:
+		LIBMTP_FILETYPE_DOC = 35
+	cdef enum:
+		LIBMTP_FILETYPE_XML = 36
+	cdef enum:
+		LIBMTP_FILETYPE_XLS = 37
+	cdef enum:
+		LIBMTP_FILETYPE_PPT = 38
+	cdef enum:
+		LIBMTP_FILETYPE_MHT = 39
+	cdef enum:
+		LIBMTP_FILETYPE_JP2 = 40
+	cdef enum:
+		LIBMTP_FILETYPE_JPX = 41
+	cdef enum:
+		LIBMTP_FILETYPE_ALBUM = 42
+	cdef enum:
+		LIBMTP_FILETYPE_PLAYLIST = 43
+	cdef enum:
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	cdef enum __LIBMTP_filetype_t:
+		LIBMTP_FILETYPE_FOLDER = 0
+		LIBMTP_FILETYPE_WAV = 1
+		LIBMTP_FILETYPE_MP3 = 2
+		LIBMTP_FILETYPE_WMA = 3
+		LIBMTP_FILETYPE_OGG = 4
+		LIBMTP_FILETYPE_AUDIBLE = 5
+		LIBMTP_FILETYPE_MP4 = 6
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+		LIBMTP_FILETYPE_WMV = 8
+		LIBMTP_FILETYPE_AVI = 9
+		LIBMTP_FILETYPE_MPEG = 10
+		LIBMTP_FILETYPE_ASF = 11
+		LIBMTP_FILETYPE_QT = 12
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+		LIBMTP_FILETYPE_JPEG = 14
+		LIBMTP_FILETYPE_JFIF = 15
+		LIBMTP_FILETYPE_TIFF = 16
+		LIBMTP_FILETYPE_BMP = 17
+		LIBMTP_FILETYPE_GIF = 18
+		LIBMTP_FILETYPE_PICT = 19
+		LIBMTP_FILETYPE_PNG = 20
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+		LIBMTP_FILETYPE_VCARD2 = 23
+		LIBMTP_FILETYPE_VCARD3 = 24
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+		LIBMTP_FILETYPE_WINEXEC = 26
+		LIBMTP_FILETYPE_TEXT = 27
+		LIBMTP_FILETYPE_HTML = 28
+		LIBMTP_FILETYPE_FIRMWARE = 29
+		LIBMTP_FILETYPE_AAC = 30
+		LIBMTP_FILETYPE_MEDIACARD = 31
+		LIBMTP_FILETYPE_FLAC = 32
+		LIBMTP_FILETYPE_MP2 = 33
+		LIBMTP_FILETYPE_M4A = 34
+		LIBMTP_FILETYPE_DOC = 35
+		LIBMTP_FILETYPE_XML = 36
+		LIBMTP_FILETYPE_XLS = 37
+		LIBMTP_FILETYPE_PPT = 38
+		LIBMTP_FILETYPE_MHT = 39
+		LIBMTP_FILETYPE_JP2 = 40
+		LIBMTP_FILETYPE_JPX = 41
+		LIBMTP_FILETYPE_ALBUM = 42
+		LIBMTP_FILETYPE_PLAYLIST = 43
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	ctypedef __LIBMTP_filetype_t LIBMTP_filetype_t
+	int LIBMTP_Get_Representative_Sample_Format(LIBMTP_mtpdevice_t *, int, LIBMTP_filesampledata_t * *)
 	void LIBMTP_Dump_Errorstack(LIBMTP_mtpdevice_t *)
 	void LIBMTP_Set_Debug(int)
 	cdef enum:
@@ -2505,9 +3440,146 @@ cdef extern from 'libmtp.h':
 	int LIBMTP_Check_Capability(LIBMTP_mtpdevice_t *, int)
 	int LIBMTP_Get_Thumbnail(LIBMTP_mtpdevice_t *, uint32_t, unsigned char * *, unsigned int *)
 	LIBMTP_folder_t * LIBMTP_Get_Folder_List(LIBMTP_mtpdevice_t *)
-	int LIBMTP_Send_Track_From_File_Descriptor(LIBMTP_mtpdevice_t *, int, LIBMTP_track_t *, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_SendPartialObject(LIBMTP_mtpdevice_t *, uint32_t, uint64_t, unsigned char *, unsigned int)
 	LIBMTP_file_t * LIBMTP_new_file_t()
-	char * LIBMTP_Get_Filetype_Description(LIBMTP_filetype_t)
+	cdef enum:
+		LIBMTP_FILETYPE_FOLDER = 0
+	cdef enum:
+		LIBMTP_FILETYPE_WAV = 1
+	cdef enum:
+		LIBMTP_FILETYPE_MP3 = 2
+	cdef enum:
+		LIBMTP_FILETYPE_WMA = 3
+	cdef enum:
+		LIBMTP_FILETYPE_OGG = 4
+	cdef enum:
+		LIBMTP_FILETYPE_AUDIBLE = 5
+	cdef enum:
+		LIBMTP_FILETYPE_MP4 = 6
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+	cdef enum:
+		LIBMTP_FILETYPE_WMV = 8
+	cdef enum:
+		LIBMTP_FILETYPE_AVI = 9
+	cdef enum:
+		LIBMTP_FILETYPE_MPEG = 10
+	cdef enum:
+		LIBMTP_FILETYPE_ASF = 11
+	cdef enum:
+		LIBMTP_FILETYPE_QT = 12
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+	cdef enum:
+		LIBMTP_FILETYPE_JPEG = 14
+	cdef enum:
+		LIBMTP_FILETYPE_JFIF = 15
+	cdef enum:
+		LIBMTP_FILETYPE_TIFF = 16
+	cdef enum:
+		LIBMTP_FILETYPE_BMP = 17
+	cdef enum:
+		LIBMTP_FILETYPE_GIF = 18
+	cdef enum:
+		LIBMTP_FILETYPE_PICT = 19
+	cdef enum:
+		LIBMTP_FILETYPE_PNG = 20
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD2 = 23
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD3 = 24
+	cdef enum:
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+	cdef enum:
+		LIBMTP_FILETYPE_WINEXEC = 26
+	cdef enum:
+		LIBMTP_FILETYPE_TEXT = 27
+	cdef enum:
+		LIBMTP_FILETYPE_HTML = 28
+	cdef enum:
+		LIBMTP_FILETYPE_FIRMWARE = 29
+	cdef enum:
+		LIBMTP_FILETYPE_AAC = 30
+	cdef enum:
+		LIBMTP_FILETYPE_MEDIACARD = 31
+	cdef enum:
+		LIBMTP_FILETYPE_FLAC = 32
+	cdef enum:
+		LIBMTP_FILETYPE_MP2 = 33
+	cdef enum:
+		LIBMTP_FILETYPE_M4A = 34
+	cdef enum:
+		LIBMTP_FILETYPE_DOC = 35
+	cdef enum:
+		LIBMTP_FILETYPE_XML = 36
+	cdef enum:
+		LIBMTP_FILETYPE_XLS = 37
+	cdef enum:
+		LIBMTP_FILETYPE_PPT = 38
+	cdef enum:
+		LIBMTP_FILETYPE_MHT = 39
+	cdef enum:
+		LIBMTP_FILETYPE_JP2 = 40
+	cdef enum:
+		LIBMTP_FILETYPE_JPX = 41
+	cdef enum:
+		LIBMTP_FILETYPE_ALBUM = 42
+	cdef enum:
+		LIBMTP_FILETYPE_PLAYLIST = 43
+	cdef enum:
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	cdef enum __LIBMTP_filetype_t:
+		LIBMTP_FILETYPE_FOLDER = 0
+		LIBMTP_FILETYPE_WAV = 1
+		LIBMTP_FILETYPE_MP3 = 2
+		LIBMTP_FILETYPE_WMA = 3
+		LIBMTP_FILETYPE_OGG = 4
+		LIBMTP_FILETYPE_AUDIBLE = 5
+		LIBMTP_FILETYPE_MP4 = 6
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+		LIBMTP_FILETYPE_WMV = 8
+		LIBMTP_FILETYPE_AVI = 9
+		LIBMTP_FILETYPE_MPEG = 10
+		LIBMTP_FILETYPE_ASF = 11
+		LIBMTP_FILETYPE_QT = 12
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+		LIBMTP_FILETYPE_JPEG = 14
+		LIBMTP_FILETYPE_JFIF = 15
+		LIBMTP_FILETYPE_TIFF = 16
+		LIBMTP_FILETYPE_BMP = 17
+		LIBMTP_FILETYPE_GIF = 18
+		LIBMTP_FILETYPE_PICT = 19
+		LIBMTP_FILETYPE_PNG = 20
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+		LIBMTP_FILETYPE_VCARD2 = 23
+		LIBMTP_FILETYPE_VCARD3 = 24
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+		LIBMTP_FILETYPE_WINEXEC = 26
+		LIBMTP_FILETYPE_TEXT = 27
+		LIBMTP_FILETYPE_HTML = 28
+		LIBMTP_FILETYPE_FIRMWARE = 29
+		LIBMTP_FILETYPE_AAC = 30
+		LIBMTP_FILETYPE_MEDIACARD = 31
+		LIBMTP_FILETYPE_FLAC = 32
+		LIBMTP_FILETYPE_MP2 = 33
+		LIBMTP_FILETYPE_M4A = 34
+		LIBMTP_FILETYPE_DOC = 35
+		LIBMTP_FILETYPE_XML = 36
+		LIBMTP_FILETYPE_XLS = 37
+		LIBMTP_FILETYPE_PPT = 38
+		LIBMTP_FILETYPE_MHT = 39
+		LIBMTP_FILETYPE_JP2 = 40
+		LIBMTP_FILETYPE_JPX = 41
+		LIBMTP_FILETYPE_ALBUM = 42
+		LIBMTP_FILETYPE_PLAYLIST = 43
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	ctypedef __LIBMTP_filetype_t LIBMTP_filetype_t
+	char * LIBMTP_Get_Filetype_Description(int)
 	LIBMTP_file_t * LIBMTP_Get_Filelisting(LIBMTP_mtpdevice_t *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
@@ -3015,7 +4087,7 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_BuyFlag = 166
 		LIBMTP_PROPERTY_UNKNOWN = 167
 	int LIBMTP_Set_Object_u32(LIBMTP_mtpdevice_t *, uint32_t, int, uint32_t)
-	void LIBMTP_destroy_file_t(LIBMTP_file_t *)
+	int LIBMTP_Set_Playlist_Name(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *, char *)
 	int LIBMTP_Create_New_Album(LIBMTP_mtpdevice_t *, LIBMTP_album_t *)
 	cdef enum:
 		LIBMTP_ERROR_NONE = 0
@@ -3555,514 +4627,8 @@ cdef extern from 'libmtp.h':
 	char * LIBMTP_Get_Property_Description(int)
 	int LIBMTP_EndEditObject(LIBMTP_mtpdevice_t *, uint32_t)
 	int LIBMTP_Set_Object_Filename(LIBMTP_mtpdevice_t *, uint32_t, char *)
-	LIBMTP_mtpdevice_t * LIBMTP_Get_First_Device()
+	int LIBMTP_Set_File_Name(LIBMTP_mtpdevice_t *, LIBMTP_file_t *, char *)
 	void LIBMTP_destroy_album_t(LIBMTP_album_t *)
-	cdef enum:
-		LIBMTP_PROPERTY_StorageID = 0
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectFormat = 1
-	cdef enum:
-		LIBMTP_PROPERTY_ProtectionStatus = 2
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectSize = 3
-	cdef enum:
-		LIBMTP_PROPERTY_AssociationType = 4
-	cdef enum:
-		LIBMTP_PROPERTY_AssociationDesc = 5
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectFileName = 6
-	cdef enum:
-		LIBMTP_PROPERTY_DateCreated = 7
-	cdef enum:
-		LIBMTP_PROPERTY_DateModified = 8
-	cdef enum:
-		LIBMTP_PROPERTY_Keywords = 9
-	cdef enum:
-		LIBMTP_PROPERTY_ParentObject = 10
-	cdef enum:
-		LIBMTP_PROPERTY_AllowedFolderContents = 11
-	cdef enum:
-		LIBMTP_PROPERTY_Hidden = 12
-	cdef enum:
-		LIBMTP_PROPERTY_SystemObject = 13
-	cdef enum:
-		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
-	cdef enum:
-		LIBMTP_PROPERTY_SyncID = 15
-	cdef enum:
-		LIBMTP_PROPERTY_PropertyBag = 16
-	cdef enum:
-		LIBMTP_PROPERTY_Name = 17
-	cdef enum:
-		LIBMTP_PROPERTY_CreatedBy = 18
-	cdef enum:
-		LIBMTP_PROPERTY_Artist = 19
-	cdef enum:
-		LIBMTP_PROPERTY_DateAuthored = 20
-	cdef enum:
-		LIBMTP_PROPERTY_Description = 21
-	cdef enum:
-		LIBMTP_PROPERTY_URLReference = 22
-	cdef enum:
-		LIBMTP_PROPERTY_LanguageLocale = 23
-	cdef enum:
-		LIBMTP_PROPERTY_CopyrightInformation = 24
-	cdef enum:
-		LIBMTP_PROPERTY_Source = 25
-	cdef enum:
-		LIBMTP_PROPERTY_OriginLocation = 26
-	cdef enum:
-		LIBMTP_PROPERTY_DateAdded = 27
-	cdef enum:
-		LIBMTP_PROPERTY_NonConsumable = 28
-	cdef enum:
-		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
-	cdef enum:
-		LIBMTP_PROPERTY_ProducerSerialNumber = 30
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleData = 36
-	cdef enum:
-		LIBMTP_PROPERTY_Width = 37
-	cdef enum:
-		LIBMTP_PROPERTY_Height = 38
-	cdef enum:
-		LIBMTP_PROPERTY_Duration = 39
-	cdef enum:
-		LIBMTP_PROPERTY_Rating = 40
-	cdef enum:
-		LIBMTP_PROPERTY_Track = 41
-	cdef enum:
-		LIBMTP_PROPERTY_Genre = 42
-	cdef enum:
-		LIBMTP_PROPERTY_Credits = 43
-	cdef enum:
-		LIBMTP_PROPERTY_Lyrics = 44
-	cdef enum:
-		LIBMTP_PROPERTY_SubscriptionContentID = 45
-	cdef enum:
-		LIBMTP_PROPERTY_ProducedBy = 46
-	cdef enum:
-		LIBMTP_PROPERTY_UseCount = 47
-	cdef enum:
-		LIBMTP_PROPERTY_SkipCount = 48
-	cdef enum:
-		LIBMTP_PROPERTY_LastAccessed = 49
-	cdef enum:
-		LIBMTP_PROPERTY_ParentalRating = 50
-	cdef enum:
-		LIBMTP_PROPERTY_MetaGenre = 51
-	cdef enum:
-		LIBMTP_PROPERTY_Composer = 52
-	cdef enum:
-		LIBMTP_PROPERTY_EffectiveRating = 53
-	cdef enum:
-		LIBMTP_PROPERTY_Subtitle = 54
-	cdef enum:
-		LIBMTP_PROPERTY_OriginalReleaseDate = 55
-	cdef enum:
-		LIBMTP_PROPERTY_AlbumName = 56
-	cdef enum:
-		LIBMTP_PROPERTY_AlbumArtist = 57
-	cdef enum:
-		LIBMTP_PROPERTY_Mood = 58
-	cdef enum:
-		LIBMTP_PROPERTY_DRMStatus = 59
-	cdef enum:
-		LIBMTP_PROPERTY_SubDescription = 60
-	cdef enum:
-		LIBMTP_PROPERTY_IsCropped = 61
-	cdef enum:
-		LIBMTP_PROPERTY_IsColorCorrected = 62
-	cdef enum:
-		LIBMTP_PROPERTY_ImageBitDepth = 63
-	cdef enum:
-		LIBMTP_PROPERTY_Fnumber = 64
-	cdef enum:
-		LIBMTP_PROPERTY_ExposureTime = 65
-	cdef enum:
-		LIBMTP_PROPERTY_ExposureIndex = 66
-	cdef enum:
-		LIBMTP_PROPERTY_DisplayName = 67
-	cdef enum:
-		LIBMTP_PROPERTY_BodyText = 68
-	cdef enum:
-		LIBMTP_PROPERTY_Subject = 69
-	cdef enum:
-		LIBMTP_PROPERTY_Priority = 70
-	cdef enum:
-		LIBMTP_PROPERTY_GivenName = 71
-	cdef enum:
-		LIBMTP_PROPERTY_MiddleNames = 72
-	cdef enum:
-		LIBMTP_PROPERTY_FamilyName = 73
-	cdef enum:
-		LIBMTP_PROPERTY_Prefix = 74
-	cdef enum:
-		LIBMTP_PROPERTY_Suffix = 75
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneticGivenName = 76
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneticFamilyName = 77
-	cdef enum:
-		LIBMTP_PROPERTY_EmailPrimary = 78
-	cdef enum:
-		LIBMTP_PROPERTY_EmailPersonal1 = 79
-	cdef enum:
-		LIBMTP_PROPERTY_EmailPersonal2 = 80
-	cdef enum:
-		LIBMTP_PROPERTY_EmailBusiness1 = 81
-	cdef enum:
-		LIBMTP_PROPERTY_EmailBusiness2 = 82
-	cdef enum:
-		LIBMTP_PROPERTY_EmailOthers = 83
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberMobile = 89
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
-	cdef enum:
-		LIBMTP_PROPERTY_FaxNumberPrimary = 91
-	cdef enum:
-		LIBMTP_PROPERTY_FaxNumberPersonal = 92
-	cdef enum:
-		LIBMTP_PROPERTY_FaxNumberBusiness = 93
-	cdef enum:
-		LIBMTP_PROPERTY_PagerNumber = 94
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberOthers = 95
-	cdef enum:
-		LIBMTP_PROPERTY_PrimaryWebAddress = 96
-	cdef enum:
-		LIBMTP_PROPERTY_PersonalWebAddress = 97
-	cdef enum:
-		LIBMTP_PROPERTY_BusinessWebAddress = 98
-	cdef enum:
-		LIBMTP_PROPERTY_InstantMessengerAddress = 99
-	cdef enum:
-		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
-	cdef enum:
-		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
-	cdef enum:
-		LIBMTP_PROPERTY_OrganizationName = 123
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
-	cdef enum:
-		LIBMTP_PROPERTY_Role = 125
-	cdef enum:
-		LIBMTP_PROPERTY_Birthdate = 126
-	cdef enum:
-		LIBMTP_PROPERTY_MessageTo = 127
-	cdef enum:
-		LIBMTP_PROPERTY_MessageCC = 128
-	cdef enum:
-		LIBMTP_PROPERTY_MessageBCC = 129
-	cdef enum:
-		LIBMTP_PROPERTY_MessageRead = 130
-	cdef enum:
-		LIBMTP_PROPERTY_MessageReceivedTime = 131
-	cdef enum:
-		LIBMTP_PROPERTY_MessageSender = 132
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityBeginTime = 133
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityEndTime = 134
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityLocation = 135
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityResources = 138
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityAccepted = 139
-	cdef enum:
-		LIBMTP_PROPERTY_Owner = 140
-	cdef enum:
-		LIBMTP_PROPERTY_Editor = 141
-	cdef enum:
-		LIBMTP_PROPERTY_Webmaster = 142
-	cdef enum:
-		LIBMTP_PROPERTY_URLSource = 143
-	cdef enum:
-		LIBMTP_PROPERTY_URLDestination = 144
-	cdef enum:
-		LIBMTP_PROPERTY_TimeBookmark = 145
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectBookmark = 146
-	cdef enum:
-		LIBMTP_PROPERTY_ByteBookmark = 147
-	cdef enum:
-		LIBMTP_PROPERTY_LastBuildDate = 148
-	cdef enum:
-		LIBMTP_PROPERTY_TimetoLive = 149
-	cdef enum:
-		LIBMTP_PROPERTY_MediaGUID = 150
-	cdef enum:
-		LIBMTP_PROPERTY_TotalBitRate = 151
-	cdef enum:
-		LIBMTP_PROPERTY_BitRateType = 152
-	cdef enum:
-		LIBMTP_PROPERTY_SampleRate = 153
-	cdef enum:
-		LIBMTP_PROPERTY_NumberOfChannels = 154
-	cdef enum:
-		LIBMTP_PROPERTY_AudioBitDepth = 155
-	cdef enum:
-		LIBMTP_PROPERTY_ScanDepth = 156
-	cdef enum:
-		LIBMTP_PROPERTY_AudioWAVECodec = 157
-	cdef enum:
-		LIBMTP_PROPERTY_AudioBitRate = 158
-	cdef enum:
-		LIBMTP_PROPERTY_VideoFourCCCodec = 159
-	cdef enum:
-		LIBMTP_PROPERTY_VideoBitRate = 160
-	cdef enum:
-		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
-	cdef enum:
-		LIBMTP_PROPERTY_KeyFrameDistance = 162
-	cdef enum:
-		LIBMTP_PROPERTY_BufferSize = 163
-	cdef enum:
-		LIBMTP_PROPERTY_EncodingQuality = 164
-	cdef enum:
-		LIBMTP_PROPERTY_EncodingProfile = 165
-	cdef enum:
-		LIBMTP_PROPERTY_BuyFlag = 166
-	cdef enum:
-		LIBMTP_PROPERTY_UNKNOWN = 167
-	cdef enum LIBMTP_property_t:
-		LIBMTP_PROPERTY_StorageID = 0
-		LIBMTP_PROPERTY_ObjectFormat = 1
-		LIBMTP_PROPERTY_ProtectionStatus = 2
-		LIBMTP_PROPERTY_ObjectSize = 3
-		LIBMTP_PROPERTY_AssociationType = 4
-		LIBMTP_PROPERTY_AssociationDesc = 5
-		LIBMTP_PROPERTY_ObjectFileName = 6
-		LIBMTP_PROPERTY_DateCreated = 7
-		LIBMTP_PROPERTY_DateModified = 8
-		LIBMTP_PROPERTY_Keywords = 9
-		LIBMTP_PROPERTY_ParentObject = 10
-		LIBMTP_PROPERTY_AllowedFolderContents = 11
-		LIBMTP_PROPERTY_Hidden = 12
-		LIBMTP_PROPERTY_SystemObject = 13
-		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
-		LIBMTP_PROPERTY_SyncID = 15
-		LIBMTP_PROPERTY_PropertyBag = 16
-		LIBMTP_PROPERTY_Name = 17
-		LIBMTP_PROPERTY_CreatedBy = 18
-		LIBMTP_PROPERTY_Artist = 19
-		LIBMTP_PROPERTY_DateAuthored = 20
-		LIBMTP_PROPERTY_Description = 21
-		LIBMTP_PROPERTY_URLReference = 22
-		LIBMTP_PROPERTY_LanguageLocale = 23
-		LIBMTP_PROPERTY_CopyrightInformation = 24
-		LIBMTP_PROPERTY_Source = 25
-		LIBMTP_PROPERTY_OriginLocation = 26
-		LIBMTP_PROPERTY_DateAdded = 27
-		LIBMTP_PROPERTY_NonConsumable = 28
-		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
-		LIBMTP_PROPERTY_ProducerSerialNumber = 30
-		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
-		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
-		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
-		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
-		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
-		LIBMTP_PROPERTY_RepresentativeSampleData = 36
-		LIBMTP_PROPERTY_Width = 37
-		LIBMTP_PROPERTY_Height = 38
-		LIBMTP_PROPERTY_Duration = 39
-		LIBMTP_PROPERTY_Rating = 40
-		LIBMTP_PROPERTY_Track = 41
-		LIBMTP_PROPERTY_Genre = 42
-		LIBMTP_PROPERTY_Credits = 43
-		LIBMTP_PROPERTY_Lyrics = 44
-		LIBMTP_PROPERTY_SubscriptionContentID = 45
-		LIBMTP_PROPERTY_ProducedBy = 46
-		LIBMTP_PROPERTY_UseCount = 47
-		LIBMTP_PROPERTY_SkipCount = 48
-		LIBMTP_PROPERTY_LastAccessed = 49
-		LIBMTP_PROPERTY_ParentalRating = 50
-		LIBMTP_PROPERTY_MetaGenre = 51
-		LIBMTP_PROPERTY_Composer = 52
-		LIBMTP_PROPERTY_EffectiveRating = 53
-		LIBMTP_PROPERTY_Subtitle = 54
-		LIBMTP_PROPERTY_OriginalReleaseDate = 55
-		LIBMTP_PROPERTY_AlbumName = 56
-		LIBMTP_PROPERTY_AlbumArtist = 57
-		LIBMTP_PROPERTY_Mood = 58
-		LIBMTP_PROPERTY_DRMStatus = 59
-		LIBMTP_PROPERTY_SubDescription = 60
-		LIBMTP_PROPERTY_IsCropped = 61
-		LIBMTP_PROPERTY_IsColorCorrected = 62
-		LIBMTP_PROPERTY_ImageBitDepth = 63
-		LIBMTP_PROPERTY_Fnumber = 64
-		LIBMTP_PROPERTY_ExposureTime = 65
-		LIBMTP_PROPERTY_ExposureIndex = 66
-		LIBMTP_PROPERTY_DisplayName = 67
-		LIBMTP_PROPERTY_BodyText = 68
-		LIBMTP_PROPERTY_Subject = 69
-		LIBMTP_PROPERTY_Priority = 70
-		LIBMTP_PROPERTY_GivenName = 71
-		LIBMTP_PROPERTY_MiddleNames = 72
-		LIBMTP_PROPERTY_FamilyName = 73
-		LIBMTP_PROPERTY_Prefix = 74
-		LIBMTP_PROPERTY_Suffix = 75
-		LIBMTP_PROPERTY_PhoneticGivenName = 76
-		LIBMTP_PROPERTY_PhoneticFamilyName = 77
-		LIBMTP_PROPERTY_EmailPrimary = 78
-		LIBMTP_PROPERTY_EmailPersonal1 = 79
-		LIBMTP_PROPERTY_EmailPersonal2 = 80
-		LIBMTP_PROPERTY_EmailBusiness1 = 81
-		LIBMTP_PROPERTY_EmailBusiness2 = 82
-		LIBMTP_PROPERTY_EmailOthers = 83
-		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
-		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
-		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
-		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
-		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
-		LIBMTP_PROPERTY_PhoneNumberMobile = 89
-		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
-		LIBMTP_PROPERTY_FaxNumberPrimary = 91
-		LIBMTP_PROPERTY_FaxNumberPersonal = 92
-		LIBMTP_PROPERTY_FaxNumberBusiness = 93
-		LIBMTP_PROPERTY_PagerNumber = 94
-		LIBMTP_PROPERTY_PhoneNumberOthers = 95
-		LIBMTP_PROPERTY_PrimaryWebAddress = 96
-		LIBMTP_PROPERTY_PersonalWebAddress = 97
-		LIBMTP_PROPERTY_BusinessWebAddress = 98
-		LIBMTP_PROPERTY_InstantMessengerAddress = 99
-		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
-		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
-		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
-		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
-		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
-		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
-		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
-		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
-		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
-		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
-		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
-		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
-		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
-		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
-		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
-		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
-		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
-		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
-		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
-		LIBMTP_PROPERTY_OrganizationName = 123
-		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
-		LIBMTP_PROPERTY_Role = 125
-		LIBMTP_PROPERTY_Birthdate = 126
-		LIBMTP_PROPERTY_MessageTo = 127
-		LIBMTP_PROPERTY_MessageCC = 128
-		LIBMTP_PROPERTY_MessageBCC = 129
-		LIBMTP_PROPERTY_MessageRead = 130
-		LIBMTP_PROPERTY_MessageReceivedTime = 131
-		LIBMTP_PROPERTY_MessageSender = 132
-		LIBMTP_PROPERTY_ActivityBeginTime = 133
-		LIBMTP_PROPERTY_ActivityEndTime = 134
-		LIBMTP_PROPERTY_ActivityLocation = 135
-		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
-		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
-		LIBMTP_PROPERTY_ActivityResources = 138
-		LIBMTP_PROPERTY_ActivityAccepted = 139
-		LIBMTP_PROPERTY_Owner = 140
-		LIBMTP_PROPERTY_Editor = 141
-		LIBMTP_PROPERTY_Webmaster = 142
-		LIBMTP_PROPERTY_URLSource = 143
-		LIBMTP_PROPERTY_URLDestination = 144
-		LIBMTP_PROPERTY_TimeBookmark = 145
-		LIBMTP_PROPERTY_ObjectBookmark = 146
-		LIBMTP_PROPERTY_ByteBookmark = 147
-		LIBMTP_PROPERTY_LastBuildDate = 148
-		LIBMTP_PROPERTY_TimetoLive = 149
-		LIBMTP_PROPERTY_MediaGUID = 150
-		LIBMTP_PROPERTY_TotalBitRate = 151
-		LIBMTP_PROPERTY_BitRateType = 152
-		LIBMTP_PROPERTY_SampleRate = 153
-		LIBMTP_PROPERTY_NumberOfChannels = 154
-		LIBMTP_PROPERTY_AudioBitDepth = 155
-		LIBMTP_PROPERTY_ScanDepth = 156
-		LIBMTP_PROPERTY_AudioWAVECodec = 157
-		LIBMTP_PROPERTY_AudioBitRate = 158
-		LIBMTP_PROPERTY_VideoFourCCCodec = 159
-		LIBMTP_PROPERTY_VideoBitRate = 160
-		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
-		LIBMTP_PROPERTY_KeyFrameDistance = 162
-		LIBMTP_PROPERTY_BufferSize = 163
-		LIBMTP_PROPERTY_EncodingQuality = 164
-		LIBMTP_PROPERTY_EncodingProfile = 165
-		LIBMTP_PROPERTY_BuyFlag = 166
-		LIBMTP_PROPERTY_UNKNOWN = 167
-	uint16_t LIBMTP_Get_u16_From_Object(LIBMTP_mtpdevice_t *, uint32_t, int, uint16_t)
 	int LIBMTP_Send_File_From_File(LIBMTP_mtpdevice_t *, char *, LIBMTP_file_t *, LIBMTP_progressfunc_t, void *)
 	int LIBMTP_Format_Storage(LIBMTP_mtpdevice_t *, LIBMTP_devicestorage_t *)
 	char * LIBMTP_Get_Modelname(LIBMTP_mtpdevice_t *)
@@ -4135,24 +4701,7 @@ cdef extern from 'libmtp.h':
 		int is_range
 	ctypedef LIBMTP_allowed_values_struct LIBMTP_allowed_values_t
 	void LIBMTP_destroy_allowed_values_t(LIBMTP_allowed_values_t *)
-	cdef enum:
-		LIBMTP_EVENT_NONE = 0
-	cdef enum:
-		LIBMTP_EVENT_STORE_ADDED = 1
-	cdef enum:
-		LIBMTP_EVENT_STORE_REMOVED = 2
-	cdef enum:
-		LIBMTP_EVENT_OBJECT_ADDED = 3
-	cdef enum:
-		LIBMTP_EVENT_OBJECT_REMOVED = 4
-	cdef enum LIBMTP_event_enum:
-		LIBMTP_EVENT_NONE = 0
-		LIBMTP_EVENT_STORE_ADDED = 1
-		LIBMTP_EVENT_STORE_REMOVED = 2
-		LIBMTP_EVENT_OBJECT_ADDED = 3
-		LIBMTP_EVENT_OBJECT_REMOVED = 4
-	ctypedef LIBMTP_event_enum LIBMTP_event_t
-	int LIBMTP_Read_Event(LIBMTP_mtpdevice_t *, LIBMTP_event_t *, uint32_t *)
+	void LIBMTP_Release_Device_List(LIBMTP_mtpdevice_t *)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
 	cdef enum:
@@ -4667,7 +5216,6 @@ cdef extern from 'libmtp.h':
 	LIBMTP_folder_t * LIBMTP_Get_Folder_List_For_Storage(LIBMTP_mtpdevice_t *, uint32_t)
 	uint32_t LIBMTP_Create_Folder(LIBMTP_mtpdevice_t *, char *, uint32_t, uint32_t)
 	LIBMTP_track_t * LIBMTP_Get_Tracklisting(LIBMTP_mtpdevice_t *)
-	int LIBMTP_SendPartialObject(LIBMTP_mtpdevice_t *, uint32_t, uint64_t, unsigned char *, unsigned int)
 	int LIBMTP_Get_Track_To_File(LIBMTP_mtpdevice_t *, uint32_t, char *, LIBMTP_progressfunc_t, void *)
 	int LIBMTP_Send_Representative_Sample(LIBMTP_mtpdevice_t *, uint32_t, LIBMTP_filesampledata_t *)
 	cdef enum:
@@ -5180,517 +5728,12 @@ cdef extern from 'libmtp.h':
 	int LIBMTP_Get_Supported_Devices_List(LIBMTP_device_entry_t * *, int *)
 	int LIBMTP_Check_Specific_Device(int, int)
 	char * LIBMTP_Get_Serialnumber(LIBMTP_mtpdevice_t *)
-	cdef enum:
-		LIBMTP_PROPERTY_StorageID = 0
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectFormat = 1
-	cdef enum:
-		LIBMTP_PROPERTY_ProtectionStatus = 2
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectSize = 3
-	cdef enum:
-		LIBMTP_PROPERTY_AssociationType = 4
-	cdef enum:
-		LIBMTP_PROPERTY_AssociationDesc = 5
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectFileName = 6
-	cdef enum:
-		LIBMTP_PROPERTY_DateCreated = 7
-	cdef enum:
-		LIBMTP_PROPERTY_DateModified = 8
-	cdef enum:
-		LIBMTP_PROPERTY_Keywords = 9
-	cdef enum:
-		LIBMTP_PROPERTY_ParentObject = 10
-	cdef enum:
-		LIBMTP_PROPERTY_AllowedFolderContents = 11
-	cdef enum:
-		LIBMTP_PROPERTY_Hidden = 12
-	cdef enum:
-		LIBMTP_PROPERTY_SystemObject = 13
-	cdef enum:
-		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
-	cdef enum:
-		LIBMTP_PROPERTY_SyncID = 15
-	cdef enum:
-		LIBMTP_PROPERTY_PropertyBag = 16
-	cdef enum:
-		LIBMTP_PROPERTY_Name = 17
-	cdef enum:
-		LIBMTP_PROPERTY_CreatedBy = 18
-	cdef enum:
-		LIBMTP_PROPERTY_Artist = 19
-	cdef enum:
-		LIBMTP_PROPERTY_DateAuthored = 20
-	cdef enum:
-		LIBMTP_PROPERTY_Description = 21
-	cdef enum:
-		LIBMTP_PROPERTY_URLReference = 22
-	cdef enum:
-		LIBMTP_PROPERTY_LanguageLocale = 23
-	cdef enum:
-		LIBMTP_PROPERTY_CopyrightInformation = 24
-	cdef enum:
-		LIBMTP_PROPERTY_Source = 25
-	cdef enum:
-		LIBMTP_PROPERTY_OriginLocation = 26
-	cdef enum:
-		LIBMTP_PROPERTY_DateAdded = 27
-	cdef enum:
-		LIBMTP_PROPERTY_NonConsumable = 28
-	cdef enum:
-		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
-	cdef enum:
-		LIBMTP_PROPERTY_ProducerSerialNumber = 30
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
-	cdef enum:
-		LIBMTP_PROPERTY_RepresentativeSampleData = 36
-	cdef enum:
-		LIBMTP_PROPERTY_Width = 37
-	cdef enum:
-		LIBMTP_PROPERTY_Height = 38
-	cdef enum:
-		LIBMTP_PROPERTY_Duration = 39
-	cdef enum:
-		LIBMTP_PROPERTY_Rating = 40
-	cdef enum:
-		LIBMTP_PROPERTY_Track = 41
-	cdef enum:
-		LIBMTP_PROPERTY_Genre = 42
-	cdef enum:
-		LIBMTP_PROPERTY_Credits = 43
-	cdef enum:
-		LIBMTP_PROPERTY_Lyrics = 44
-	cdef enum:
-		LIBMTP_PROPERTY_SubscriptionContentID = 45
-	cdef enum:
-		LIBMTP_PROPERTY_ProducedBy = 46
-	cdef enum:
-		LIBMTP_PROPERTY_UseCount = 47
-	cdef enum:
-		LIBMTP_PROPERTY_SkipCount = 48
-	cdef enum:
-		LIBMTP_PROPERTY_LastAccessed = 49
-	cdef enum:
-		LIBMTP_PROPERTY_ParentalRating = 50
-	cdef enum:
-		LIBMTP_PROPERTY_MetaGenre = 51
-	cdef enum:
-		LIBMTP_PROPERTY_Composer = 52
-	cdef enum:
-		LIBMTP_PROPERTY_EffectiveRating = 53
-	cdef enum:
-		LIBMTP_PROPERTY_Subtitle = 54
-	cdef enum:
-		LIBMTP_PROPERTY_OriginalReleaseDate = 55
-	cdef enum:
-		LIBMTP_PROPERTY_AlbumName = 56
-	cdef enum:
-		LIBMTP_PROPERTY_AlbumArtist = 57
-	cdef enum:
-		LIBMTP_PROPERTY_Mood = 58
-	cdef enum:
-		LIBMTP_PROPERTY_DRMStatus = 59
-	cdef enum:
-		LIBMTP_PROPERTY_SubDescription = 60
-	cdef enum:
-		LIBMTP_PROPERTY_IsCropped = 61
-	cdef enum:
-		LIBMTP_PROPERTY_IsColorCorrected = 62
-	cdef enum:
-		LIBMTP_PROPERTY_ImageBitDepth = 63
-	cdef enum:
-		LIBMTP_PROPERTY_Fnumber = 64
-	cdef enum:
-		LIBMTP_PROPERTY_ExposureTime = 65
-	cdef enum:
-		LIBMTP_PROPERTY_ExposureIndex = 66
-	cdef enum:
-		LIBMTP_PROPERTY_DisplayName = 67
-	cdef enum:
-		LIBMTP_PROPERTY_BodyText = 68
-	cdef enum:
-		LIBMTP_PROPERTY_Subject = 69
-	cdef enum:
-		LIBMTP_PROPERTY_Priority = 70
-	cdef enum:
-		LIBMTP_PROPERTY_GivenName = 71
-	cdef enum:
-		LIBMTP_PROPERTY_MiddleNames = 72
-	cdef enum:
-		LIBMTP_PROPERTY_FamilyName = 73
-	cdef enum:
-		LIBMTP_PROPERTY_Prefix = 74
-	cdef enum:
-		LIBMTP_PROPERTY_Suffix = 75
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneticGivenName = 76
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneticFamilyName = 77
-	cdef enum:
-		LIBMTP_PROPERTY_EmailPrimary = 78
-	cdef enum:
-		LIBMTP_PROPERTY_EmailPersonal1 = 79
-	cdef enum:
-		LIBMTP_PROPERTY_EmailPersonal2 = 80
-	cdef enum:
-		LIBMTP_PROPERTY_EmailBusiness1 = 81
-	cdef enum:
-		LIBMTP_PROPERTY_EmailBusiness2 = 82
-	cdef enum:
-		LIBMTP_PROPERTY_EmailOthers = 83
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberMobile = 89
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
-	cdef enum:
-		LIBMTP_PROPERTY_FaxNumberPrimary = 91
-	cdef enum:
-		LIBMTP_PROPERTY_FaxNumberPersonal = 92
-	cdef enum:
-		LIBMTP_PROPERTY_FaxNumberBusiness = 93
-	cdef enum:
-		LIBMTP_PROPERTY_PagerNumber = 94
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneNumberOthers = 95
-	cdef enum:
-		LIBMTP_PROPERTY_PrimaryWebAddress = 96
-	cdef enum:
-		LIBMTP_PROPERTY_PersonalWebAddress = 97
-	cdef enum:
-		LIBMTP_PROPERTY_BusinessWebAddress = 98
-	cdef enum:
-		LIBMTP_PROPERTY_InstantMessengerAddress = 99
-	cdef enum:
-		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
-	cdef enum:
-		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
-	cdef enum:
-		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
-	cdef enum:
-		LIBMTP_PROPERTY_OrganizationName = 123
-	cdef enum:
-		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
-	cdef enum:
-		LIBMTP_PROPERTY_Role = 125
-	cdef enum:
-		LIBMTP_PROPERTY_Birthdate = 126
-	cdef enum:
-		LIBMTP_PROPERTY_MessageTo = 127
-	cdef enum:
-		LIBMTP_PROPERTY_MessageCC = 128
-	cdef enum:
-		LIBMTP_PROPERTY_MessageBCC = 129
-	cdef enum:
-		LIBMTP_PROPERTY_MessageRead = 130
-	cdef enum:
-		LIBMTP_PROPERTY_MessageReceivedTime = 131
-	cdef enum:
-		LIBMTP_PROPERTY_MessageSender = 132
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityBeginTime = 133
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityEndTime = 134
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityLocation = 135
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityResources = 138
-	cdef enum:
-		LIBMTP_PROPERTY_ActivityAccepted = 139
-	cdef enum:
-		LIBMTP_PROPERTY_Owner = 140
-	cdef enum:
-		LIBMTP_PROPERTY_Editor = 141
-	cdef enum:
-		LIBMTP_PROPERTY_Webmaster = 142
-	cdef enum:
-		LIBMTP_PROPERTY_URLSource = 143
-	cdef enum:
-		LIBMTP_PROPERTY_URLDestination = 144
-	cdef enum:
-		LIBMTP_PROPERTY_TimeBookmark = 145
-	cdef enum:
-		LIBMTP_PROPERTY_ObjectBookmark = 146
-	cdef enum:
-		LIBMTP_PROPERTY_ByteBookmark = 147
-	cdef enum:
-		LIBMTP_PROPERTY_LastBuildDate = 148
-	cdef enum:
-		LIBMTP_PROPERTY_TimetoLive = 149
-	cdef enum:
-		LIBMTP_PROPERTY_MediaGUID = 150
-	cdef enum:
-		LIBMTP_PROPERTY_TotalBitRate = 151
-	cdef enum:
-		LIBMTP_PROPERTY_BitRateType = 152
-	cdef enum:
-		LIBMTP_PROPERTY_SampleRate = 153
-	cdef enum:
-		LIBMTP_PROPERTY_NumberOfChannels = 154
-	cdef enum:
-		LIBMTP_PROPERTY_AudioBitDepth = 155
-	cdef enum:
-		LIBMTP_PROPERTY_ScanDepth = 156
-	cdef enum:
-		LIBMTP_PROPERTY_AudioWAVECodec = 157
-	cdef enum:
-		LIBMTP_PROPERTY_AudioBitRate = 158
-	cdef enum:
-		LIBMTP_PROPERTY_VideoFourCCCodec = 159
-	cdef enum:
-		LIBMTP_PROPERTY_VideoBitRate = 160
-	cdef enum:
-		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
-	cdef enum:
-		LIBMTP_PROPERTY_KeyFrameDistance = 162
-	cdef enum:
-		LIBMTP_PROPERTY_BufferSize = 163
-	cdef enum:
-		LIBMTP_PROPERTY_EncodingQuality = 164
-	cdef enum:
-		LIBMTP_PROPERTY_EncodingProfile = 165
-	cdef enum:
-		LIBMTP_PROPERTY_BuyFlag = 166
-	cdef enum:
-		LIBMTP_PROPERTY_UNKNOWN = 167
-	cdef enum LIBMTP_property_t:
-		LIBMTP_PROPERTY_StorageID = 0
-		LIBMTP_PROPERTY_ObjectFormat = 1
-		LIBMTP_PROPERTY_ProtectionStatus = 2
-		LIBMTP_PROPERTY_ObjectSize = 3
-		LIBMTP_PROPERTY_AssociationType = 4
-		LIBMTP_PROPERTY_AssociationDesc = 5
-		LIBMTP_PROPERTY_ObjectFileName = 6
-		LIBMTP_PROPERTY_DateCreated = 7
-		LIBMTP_PROPERTY_DateModified = 8
-		LIBMTP_PROPERTY_Keywords = 9
-		LIBMTP_PROPERTY_ParentObject = 10
-		LIBMTP_PROPERTY_AllowedFolderContents = 11
-		LIBMTP_PROPERTY_Hidden = 12
-		LIBMTP_PROPERTY_SystemObject = 13
-		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
-		LIBMTP_PROPERTY_SyncID = 15
-		LIBMTP_PROPERTY_PropertyBag = 16
-		LIBMTP_PROPERTY_Name = 17
-		LIBMTP_PROPERTY_CreatedBy = 18
-		LIBMTP_PROPERTY_Artist = 19
-		LIBMTP_PROPERTY_DateAuthored = 20
-		LIBMTP_PROPERTY_Description = 21
-		LIBMTP_PROPERTY_URLReference = 22
-		LIBMTP_PROPERTY_LanguageLocale = 23
-		LIBMTP_PROPERTY_CopyrightInformation = 24
-		LIBMTP_PROPERTY_Source = 25
-		LIBMTP_PROPERTY_OriginLocation = 26
-		LIBMTP_PROPERTY_DateAdded = 27
-		LIBMTP_PROPERTY_NonConsumable = 28
-		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
-		LIBMTP_PROPERTY_ProducerSerialNumber = 30
-		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
-		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
-		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
-		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
-		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
-		LIBMTP_PROPERTY_RepresentativeSampleData = 36
-		LIBMTP_PROPERTY_Width = 37
-		LIBMTP_PROPERTY_Height = 38
-		LIBMTP_PROPERTY_Duration = 39
-		LIBMTP_PROPERTY_Rating = 40
-		LIBMTP_PROPERTY_Track = 41
-		LIBMTP_PROPERTY_Genre = 42
-		LIBMTP_PROPERTY_Credits = 43
-		LIBMTP_PROPERTY_Lyrics = 44
-		LIBMTP_PROPERTY_SubscriptionContentID = 45
-		LIBMTP_PROPERTY_ProducedBy = 46
-		LIBMTP_PROPERTY_UseCount = 47
-		LIBMTP_PROPERTY_SkipCount = 48
-		LIBMTP_PROPERTY_LastAccessed = 49
-		LIBMTP_PROPERTY_ParentalRating = 50
-		LIBMTP_PROPERTY_MetaGenre = 51
-		LIBMTP_PROPERTY_Composer = 52
-		LIBMTP_PROPERTY_EffectiveRating = 53
-		LIBMTP_PROPERTY_Subtitle = 54
-		LIBMTP_PROPERTY_OriginalReleaseDate = 55
-		LIBMTP_PROPERTY_AlbumName = 56
-		LIBMTP_PROPERTY_AlbumArtist = 57
-		LIBMTP_PROPERTY_Mood = 58
-		LIBMTP_PROPERTY_DRMStatus = 59
-		LIBMTP_PROPERTY_SubDescription = 60
-		LIBMTP_PROPERTY_IsCropped = 61
-		LIBMTP_PROPERTY_IsColorCorrected = 62
-		LIBMTP_PROPERTY_ImageBitDepth = 63
-		LIBMTP_PROPERTY_Fnumber = 64
-		LIBMTP_PROPERTY_ExposureTime = 65
-		LIBMTP_PROPERTY_ExposureIndex = 66
-		LIBMTP_PROPERTY_DisplayName = 67
-		LIBMTP_PROPERTY_BodyText = 68
-		LIBMTP_PROPERTY_Subject = 69
-		LIBMTP_PROPERTY_Priority = 70
-		LIBMTP_PROPERTY_GivenName = 71
-		LIBMTP_PROPERTY_MiddleNames = 72
-		LIBMTP_PROPERTY_FamilyName = 73
-		LIBMTP_PROPERTY_Prefix = 74
-		LIBMTP_PROPERTY_Suffix = 75
-		LIBMTP_PROPERTY_PhoneticGivenName = 76
-		LIBMTP_PROPERTY_PhoneticFamilyName = 77
-		LIBMTP_PROPERTY_EmailPrimary = 78
-		LIBMTP_PROPERTY_EmailPersonal1 = 79
-		LIBMTP_PROPERTY_EmailPersonal2 = 80
-		LIBMTP_PROPERTY_EmailBusiness1 = 81
-		LIBMTP_PROPERTY_EmailBusiness2 = 82
-		LIBMTP_PROPERTY_EmailOthers = 83
-		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
-		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
-		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
-		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
-		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
-		LIBMTP_PROPERTY_PhoneNumberMobile = 89
-		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
-		LIBMTP_PROPERTY_FaxNumberPrimary = 91
-		LIBMTP_PROPERTY_FaxNumberPersonal = 92
-		LIBMTP_PROPERTY_FaxNumberBusiness = 93
-		LIBMTP_PROPERTY_PagerNumber = 94
-		LIBMTP_PROPERTY_PhoneNumberOthers = 95
-		LIBMTP_PROPERTY_PrimaryWebAddress = 96
-		LIBMTP_PROPERTY_PersonalWebAddress = 97
-		LIBMTP_PROPERTY_BusinessWebAddress = 98
-		LIBMTP_PROPERTY_InstantMessengerAddress = 99
-		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
-		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
-		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
-		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
-		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
-		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
-		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
-		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
-		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
-		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
-		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
-		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
-		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
-		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
-		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
-		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
-		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
-		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
-		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
-		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
-		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
-		LIBMTP_PROPERTY_OrganizationName = 123
-		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
-		LIBMTP_PROPERTY_Role = 125
-		LIBMTP_PROPERTY_Birthdate = 126
-		LIBMTP_PROPERTY_MessageTo = 127
-		LIBMTP_PROPERTY_MessageCC = 128
-		LIBMTP_PROPERTY_MessageBCC = 129
-		LIBMTP_PROPERTY_MessageRead = 130
-		LIBMTP_PROPERTY_MessageReceivedTime = 131
-		LIBMTP_PROPERTY_MessageSender = 132
-		LIBMTP_PROPERTY_ActivityBeginTime = 133
-		LIBMTP_PROPERTY_ActivityEndTime = 134
-		LIBMTP_PROPERTY_ActivityLocation = 135
-		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
-		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
-		LIBMTP_PROPERTY_ActivityResources = 138
-		LIBMTP_PROPERTY_ActivityAccepted = 139
-		LIBMTP_PROPERTY_Owner = 140
-		LIBMTP_PROPERTY_Editor = 141
-		LIBMTP_PROPERTY_Webmaster = 142
-		LIBMTP_PROPERTY_URLSource = 143
-		LIBMTP_PROPERTY_URLDestination = 144
-		LIBMTP_PROPERTY_TimeBookmark = 145
-		LIBMTP_PROPERTY_ObjectBookmark = 146
-		LIBMTP_PROPERTY_ByteBookmark = 147
-		LIBMTP_PROPERTY_LastBuildDate = 148
-		LIBMTP_PROPERTY_TimetoLive = 149
-		LIBMTP_PROPERTY_MediaGUID = 150
-		LIBMTP_PROPERTY_TotalBitRate = 151
-		LIBMTP_PROPERTY_BitRateType = 152
-		LIBMTP_PROPERTY_SampleRate = 153
-		LIBMTP_PROPERTY_NumberOfChannels = 154
-		LIBMTP_PROPERTY_AudioBitDepth = 155
-		LIBMTP_PROPERTY_ScanDepth = 156
-		LIBMTP_PROPERTY_AudioWAVECodec = 157
-		LIBMTP_PROPERTY_AudioBitRate = 158
-		LIBMTP_PROPERTY_VideoFourCCCodec = 159
-		LIBMTP_PROPERTY_VideoBitRate = 160
-		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
-		LIBMTP_PROPERTY_KeyFrameDistance = 162
-		LIBMTP_PROPERTY_BufferSize = 163
-		LIBMTP_PROPERTY_EncodingQuality = 164
-		LIBMTP_PROPERTY_EncodingProfile = 165
-		LIBMTP_PROPERTY_BuyFlag = 166
-		LIBMTP_PROPERTY_UNKNOWN = 167
-	uint32_t LIBMTP_Get_u32_From_Object(LIBMTP_mtpdevice_t *, uint32_t, int, uint32_t)
+	LIBMTP_track_t * LIBMTP_Get_Tracklisting_With_Callback_For_Storage(LIBMTP_mtpdevice_t *, uint32_t, LIBMTP_progressfunc_t, void *)
 	int LIBMTP_Get_Track_To_Handler(LIBMTP_mtpdevice_t *, uint32_t, MTPDataPutFunc, void *, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_Send_Track_From_File_Descriptor(LIBMTP_mtpdevice_t *, int, LIBMTP_track_t *, LIBMTP_progressfunc_t, void *)
 	int LIBMTP_TruncateObject(LIBMTP_mtpdevice_t *, uint32_t, uint64_t)
-	int LIBMTP_Get_Track_To_File_Descriptor(LIBMTP_mtpdevice_t *, uint32_t, int, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_Update_Album(LIBMTP_mtpdevice_t *, LIBMTP_album_t *)
 	char * LIBMTP_Get_Manufacturername(LIBMTP_mtpdevice_t *)
-	void LIBMTP_Release_Device_List(LIBMTP_mtpdevice_t *)
 	LIBMTP_folder_t * LIBMTP_Find_Folder(LIBMTP_folder_t *, uint32_t)
 	LIBMTP_playlist_t * LIBMTP_Get_Playlist(LIBMTP_mtpdevice_t *, uint32_t)
 	LIBMTP_playlist_t * LIBMTP_new_playlist_t()
@@ -6200,11 +6243,147 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_EncodingProfile = 165
 		LIBMTP_PROPERTY_BuyFlag = 166
 		LIBMTP_PROPERTY_UNKNOWN = 167
-	int LIBMTP_Get_Allowed_Property_Values(LIBMTP_mtpdevice_t *, int, LIBMTP_filetype_t, LIBMTP_allowed_values_t *)
+	cdef enum:
+		LIBMTP_FILETYPE_FOLDER = 0
+	cdef enum:
+		LIBMTP_FILETYPE_WAV = 1
+	cdef enum:
+		LIBMTP_FILETYPE_MP3 = 2
+	cdef enum:
+		LIBMTP_FILETYPE_WMA = 3
+	cdef enum:
+		LIBMTP_FILETYPE_OGG = 4
+	cdef enum:
+		LIBMTP_FILETYPE_AUDIBLE = 5
+	cdef enum:
+		LIBMTP_FILETYPE_MP4 = 6
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+	cdef enum:
+		LIBMTP_FILETYPE_WMV = 8
+	cdef enum:
+		LIBMTP_FILETYPE_AVI = 9
+	cdef enum:
+		LIBMTP_FILETYPE_MPEG = 10
+	cdef enum:
+		LIBMTP_FILETYPE_ASF = 11
+	cdef enum:
+		LIBMTP_FILETYPE_QT = 12
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+	cdef enum:
+		LIBMTP_FILETYPE_JPEG = 14
+	cdef enum:
+		LIBMTP_FILETYPE_JFIF = 15
+	cdef enum:
+		LIBMTP_FILETYPE_TIFF = 16
+	cdef enum:
+		LIBMTP_FILETYPE_BMP = 17
+	cdef enum:
+		LIBMTP_FILETYPE_GIF = 18
+	cdef enum:
+		LIBMTP_FILETYPE_PICT = 19
+	cdef enum:
+		LIBMTP_FILETYPE_PNG = 20
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD2 = 23
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD3 = 24
+	cdef enum:
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+	cdef enum:
+		LIBMTP_FILETYPE_WINEXEC = 26
+	cdef enum:
+		LIBMTP_FILETYPE_TEXT = 27
+	cdef enum:
+		LIBMTP_FILETYPE_HTML = 28
+	cdef enum:
+		LIBMTP_FILETYPE_FIRMWARE = 29
+	cdef enum:
+		LIBMTP_FILETYPE_AAC = 30
+	cdef enum:
+		LIBMTP_FILETYPE_MEDIACARD = 31
+	cdef enum:
+		LIBMTP_FILETYPE_FLAC = 32
+	cdef enum:
+		LIBMTP_FILETYPE_MP2 = 33
+	cdef enum:
+		LIBMTP_FILETYPE_M4A = 34
+	cdef enum:
+		LIBMTP_FILETYPE_DOC = 35
+	cdef enum:
+		LIBMTP_FILETYPE_XML = 36
+	cdef enum:
+		LIBMTP_FILETYPE_XLS = 37
+	cdef enum:
+		LIBMTP_FILETYPE_PPT = 38
+	cdef enum:
+		LIBMTP_FILETYPE_MHT = 39
+	cdef enum:
+		LIBMTP_FILETYPE_JP2 = 40
+	cdef enum:
+		LIBMTP_FILETYPE_JPX = 41
+	cdef enum:
+		LIBMTP_FILETYPE_ALBUM = 42
+	cdef enum:
+		LIBMTP_FILETYPE_PLAYLIST = 43
+	cdef enum:
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	cdef enum __LIBMTP_filetype_t:
+		LIBMTP_FILETYPE_FOLDER = 0
+		LIBMTP_FILETYPE_WAV = 1
+		LIBMTP_FILETYPE_MP3 = 2
+		LIBMTP_FILETYPE_WMA = 3
+		LIBMTP_FILETYPE_OGG = 4
+		LIBMTP_FILETYPE_AUDIBLE = 5
+		LIBMTP_FILETYPE_MP4 = 6
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+		LIBMTP_FILETYPE_WMV = 8
+		LIBMTP_FILETYPE_AVI = 9
+		LIBMTP_FILETYPE_MPEG = 10
+		LIBMTP_FILETYPE_ASF = 11
+		LIBMTP_FILETYPE_QT = 12
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+		LIBMTP_FILETYPE_JPEG = 14
+		LIBMTP_FILETYPE_JFIF = 15
+		LIBMTP_FILETYPE_TIFF = 16
+		LIBMTP_FILETYPE_BMP = 17
+		LIBMTP_FILETYPE_GIF = 18
+		LIBMTP_FILETYPE_PICT = 19
+		LIBMTP_FILETYPE_PNG = 20
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+		LIBMTP_FILETYPE_VCARD2 = 23
+		LIBMTP_FILETYPE_VCARD3 = 24
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+		LIBMTP_FILETYPE_WINEXEC = 26
+		LIBMTP_FILETYPE_TEXT = 27
+		LIBMTP_FILETYPE_HTML = 28
+		LIBMTP_FILETYPE_FIRMWARE = 29
+		LIBMTP_FILETYPE_AAC = 30
+		LIBMTP_FILETYPE_MEDIACARD = 31
+		LIBMTP_FILETYPE_FLAC = 32
+		LIBMTP_FILETYPE_MP2 = 33
+		LIBMTP_FILETYPE_M4A = 34
+		LIBMTP_FILETYPE_DOC = 35
+		LIBMTP_FILETYPE_XML = 36
+		LIBMTP_FILETYPE_XLS = 37
+		LIBMTP_FILETYPE_PPT = 38
+		LIBMTP_FILETYPE_MHT = 39
+		LIBMTP_FILETYPE_JP2 = 40
+		LIBMTP_FILETYPE_JPX = 41
+		LIBMTP_FILETYPE_ALBUM = 42
+		LIBMTP_FILETYPE_PLAYLIST = 43
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	ctypedef __LIBMTP_filetype_t LIBMTP_filetype_t
+	int LIBMTP_Get_Allowed_Property_Values(LIBMTP_mtpdevice_t *, int, int, LIBMTP_allowed_values_t *)
 	int LIBMTP_Get_Supported_Filetypes(LIBMTP_mtpdevice_t *, uint16_t * *, uint16_t *)
 	int LIBMTP_Send_File_From_File_Descriptor(LIBMTP_mtpdevice_t *, int, LIBMTP_file_t *, LIBMTP_progressfunc_t, void *)
-	int LIBMTP_Set_File_Name(LIBMTP_mtpdevice_t *, LIBMTP_file_t *, char *)
-	LIBMTP_track_t * LIBMTP_Get_Tracklisting_With_Callback_For_Storage(LIBMTP_mtpdevice_t *, uint32_t, LIBMTP_progressfunc_t, void *)
+	int LIBMTP_Delete_Object(LIBMTP_mtpdevice_t *, uint32_t)
 	cdef enum:
 		LIBMTP_PROPERTY_StorageID = 0
 	cdef enum:
@@ -6710,7 +6889,650 @@ cdef extern from 'libmtp.h':
 		LIBMTP_PROPERTY_EncodingProfile = 165
 		LIBMTP_PROPERTY_BuyFlag = 166
 		LIBMTP_PROPERTY_UNKNOWN = 167
-	int LIBMTP_Is_Property_Supported(LIBMTP_mtpdevice_t *, int, LIBMTP_filetype_t)
+	uint16_t LIBMTP_Get_u16_From_Object(LIBMTP_mtpdevice_t *, uint32_t, int, uint16_t)
+	cdef enum:
+		LIBMTP_PROPERTY_StorageID = 0
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectFormat = 1
+	cdef enum:
+		LIBMTP_PROPERTY_ProtectionStatus = 2
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectSize = 3
+	cdef enum:
+		LIBMTP_PROPERTY_AssociationType = 4
+	cdef enum:
+		LIBMTP_PROPERTY_AssociationDesc = 5
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectFileName = 6
+	cdef enum:
+		LIBMTP_PROPERTY_DateCreated = 7
+	cdef enum:
+		LIBMTP_PROPERTY_DateModified = 8
+	cdef enum:
+		LIBMTP_PROPERTY_Keywords = 9
+	cdef enum:
+		LIBMTP_PROPERTY_ParentObject = 10
+	cdef enum:
+		LIBMTP_PROPERTY_AllowedFolderContents = 11
+	cdef enum:
+		LIBMTP_PROPERTY_Hidden = 12
+	cdef enum:
+		LIBMTP_PROPERTY_SystemObject = 13
+	cdef enum:
+		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
+	cdef enum:
+		LIBMTP_PROPERTY_SyncID = 15
+	cdef enum:
+		LIBMTP_PROPERTY_PropertyBag = 16
+	cdef enum:
+		LIBMTP_PROPERTY_Name = 17
+	cdef enum:
+		LIBMTP_PROPERTY_CreatedBy = 18
+	cdef enum:
+		LIBMTP_PROPERTY_Artist = 19
+	cdef enum:
+		LIBMTP_PROPERTY_DateAuthored = 20
+	cdef enum:
+		LIBMTP_PROPERTY_Description = 21
+	cdef enum:
+		LIBMTP_PROPERTY_URLReference = 22
+	cdef enum:
+		LIBMTP_PROPERTY_LanguageLocale = 23
+	cdef enum:
+		LIBMTP_PROPERTY_CopyrightInformation = 24
+	cdef enum:
+		LIBMTP_PROPERTY_Source = 25
+	cdef enum:
+		LIBMTP_PROPERTY_OriginLocation = 26
+	cdef enum:
+		LIBMTP_PROPERTY_DateAdded = 27
+	cdef enum:
+		LIBMTP_PROPERTY_NonConsumable = 28
+	cdef enum:
+		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
+	cdef enum:
+		LIBMTP_PROPERTY_ProducerSerialNumber = 30
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
+	cdef enum:
+		LIBMTP_PROPERTY_RepresentativeSampleData = 36
+	cdef enum:
+		LIBMTP_PROPERTY_Width = 37
+	cdef enum:
+		LIBMTP_PROPERTY_Height = 38
+	cdef enum:
+		LIBMTP_PROPERTY_Duration = 39
+	cdef enum:
+		LIBMTP_PROPERTY_Rating = 40
+	cdef enum:
+		LIBMTP_PROPERTY_Track = 41
+	cdef enum:
+		LIBMTP_PROPERTY_Genre = 42
+	cdef enum:
+		LIBMTP_PROPERTY_Credits = 43
+	cdef enum:
+		LIBMTP_PROPERTY_Lyrics = 44
+	cdef enum:
+		LIBMTP_PROPERTY_SubscriptionContentID = 45
+	cdef enum:
+		LIBMTP_PROPERTY_ProducedBy = 46
+	cdef enum:
+		LIBMTP_PROPERTY_UseCount = 47
+	cdef enum:
+		LIBMTP_PROPERTY_SkipCount = 48
+	cdef enum:
+		LIBMTP_PROPERTY_LastAccessed = 49
+	cdef enum:
+		LIBMTP_PROPERTY_ParentalRating = 50
+	cdef enum:
+		LIBMTP_PROPERTY_MetaGenre = 51
+	cdef enum:
+		LIBMTP_PROPERTY_Composer = 52
+	cdef enum:
+		LIBMTP_PROPERTY_EffectiveRating = 53
+	cdef enum:
+		LIBMTP_PROPERTY_Subtitle = 54
+	cdef enum:
+		LIBMTP_PROPERTY_OriginalReleaseDate = 55
+	cdef enum:
+		LIBMTP_PROPERTY_AlbumName = 56
+	cdef enum:
+		LIBMTP_PROPERTY_AlbumArtist = 57
+	cdef enum:
+		LIBMTP_PROPERTY_Mood = 58
+	cdef enum:
+		LIBMTP_PROPERTY_DRMStatus = 59
+	cdef enum:
+		LIBMTP_PROPERTY_SubDescription = 60
+	cdef enum:
+		LIBMTP_PROPERTY_IsCropped = 61
+	cdef enum:
+		LIBMTP_PROPERTY_IsColorCorrected = 62
+	cdef enum:
+		LIBMTP_PROPERTY_ImageBitDepth = 63
+	cdef enum:
+		LIBMTP_PROPERTY_Fnumber = 64
+	cdef enum:
+		LIBMTP_PROPERTY_ExposureTime = 65
+	cdef enum:
+		LIBMTP_PROPERTY_ExposureIndex = 66
+	cdef enum:
+		LIBMTP_PROPERTY_DisplayName = 67
+	cdef enum:
+		LIBMTP_PROPERTY_BodyText = 68
+	cdef enum:
+		LIBMTP_PROPERTY_Subject = 69
+	cdef enum:
+		LIBMTP_PROPERTY_Priority = 70
+	cdef enum:
+		LIBMTP_PROPERTY_GivenName = 71
+	cdef enum:
+		LIBMTP_PROPERTY_MiddleNames = 72
+	cdef enum:
+		LIBMTP_PROPERTY_FamilyName = 73
+	cdef enum:
+		LIBMTP_PROPERTY_Prefix = 74
+	cdef enum:
+		LIBMTP_PROPERTY_Suffix = 75
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneticGivenName = 76
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneticFamilyName = 77
+	cdef enum:
+		LIBMTP_PROPERTY_EmailPrimary = 78
+	cdef enum:
+		LIBMTP_PROPERTY_EmailPersonal1 = 79
+	cdef enum:
+		LIBMTP_PROPERTY_EmailPersonal2 = 80
+	cdef enum:
+		LIBMTP_PROPERTY_EmailBusiness1 = 81
+	cdef enum:
+		LIBMTP_PROPERTY_EmailBusiness2 = 82
+	cdef enum:
+		LIBMTP_PROPERTY_EmailOthers = 83
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberMobile = 89
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
+	cdef enum:
+		LIBMTP_PROPERTY_FaxNumberPrimary = 91
+	cdef enum:
+		LIBMTP_PROPERTY_FaxNumberPersonal = 92
+	cdef enum:
+		LIBMTP_PROPERTY_FaxNumberBusiness = 93
+	cdef enum:
+		LIBMTP_PROPERTY_PagerNumber = 94
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneNumberOthers = 95
+	cdef enum:
+		LIBMTP_PROPERTY_PrimaryWebAddress = 96
+	cdef enum:
+		LIBMTP_PROPERTY_PersonalWebAddress = 97
+	cdef enum:
+		LIBMTP_PROPERTY_BusinessWebAddress = 98
+	cdef enum:
+		LIBMTP_PROPERTY_InstantMessengerAddress = 99
+	cdef enum:
+		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
+	cdef enum:
+		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
+	cdef enum:
+		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
+	cdef enum:
+		LIBMTP_PROPERTY_OrganizationName = 123
+	cdef enum:
+		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
+	cdef enum:
+		LIBMTP_PROPERTY_Role = 125
+	cdef enum:
+		LIBMTP_PROPERTY_Birthdate = 126
+	cdef enum:
+		LIBMTP_PROPERTY_MessageTo = 127
+	cdef enum:
+		LIBMTP_PROPERTY_MessageCC = 128
+	cdef enum:
+		LIBMTP_PROPERTY_MessageBCC = 129
+	cdef enum:
+		LIBMTP_PROPERTY_MessageRead = 130
+	cdef enum:
+		LIBMTP_PROPERTY_MessageReceivedTime = 131
+	cdef enum:
+		LIBMTP_PROPERTY_MessageSender = 132
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityBeginTime = 133
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityEndTime = 134
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityLocation = 135
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityResources = 138
+	cdef enum:
+		LIBMTP_PROPERTY_ActivityAccepted = 139
+	cdef enum:
+		LIBMTP_PROPERTY_Owner = 140
+	cdef enum:
+		LIBMTP_PROPERTY_Editor = 141
+	cdef enum:
+		LIBMTP_PROPERTY_Webmaster = 142
+	cdef enum:
+		LIBMTP_PROPERTY_URLSource = 143
+	cdef enum:
+		LIBMTP_PROPERTY_URLDestination = 144
+	cdef enum:
+		LIBMTP_PROPERTY_TimeBookmark = 145
+	cdef enum:
+		LIBMTP_PROPERTY_ObjectBookmark = 146
+	cdef enum:
+		LIBMTP_PROPERTY_ByteBookmark = 147
+	cdef enum:
+		LIBMTP_PROPERTY_LastBuildDate = 148
+	cdef enum:
+		LIBMTP_PROPERTY_TimetoLive = 149
+	cdef enum:
+		LIBMTP_PROPERTY_MediaGUID = 150
+	cdef enum:
+		LIBMTP_PROPERTY_TotalBitRate = 151
+	cdef enum:
+		LIBMTP_PROPERTY_BitRateType = 152
+	cdef enum:
+		LIBMTP_PROPERTY_SampleRate = 153
+	cdef enum:
+		LIBMTP_PROPERTY_NumberOfChannels = 154
+	cdef enum:
+		LIBMTP_PROPERTY_AudioBitDepth = 155
+	cdef enum:
+		LIBMTP_PROPERTY_ScanDepth = 156
+	cdef enum:
+		LIBMTP_PROPERTY_AudioWAVECodec = 157
+	cdef enum:
+		LIBMTP_PROPERTY_AudioBitRate = 158
+	cdef enum:
+		LIBMTP_PROPERTY_VideoFourCCCodec = 159
+	cdef enum:
+		LIBMTP_PROPERTY_VideoBitRate = 160
+	cdef enum:
+		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
+	cdef enum:
+		LIBMTP_PROPERTY_KeyFrameDistance = 162
+	cdef enum:
+		LIBMTP_PROPERTY_BufferSize = 163
+	cdef enum:
+		LIBMTP_PROPERTY_EncodingQuality = 164
+	cdef enum:
+		LIBMTP_PROPERTY_EncodingProfile = 165
+	cdef enum:
+		LIBMTP_PROPERTY_BuyFlag = 166
+	cdef enum:
+		LIBMTP_PROPERTY_UNKNOWN = 167
+	cdef enum LIBMTP_property_t:
+		LIBMTP_PROPERTY_StorageID = 0
+		LIBMTP_PROPERTY_ObjectFormat = 1
+		LIBMTP_PROPERTY_ProtectionStatus = 2
+		LIBMTP_PROPERTY_ObjectSize = 3
+		LIBMTP_PROPERTY_AssociationType = 4
+		LIBMTP_PROPERTY_AssociationDesc = 5
+		LIBMTP_PROPERTY_ObjectFileName = 6
+		LIBMTP_PROPERTY_DateCreated = 7
+		LIBMTP_PROPERTY_DateModified = 8
+		LIBMTP_PROPERTY_Keywords = 9
+		LIBMTP_PROPERTY_ParentObject = 10
+		LIBMTP_PROPERTY_AllowedFolderContents = 11
+		LIBMTP_PROPERTY_Hidden = 12
+		LIBMTP_PROPERTY_SystemObject = 13
+		LIBMTP_PROPERTY_PersistantUniqueObjectIdentifier = 14
+		LIBMTP_PROPERTY_SyncID = 15
+		LIBMTP_PROPERTY_PropertyBag = 16
+		LIBMTP_PROPERTY_Name = 17
+		LIBMTP_PROPERTY_CreatedBy = 18
+		LIBMTP_PROPERTY_Artist = 19
+		LIBMTP_PROPERTY_DateAuthored = 20
+		LIBMTP_PROPERTY_Description = 21
+		LIBMTP_PROPERTY_URLReference = 22
+		LIBMTP_PROPERTY_LanguageLocale = 23
+		LIBMTP_PROPERTY_CopyrightInformation = 24
+		LIBMTP_PROPERTY_Source = 25
+		LIBMTP_PROPERTY_OriginLocation = 26
+		LIBMTP_PROPERTY_DateAdded = 27
+		LIBMTP_PROPERTY_NonConsumable = 28
+		LIBMTP_PROPERTY_CorruptOrUnplayable = 29
+		LIBMTP_PROPERTY_ProducerSerialNumber = 30
+		LIBMTP_PROPERTY_RepresentativeSampleFormat = 31
+		LIBMTP_PROPERTY_RepresentativeSampleSize = 32
+		LIBMTP_PROPERTY_RepresentativeSampleHeight = 33
+		LIBMTP_PROPERTY_RepresentativeSampleWidth = 34
+		LIBMTP_PROPERTY_RepresentativeSampleDuration = 35
+		LIBMTP_PROPERTY_RepresentativeSampleData = 36
+		LIBMTP_PROPERTY_Width = 37
+		LIBMTP_PROPERTY_Height = 38
+		LIBMTP_PROPERTY_Duration = 39
+		LIBMTP_PROPERTY_Rating = 40
+		LIBMTP_PROPERTY_Track = 41
+		LIBMTP_PROPERTY_Genre = 42
+		LIBMTP_PROPERTY_Credits = 43
+		LIBMTP_PROPERTY_Lyrics = 44
+		LIBMTP_PROPERTY_SubscriptionContentID = 45
+		LIBMTP_PROPERTY_ProducedBy = 46
+		LIBMTP_PROPERTY_UseCount = 47
+		LIBMTP_PROPERTY_SkipCount = 48
+		LIBMTP_PROPERTY_LastAccessed = 49
+		LIBMTP_PROPERTY_ParentalRating = 50
+		LIBMTP_PROPERTY_MetaGenre = 51
+		LIBMTP_PROPERTY_Composer = 52
+		LIBMTP_PROPERTY_EffectiveRating = 53
+		LIBMTP_PROPERTY_Subtitle = 54
+		LIBMTP_PROPERTY_OriginalReleaseDate = 55
+		LIBMTP_PROPERTY_AlbumName = 56
+		LIBMTP_PROPERTY_AlbumArtist = 57
+		LIBMTP_PROPERTY_Mood = 58
+		LIBMTP_PROPERTY_DRMStatus = 59
+		LIBMTP_PROPERTY_SubDescription = 60
+		LIBMTP_PROPERTY_IsCropped = 61
+		LIBMTP_PROPERTY_IsColorCorrected = 62
+		LIBMTP_PROPERTY_ImageBitDepth = 63
+		LIBMTP_PROPERTY_Fnumber = 64
+		LIBMTP_PROPERTY_ExposureTime = 65
+		LIBMTP_PROPERTY_ExposureIndex = 66
+		LIBMTP_PROPERTY_DisplayName = 67
+		LIBMTP_PROPERTY_BodyText = 68
+		LIBMTP_PROPERTY_Subject = 69
+		LIBMTP_PROPERTY_Priority = 70
+		LIBMTP_PROPERTY_GivenName = 71
+		LIBMTP_PROPERTY_MiddleNames = 72
+		LIBMTP_PROPERTY_FamilyName = 73
+		LIBMTP_PROPERTY_Prefix = 74
+		LIBMTP_PROPERTY_Suffix = 75
+		LIBMTP_PROPERTY_PhoneticGivenName = 76
+		LIBMTP_PROPERTY_PhoneticFamilyName = 77
+		LIBMTP_PROPERTY_EmailPrimary = 78
+		LIBMTP_PROPERTY_EmailPersonal1 = 79
+		LIBMTP_PROPERTY_EmailPersonal2 = 80
+		LIBMTP_PROPERTY_EmailBusiness1 = 81
+		LIBMTP_PROPERTY_EmailBusiness2 = 82
+		LIBMTP_PROPERTY_EmailOthers = 83
+		LIBMTP_PROPERTY_PhoneNumberPrimary = 84
+		LIBMTP_PROPERTY_PhoneNumberPersonal = 85
+		LIBMTP_PROPERTY_PhoneNumberPersonal2 = 86
+		LIBMTP_PROPERTY_PhoneNumberBusiness = 87
+		LIBMTP_PROPERTY_PhoneNumberBusiness2 = 88
+		LIBMTP_PROPERTY_PhoneNumberMobile = 89
+		LIBMTP_PROPERTY_PhoneNumberMobile2 = 90
+		LIBMTP_PROPERTY_FaxNumberPrimary = 91
+		LIBMTP_PROPERTY_FaxNumberPersonal = 92
+		LIBMTP_PROPERTY_FaxNumberBusiness = 93
+		LIBMTP_PROPERTY_PagerNumber = 94
+		LIBMTP_PROPERTY_PhoneNumberOthers = 95
+		LIBMTP_PROPERTY_PrimaryWebAddress = 96
+		LIBMTP_PROPERTY_PersonalWebAddress = 97
+		LIBMTP_PROPERTY_BusinessWebAddress = 98
+		LIBMTP_PROPERTY_InstantMessengerAddress = 99
+		LIBMTP_PROPERTY_InstantMessengerAddress2 = 100
+		LIBMTP_PROPERTY_InstantMessengerAddress3 = 101
+		LIBMTP_PROPERTY_PostalAddressPersonalFull = 102
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine1 = 103
+		LIBMTP_PROPERTY_PostalAddressPersonalFullLine2 = 104
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCity = 105
+		LIBMTP_PROPERTY_PostalAddressPersonalFullRegion = 106
+		LIBMTP_PROPERTY_PostalAddressPersonalFullPostalCode = 107
+		LIBMTP_PROPERTY_PostalAddressPersonalFullCountry = 108
+		LIBMTP_PROPERTY_PostalAddressBusinessFull = 109
+		LIBMTP_PROPERTY_PostalAddressBusinessLine1 = 110
+		LIBMTP_PROPERTY_PostalAddressBusinessLine2 = 111
+		LIBMTP_PROPERTY_PostalAddressBusinessCity = 112
+		LIBMTP_PROPERTY_PostalAddressBusinessRegion = 113
+		LIBMTP_PROPERTY_PostalAddressBusinessPostalCode = 114
+		LIBMTP_PROPERTY_PostalAddressBusinessCountry = 115
+		LIBMTP_PROPERTY_PostalAddressOtherFull = 116
+		LIBMTP_PROPERTY_PostalAddressOtherLine1 = 117
+		LIBMTP_PROPERTY_PostalAddressOtherLine2 = 118
+		LIBMTP_PROPERTY_PostalAddressOtherCity = 119
+		LIBMTP_PROPERTY_PostalAddressOtherRegion = 120
+		LIBMTP_PROPERTY_PostalAddressOtherPostalCode = 121
+		LIBMTP_PROPERTY_PostalAddressOtherCountry = 122
+		LIBMTP_PROPERTY_OrganizationName = 123
+		LIBMTP_PROPERTY_PhoneticOrganizationName = 124
+		LIBMTP_PROPERTY_Role = 125
+		LIBMTP_PROPERTY_Birthdate = 126
+		LIBMTP_PROPERTY_MessageTo = 127
+		LIBMTP_PROPERTY_MessageCC = 128
+		LIBMTP_PROPERTY_MessageBCC = 129
+		LIBMTP_PROPERTY_MessageRead = 130
+		LIBMTP_PROPERTY_MessageReceivedTime = 131
+		LIBMTP_PROPERTY_MessageSender = 132
+		LIBMTP_PROPERTY_ActivityBeginTime = 133
+		LIBMTP_PROPERTY_ActivityEndTime = 134
+		LIBMTP_PROPERTY_ActivityLocation = 135
+		LIBMTP_PROPERTY_ActivityRequiredAttendees = 136
+		LIBMTP_PROPERTY_ActivityOptionalAttendees = 137
+		LIBMTP_PROPERTY_ActivityResources = 138
+		LIBMTP_PROPERTY_ActivityAccepted = 139
+		LIBMTP_PROPERTY_Owner = 140
+		LIBMTP_PROPERTY_Editor = 141
+		LIBMTP_PROPERTY_Webmaster = 142
+		LIBMTP_PROPERTY_URLSource = 143
+		LIBMTP_PROPERTY_URLDestination = 144
+		LIBMTP_PROPERTY_TimeBookmark = 145
+		LIBMTP_PROPERTY_ObjectBookmark = 146
+		LIBMTP_PROPERTY_ByteBookmark = 147
+		LIBMTP_PROPERTY_LastBuildDate = 148
+		LIBMTP_PROPERTY_TimetoLive = 149
+		LIBMTP_PROPERTY_MediaGUID = 150
+		LIBMTP_PROPERTY_TotalBitRate = 151
+		LIBMTP_PROPERTY_BitRateType = 152
+		LIBMTP_PROPERTY_SampleRate = 153
+		LIBMTP_PROPERTY_NumberOfChannels = 154
+		LIBMTP_PROPERTY_AudioBitDepth = 155
+		LIBMTP_PROPERTY_ScanDepth = 156
+		LIBMTP_PROPERTY_AudioWAVECodec = 157
+		LIBMTP_PROPERTY_AudioBitRate = 158
+		LIBMTP_PROPERTY_VideoFourCCCodec = 159
+		LIBMTP_PROPERTY_VideoBitRate = 160
+		LIBMTP_PROPERTY_FramesPerThousandSeconds = 161
+		LIBMTP_PROPERTY_KeyFrameDistance = 162
+		LIBMTP_PROPERTY_BufferSize = 163
+		LIBMTP_PROPERTY_EncodingQuality = 164
+		LIBMTP_PROPERTY_EncodingProfile = 165
+		LIBMTP_PROPERTY_BuyFlag = 166
+		LIBMTP_PROPERTY_UNKNOWN = 167
+	cdef enum:
+		LIBMTP_FILETYPE_FOLDER = 0
+	cdef enum:
+		LIBMTP_FILETYPE_WAV = 1
+	cdef enum:
+		LIBMTP_FILETYPE_MP3 = 2
+	cdef enum:
+		LIBMTP_FILETYPE_WMA = 3
+	cdef enum:
+		LIBMTP_FILETYPE_OGG = 4
+	cdef enum:
+		LIBMTP_FILETYPE_AUDIBLE = 5
+	cdef enum:
+		LIBMTP_FILETYPE_MP4 = 6
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+	cdef enum:
+		LIBMTP_FILETYPE_WMV = 8
+	cdef enum:
+		LIBMTP_FILETYPE_AVI = 9
+	cdef enum:
+		LIBMTP_FILETYPE_MPEG = 10
+	cdef enum:
+		LIBMTP_FILETYPE_ASF = 11
+	cdef enum:
+		LIBMTP_FILETYPE_QT = 12
+	cdef enum:
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+	cdef enum:
+		LIBMTP_FILETYPE_JPEG = 14
+	cdef enum:
+		LIBMTP_FILETYPE_JFIF = 15
+	cdef enum:
+		LIBMTP_FILETYPE_TIFF = 16
+	cdef enum:
+		LIBMTP_FILETYPE_BMP = 17
+	cdef enum:
+		LIBMTP_FILETYPE_GIF = 18
+	cdef enum:
+		LIBMTP_FILETYPE_PICT = 19
+	cdef enum:
+		LIBMTP_FILETYPE_PNG = 20
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+	cdef enum:
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD2 = 23
+	cdef enum:
+		LIBMTP_FILETYPE_VCARD3 = 24
+	cdef enum:
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+	cdef enum:
+		LIBMTP_FILETYPE_WINEXEC = 26
+	cdef enum:
+		LIBMTP_FILETYPE_TEXT = 27
+	cdef enum:
+		LIBMTP_FILETYPE_HTML = 28
+	cdef enum:
+		LIBMTP_FILETYPE_FIRMWARE = 29
+	cdef enum:
+		LIBMTP_FILETYPE_AAC = 30
+	cdef enum:
+		LIBMTP_FILETYPE_MEDIACARD = 31
+	cdef enum:
+		LIBMTP_FILETYPE_FLAC = 32
+	cdef enum:
+		LIBMTP_FILETYPE_MP2 = 33
+	cdef enum:
+		LIBMTP_FILETYPE_M4A = 34
+	cdef enum:
+		LIBMTP_FILETYPE_DOC = 35
+	cdef enum:
+		LIBMTP_FILETYPE_XML = 36
+	cdef enum:
+		LIBMTP_FILETYPE_XLS = 37
+	cdef enum:
+		LIBMTP_FILETYPE_PPT = 38
+	cdef enum:
+		LIBMTP_FILETYPE_MHT = 39
+	cdef enum:
+		LIBMTP_FILETYPE_JP2 = 40
+	cdef enum:
+		LIBMTP_FILETYPE_JPX = 41
+	cdef enum:
+		LIBMTP_FILETYPE_ALBUM = 42
+	cdef enum:
+		LIBMTP_FILETYPE_PLAYLIST = 43
+	cdef enum:
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	cdef enum __LIBMTP_filetype_t:
+		LIBMTP_FILETYPE_FOLDER = 0
+		LIBMTP_FILETYPE_WAV = 1
+		LIBMTP_FILETYPE_MP3 = 2
+		LIBMTP_FILETYPE_WMA = 3
+		LIBMTP_FILETYPE_OGG = 4
+		LIBMTP_FILETYPE_AUDIBLE = 5
+		LIBMTP_FILETYPE_MP4 = 6
+		LIBMTP_FILETYPE_UNDEF_AUDIO = 7
+		LIBMTP_FILETYPE_WMV = 8
+		LIBMTP_FILETYPE_AVI = 9
+		LIBMTP_FILETYPE_MPEG = 10
+		LIBMTP_FILETYPE_ASF = 11
+		LIBMTP_FILETYPE_QT = 12
+		LIBMTP_FILETYPE_UNDEF_VIDEO = 13
+		LIBMTP_FILETYPE_JPEG = 14
+		LIBMTP_FILETYPE_JFIF = 15
+		LIBMTP_FILETYPE_TIFF = 16
+		LIBMTP_FILETYPE_BMP = 17
+		LIBMTP_FILETYPE_GIF = 18
+		LIBMTP_FILETYPE_PICT = 19
+		LIBMTP_FILETYPE_PNG = 20
+		LIBMTP_FILETYPE_VCALENDAR1 = 21
+		LIBMTP_FILETYPE_VCALENDAR2 = 22
+		LIBMTP_FILETYPE_VCARD2 = 23
+		LIBMTP_FILETYPE_VCARD3 = 24
+		LIBMTP_FILETYPE_WINDOWSIMAGEFORMAT = 25
+		LIBMTP_FILETYPE_WINEXEC = 26
+		LIBMTP_FILETYPE_TEXT = 27
+		LIBMTP_FILETYPE_HTML = 28
+		LIBMTP_FILETYPE_FIRMWARE = 29
+		LIBMTP_FILETYPE_AAC = 30
+		LIBMTP_FILETYPE_MEDIACARD = 31
+		LIBMTP_FILETYPE_FLAC = 32
+		LIBMTP_FILETYPE_MP2 = 33
+		LIBMTP_FILETYPE_M4A = 34
+		LIBMTP_FILETYPE_DOC = 35
+		LIBMTP_FILETYPE_XML = 36
+		LIBMTP_FILETYPE_XLS = 37
+		LIBMTP_FILETYPE_PPT = 38
+		LIBMTP_FILETYPE_MHT = 39
+		LIBMTP_FILETYPE_JP2 = 40
+		LIBMTP_FILETYPE_JPX = 41
+		LIBMTP_FILETYPE_ALBUM = 42
+		LIBMTP_FILETYPE_PLAYLIST = 43
+		LIBMTP_FILETYPE_UNKNOWN = 44
+	ctypedef __LIBMTP_filetype_t LIBMTP_filetype_t
+	int LIBMTP_Is_Property_Supported(LIBMTP_mtpdevice_t *, int, int)
 	int LIBMTP_Update_Playlist(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *)
 	LIBMTP_track_t * LIBMTP_Get_Trackmetadata(LIBMTP_mtpdevice_t *, uint32_t)
 	int LIBMTP_Create_New_Playlist(LIBMTP_mtpdevice_t *, LIBMTP_playlist_t *)
