@@ -40,7 +40,7 @@ Major Pitfalls
 --------------
 
 libmtp has a big drawback that is a cache filled at startup. This takes alot of
-time due to usb communication. Depending on the number of files it takes a
+time due to usb initialisation. Depending on the number of files it takes a
 minute or more. A flag was given to the MediaTransfer-class construtor that
 allows creating a connection without caching. This renders some functions
 unusual, others require this mode.
@@ -51,6 +51,10 @@ If the screenlock is active MTP is known not to work well on some devices.
 
 Some devices have problems if you wait too long with the connect after plugging
 in.
+
+A windows phones did a factory reset during MTP reset after connection
+errors (the reset was issues by libmtp automatically during
+initialisation).
 
 While libmtp provides errorcodes some functions just return -1 (which is not a
 listed error). Other functions return a pointer and have no way to determine
