@@ -46,10 +46,14 @@ def main(root='.'):
 					# and _object['filetype'] == 'JPEG'
 					):
 						name = base + '/' + determine_name(objects, **_object)
-						print('backuped: {} {} {filetype}'.format(object_id, name, **_object))
 						try: makedirs(dirname(name))
 						except: pass
-						mtp.get_file_to_file(object_id, name)
+						try:
+							mtp.get_file_to_file(object_id, name)
+						except Exception, e:
+							print('error retrieving file %s', e)
+						else:
+							print('backuped: {} {} {filetype}'.format(object_id, name, **_object))
 					else:
 						print('ignored: {} {} {filetype}'.format(object_id, _object.get('name', '-'), **_object))
 		except object, e:
